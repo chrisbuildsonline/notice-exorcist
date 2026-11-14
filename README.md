@@ -10,7 +10,17 @@ A user uploads a scan or photo of a customs notice. Notice Exorcist extracts eve
 
 ## Stack
 
-TypeScript monorepo (pnpm). Next.js and Tailwind front end; a pure packages/duty-engine library using decimal.js with fast-check property tests and Vitest; a notice-extraction service calling a multimodal model (Claude via Amazon Bedrock) that returns schema-validated JSON (Zod); SQLite with FTS5 for the local rulings index; a custom MCP server (tariff-mcp) built on the MCP TypeScript SDK; PDF export with a server-side renderer. Deployed as one Docker Compose file or a single hosted app, with an optional local-only mode. OSI-licensed (MIT) public repository.
+TypeScript monorepo (Bun workspaces). Next.js and Tailwind front end; a pure packages/duty-engine library using decimal.js with fast-check property tests and Vitest; a notice-extraction service calling a multimodal model (local Ollama by default; Claude via Amazon Bedrock optional, enabled by an env var) that returns schema-validated JSON (Zod); SQLite with FTS5 for the local rulings index; a custom MCP server (tariff-mcp) built on the MCP TypeScript SDK; PDF export with a server-side renderer. Deployed as one Docker Compose file or a single hosted app, with an optional local-only mode. OSI-licensed (MIT) public repository.
+
+## Develop
+
+```sh
+bun install
+bun run dev        # web app on http://localhost:3000
+bun run test       # Vitest across all workspaces
+bun run typecheck
+bun run e2e        # Playwright (chromium); first run: bunx playwright install chromium
+```
 
 ## License
 
