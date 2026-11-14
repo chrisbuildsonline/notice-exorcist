@@ -10,7 +10,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `provenance.test.ts` expects a throw when `prov` is missing and a pass-through of `stated` provenance unchanged. Covers R7.4, R7.5.
 - [x] 4. Implement `parseRateText` for `Free` and ad valorem.
   - Test: `rate-text.test.ts` cases `Free`, `free `, `6.5%`, `0%`, `12%`, each asserting `raw` equals input. Covers R2.1, R2.2, R2.7.
-- [ ] 5. Extend the parser to specific and compound rates.
+- [x] 5. Extend the parser to specific and compound rates.
   - Test: `rate-text.test.ts` cases `2.4¢/kg`, `$1.20/doz`, `2.4¢/kg + 5%`. Covers R2.3, R2.4.
 - [ ] 6. Make everything else return `unsupported` with the raw text.
   - Test: `rate-text-unsupported.test.ts` cases `See 9903.88.03`, empty string, `3.4% + 0.5¢/kg, max 8%`, `Free except as provided`, and checks no field other than `kind` and `raw`. Covers R2.5, R2.6.
