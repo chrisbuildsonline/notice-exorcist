@@ -26,7 +26,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `fee-table.test.ts` rejects entries missing a source field and overlapping date ranges, and accepts the shipped `fees.json`. Covers R6.1, R6.2, R6.3.
 - [x] 12. Implement `computeMpf` with min/max clamp from the table.
   - Test: `mpf.test.ts` for below-minimum, within range, above-maximum, date with no table, and no inferred exemption. Covers R4.1 to R4.4.
-- [ ] 13. Implement `computeHmf`.
+- [x] 13. Implement `computeHmf`.
   - Test: `hmf.test.ts` for ocean, non-ocean (`not_applicable`), and rounding once. Covers R5.1 to R5.3.
 - [ ] 14. Implement `compareFigures` and the notice total check.
   - Test: `compare.test.ts` for equal, differing, unsupported, and that the stated figure object is unchanged (deep equal before and after). Covers R8.1 to R8.4.

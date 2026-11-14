@@ -7,7 +7,7 @@ export type FeeResult =
   | { status: 'unsupported'; reason: 'no_fee_table_for_date' }
   | { status: 'not_applicable' };
 
-export type MpfInput = {
+export type FeeInput = {
   enteredValue: Fig;
   /** ISO date (YYYY-MM-DD) of the entry; picks the fiscal-year row of the fee table. */
   entryDate: string;
@@ -38,7 +38,7 @@ function result(formulaId: string, unrounded: Decimal, inputs: Record<string, Fi
 }
 
 /** Merchandise Processing Fee: entered value x rate, clamped to [minimum, maximum], rounded half-up to cents once. */
-export function computeMpf(input: MpfInput): FeeResult {
+export function computeMpf(input: FeeInput): FeeResult {
   const enteredValue = assertFig(input.enteredValue, 'enteredValue');
   const entry = findEntry(input.table, 'mpf', input.entryDate);
   if (!input.applies) return { status: 'not_applicable' };
@@ -50,4 +50,14 @@ export function computeMpf(input: MpfInput): FeeResult {
   const raw = new D(enteredValue.value).times(ratePercent.value).div(100);
   const clamped = D.min(D.max(raw, minimum.value), maximum.value);
   return result('fee.mpf', clamped, { enteredValue, ratePercent, minimum, maximum });
+}
+
+/** Harbor Maintenance Fee: entered value x rate for ocean shipments, rounded half-up to cents once. */
+export function computeHmf(input: FeeInput & { ocean: boolean }): FeeResult {
+  const enteredValue = assertFig(input.enteredValue, 'enteredValue');
+  const entry = findEntry(input.table, 'hmf', input.entryDate);
+  if (!input.ocean || !input.applies) return { status: 'not_applicable' };
+  if (!entry) return { status: 'unsupported', reason: 'no_fee_table_for_date' };
+  const ratePercent = { value: new D(entry.rate), prov: tableProv(entry) };
+  return result('fee.hmf', new D(enteredValue.value).times(ratePercent.value).div(100), { enteredValue, ratePercent });
 }
