@@ -28,7 +28,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `test/integrity.bun.test.ts`. Covers R8.1 to R8.3.
 - [ ] 13. Wire the root test script: Vitest then `bun test` for tariff-data. Exclude `packages/tariff-data/**` from Vitest.
   - Test: `bun run test` runs both suites. Break one tariff-data test on purpose and confirm the root command exits non-zero, then revert. Covers R7.2 to R7.4.
-- [ ] 14. Add a boundary test: the package does not import `apps/web` or `duty-engine`, and only `src/fetch/` uses `fetch`.
+- [x] 14. Add a boundary test: the package does not import `apps/web` or `duty-engine`, and only `src/fetch/` uses `fetch`.
   - Test: `boundary.bun.test.ts` scans sources. Covers R9.2, R9.3.
 - [ ] 15. Update `structure.md` to list `packages/tariff-data`, and add the `data:fetch` and `data:build` commands to the README Develop section.
   - Check: files diff shows only those additions. Covers the layout note in `design.md`.
