@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/* Tokens from design/DESIGN.md 2.4. Change them there first. */
+@theme static {
+  --color-canvas:#eef0f4; --color-surface:#fff; --color-surface-muted:#f6f7f9; --color-line:#e6e8ee;
+  --color-ink:#14161c; --color-ink-hover:#2a2d36; --color-text-secondary:#4a5060; --color-text-muted:#646a79;
+  --color-disabled-bg:#e6e8ee; --color-disabled-fg:#8a90a0;
+  --color-accent:#5b3df5; --color-accent-700:#4527d6; --color-accent-200:#cfc6ff; --color-accent-50:#f1eeff;
+  --color-haunt-fg:#b4350a; --color-haunt-bg:#fff1ea; --color-haunt-edge:#e8590c;
+  --color-unverified-fg:#8a5300; --color-unverified-bg:#fff6e0; --color-unverified-edge:#b87d00;
+  --color-calm-fg:#15693d; --color-calm-bg:#e8f6ee; --color-calm-edge:#2f9e5e;
+  --color-confirm-fg:#1f5296; --color-confirm-bg:#e8f0fc; --color-confirm-edge:#3b7ddd;
+  --color-unsupported-fg:#4a5060; --color-unsupported-bg:#eceef3; --color-unsupported-edge:#8a90a0;
+  --radius-xs:6px; --radius-sm:10px; --radius-md:14px; --radius-lg:18px; --radius-xl:24px;
+  --shadow-float:0 1px 2px rgba(20,22,28,.04),0 8px 24px -6px rgba(20,22,28,.08);
+  --shadow-raised:0 2px 4px rgba(20,22,28,.05),0 16px 40px -12px rgba(20,22,28,.14);
+  --shadow-overlay:0 24px 64px -16px rgba(20,22,28,.28);
+  --shadow-pill:inset 0 1px 0 rgba(255,255,255,.10),0 6px 16px -6px rgba(20,22,28,.45);
+  --ease-out:cubic-bezier(.2,.8,.2,1); --ease-in-out:cubic-bezier(.65,0,.35,1);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Type roles from DESIGN.md 2.3 (desktop sizes; phone overrides below) */
+  --text-display:56px; --text-display--line-height:60px; --text-display--letter-spacing:-0.03em; --text-display--font-weight:600;
+  --text-title:32px; --text-title--line-height:38px; --text-title--letter-spacing:-0.02em; --text-title--font-weight:600;
+  --text-heading:20px; --text-heading--line-height:28px; --text-heading--letter-spacing:-0.01em; --text-heading--font-weight:600;
+  --text-number-lg:36px; --text-number-lg--line-height:40px; --text-number-lg--letter-spacing:-0.02em; --text-number-lg--font-weight:600;
+  --text-number:17px; --text-number--line-height:24px; --text-number--font-weight:600;
+  --text-body:15px; --text-body--line-height:24px;
+  --text-caption:13px; --text-caption--line-height:18px; --text-caption--font-weight:500;
+  --text-label:11px; --text-label--line-height:16px; --text-label--letter-spacing:0.06em; --text-label--font-weight:600;
+  --text-mono:13px; --text-mono--line-height:20px; --text-mono--font-weight:500;
+}
+
+:root {
+  --glow-haunt:rgba(232,89,12,.30);
+  --glow-unverified:rgba(245,179,0,.28);
+  --glow-calm:rgba(47,158,94,.22);
+}
+
+/* Phone (<768px) sizes from DESIGN.md 2.3 */
+@media (max-width: 767px) {
+  :root {
+    --text-display:40px; --text-display--line-height:44px;
+    --text-title:28px; --text-title--line-height:34px;
+    --text-heading:18px; --text-heading--line-height:26px;
+    --text-number-lg:32px; --text-number-lg--line-height:36px;
+    --text-body:16px;
+    --text-mono:14px;
+  }
+}
+
+body { background:var(--color-canvas); color:var(--color-ink); font-family:var(--font-sans); }
+.num { font-variant-numeric:tabular-nums; }
+:focus-visible { outline:2px solid var(--color-accent); outline-offset:2px; border-radius:inherit; }

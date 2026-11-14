@@ -8,4 +8,11 @@ CLAUDE.md
 .omc/
 .claude/
 design/refs/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+# playwright output, including e2e screenshots (test-results/screenshots/)
+test-results/
+playwright-report/
 # never ignore .kiro/: the hackathon requires it in the repo
+.claude/settings.local.json
