@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { PKG_DIR } from './config';
 
-const sources = [...new Bun.Glob('{src,test}/**/*.ts').scanSync(PKG_DIR)]
+// Package code only; test/helpers.ts replaces fetch with a thrower to keep tests offline.
+const sources = [...new Bun.Glob('src/**/*.ts').scanSync(PKG_DIR)]
   .filter((f) => !f.endsWith('.test.ts'))
   .map((f) => ({ path: f, text: readFileSync(join(PKG_DIR, f), 'utf8') }));
 
@@ -21,7 +22,7 @@ describe('package boundaries', () => {
   test('only src/fetch/ touches the network', () => {
     const net = /\bfetch\s*\(|\bfetch\b\s*[,;)=]|typeof fetch|XMLHttpRequest|WebSocket|node:(http|https|net|dgram)|\bBun\.connect\b/;
     const offenders = sources.filter((s) => net.test(s.text)).map((s) => relative('.', s.path));
-    expect(offenders.every((p) => p.startsWith('src/fetch/'))).toBe(true);
+    expect(offenders.filter((p) => !p.startsWith('src/fetch/'))).toEqual([]);
     expect(offenders).toContain('src/fetch/hts.ts');
   });
 });

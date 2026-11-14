@@ -17,10 +17,16 @@ TypeScript monorepo (Bun workspaces). Next.js and Tailwind front end; a pure pac
 ```sh
 bun install
 bun run dev        # web app on http://localhost:3000
-bun run test       # Vitest across all workspaces
+bun run test       # Vitest across all workspaces, then bun test for packages/tariff-data
 bun run typecheck
 bun run e2e        # Playwright (chromium); first run: bunx playwright install chromium
+
+# tariff data (packages/tariff-data)
+bun run --cwd packages/tariff-data data:fetch   # re-download USITC HTS + CBP CROSS into data/ (network)
+bun run --cwd packages/tariff-data data:build   # build the SQLite FTS5 index into .cache/ (offline)
 ```
+
+The tariff and ruling data in `packages/tariff-data/data/` is US government public domain, not MIT; see its `SOURCES.md`.
 
 ## License
 

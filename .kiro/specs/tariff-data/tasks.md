@@ -22,13 +22,13 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `search.bun.test.ts` for quoting, inputs with `"`, `*`, `NEAR`, `-`, `:` (no throw), empty query (empty list), OR fallback, and filters. Covers R6.1 to R6.3, R6.5 to R6.8.
 - [x] 10. Implement `lookupHts` with ancestors, provenance, and the `not_found`, `invalid_code`, `out_of_scope` statuses. No rate inheritance, no parsing.
   - Test: `lookup.bun.test.ts` on the built index: `6109.10.00` returns the stored general text, a code with an empty general returns `''`, a heading-row code returns `not_found`, chapter 87 returns `out_of_scope`, `abc` returns `invalid_code`. Covers R5.1 to R5.8.
-- [ ] 11. Integration tests on the built index in `test/`: the R7.6 list, including `cotton t-shirt knitted` with a 6109 ruling in the top five, and per-chapter coverage (R7.7).
+- [x] 11. Integration tests on the built index in `test/`: the R7.6 list, including `cotton t-shirt knitted` with a 6109 ruling in the top five, and per-chapter coverage (R7.7).
   - Test: `test/index.integration.bun.test.ts`. Covers R6.4, R7.1, R7.5 to R7.7.
-- [ ] 12. Data integrity tests: every `general` equals the raw JSON value, `source` non-empty, `meta.edition` equals the manifest edition, ruling URLs start with `https://rulings.cbp.gov/`.
+- [x] 12. Data integrity tests: every `general` equals the raw JSON value, `source` non-empty, `meta.edition` equals the manifest edition, ruling URLs start with `https://rulings.cbp.gov/`.
   - Test: `test/integrity.bun.test.ts`. Covers R8.1 to R8.3.
-- [ ] 13. Wire the root test script: Vitest then `bun test` for tariff-data. Exclude `packages/tariff-data/**` from Vitest.
+- [x] 13. Wire the root test script: Vitest then `bun test` for tariff-data. Exclude `packages/tariff-data/**` from Vitest.
   - Test: `bun run test` runs both suites. Break one tariff-data test on purpose and confirm the root command exits non-zero, then revert. Covers R7.2 to R7.4.
 - [x] 14. Add a boundary test: the package does not import `apps/web` or `duty-engine`, and only `src/fetch/` uses `fetch`.
   - Test: `boundary.bun.test.ts` scans sources. Covers R9.2, R9.3.
-- [ ] 15. Update `structure.md` to list `packages/tariff-data`, and add the `data:fetch` and `data:build` commands to the README Develop section.
+- [x] 15. Update `structure.md` to list `packages/tariff-data`, and add the `data:fetch` and `data:build` commands to the README Develop section.
   - Check: files diff shows only those additions. Covers the layout note in `design.md`.
