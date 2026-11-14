@@ -14,7 +14,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `rate-text.test.ts` cases `2.4¢/kg`, `$1.20/doz`, `2.4¢/kg + 5%`. Covers R2.3, R2.4.
 - [x] 6. Make everything else return `unsupported` with the raw text.
   - Test: `rate-text-unsupported.test.ts` cases `See 9903.88.03`, empty string, `3.4% + 0.5¢/kg, max 8%`, `Free except as provided`, and checks no field other than `kind` and `raw`. Covers R2.5, R2.6.
-- [ ] 7. Property test for the parser.
+- [x] 7. Property test for the parser.
   - Test: `rate-text.prop.test.ts` (a) generated supported strings keep `raw`, (b) generated strings outside the grammar return `unsupported` with identical `raw`. Covers R9.4, R9.5.
 - [ ] 8. Implement `computeLineDuty` for `free` and `ad_valorem` with single half-up rounding and provenance.
   - Test: `line-duty.test.ts` with `$996.92 × 6.5% = 64.80` (unrounded 64.7998), the formula id and inputs in `prov`. Covers R3.1, R3.2, R3.6, R3.7, R7.1, R7.2.
