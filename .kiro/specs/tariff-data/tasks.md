@@ -20,7 +20,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `build-rulings.bun.test.ts` checks code extraction comes from the tariff field only, codes are normalized, `url` and `source` are set, and a ruling listing 6109.10.00 has a `ruling_codes` row with heading `6109`. Covers R4.4, R4.6, R4.11, R4.12.
 - [ ] 9. Implement `toFtsExpression` and `searchRulings` / `searchHts` (bm25, AND then OR fallback, heading and chapter filters, snippets).
   - Test: `search.bun.test.ts` for quoting, inputs with `"`, `*`, `NEAR`, `-`, `:` (no throw), empty query (empty list), OR fallback, and filters. Covers R6.1 to R6.3, R6.5 to R6.8.
-- [ ] 10. Implement `lookupHts` with ancestors, provenance, and the `not_found`, `invalid_code`, `out_of_scope` statuses. No rate inheritance, no parsing.
+- [x] 10. Implement `lookupHts` with ancestors, provenance, and the `not_found`, `invalid_code`, `out_of_scope` statuses. No rate inheritance, no parsing.
   - Test: `lookup.bun.test.ts` on the built index: `6109.10.00` returns the stored general text, a code with an empty general returns `''`, a heading-row code returns `not_found`, chapter 87 returns `out_of_scope`, `abc` returns `invalid_code`. Covers R5.1 to R5.8.
 - [ ] 11. Integration tests on the built index in `test/`: the R7.6 list, including `cotton t-shirt knitted` with a 6109 ruling in the top five, and per-chapter coverage (R7.7).
   - Test: `test/index.integration.bun.test.ts`. Covers R6.4, R7.1, R7.5 to R7.7.
