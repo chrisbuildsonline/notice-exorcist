@@ -4,7 +4,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
 
 - [x] 1. Scaffold `packages/duty-engine` (Bun workspace member, strict TS, Vitest, fast-check, decimal.js, zod). Add `decimal.ts` with a cloned Decimal config and `roundCents`.
   - Test: `decimal.test.ts` checks `0.1 + 0.2 = 0.3`, half-up at `.005`, and that `roundCents` is idempotent. Covers R1.1, R1.2.
-- [ ] 2. Reject non-Decimal money input with `InvalidMoneyError`.
+- [x] 2. Reject non-Decimal money input with `InvalidMoneyError`.
   - Test: `money-input.test.ts` passes a JS `number` and expects the typed error. Covers R1.3.
 - [ ] 3. Add `provenance.ts` (types, Zod schemas, `MissingProvenanceError`, `makeFig`).
   - Test: `provenance.test.ts` expects a throw when `prov` is missing and a pass-through of `stated` provenance unchanged. Covers R7.4, R7.5.
