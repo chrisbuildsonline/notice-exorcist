@@ -1,0 +1,55 @@
+{
+  "edition": "2026 HTS Revision 23",
+  "files": {
+    "hts/ch39.json": {
+      "url": "https://hts.usitc.gov/reststop/exportList?from=3900&to=3999&format=JSON&styles=false",
+      "retrievedAt": "2026-11-14T16:41:29.194Z",
+      "sha256": "5c1e3e78af30a3dda440eee02a73ece7c6c6652e4d3c5625d35967a886d92584"
+    },
+    "hts/ch42.json": {
+      "url": "https://hts.usitc.gov/reststop/exportList?from=4200&to=4299&format=JSON&styles=false",
+      "retrievedAt": "2026-11-14T16:41:29.443Z",
+      "sha256": "ebe861d42a87a40fdf94c99535018cf12c1bc4bc3ff1c7fc1c383bc31c0d1f08"
+    },
+    "hts/ch61.json": {
+      "url": "https://hts.usitc.gov/reststop/exportList?from=6100&to=6199&format=JSON&styles=false",
+      "retrievedAt": "2026-11-14T16:41:29.767Z",
+      "sha256": "47d793de0128eab7358caa2a2094d9164370a51d3595bae1b42aec42a5a571cb"
+    },
+    "hts/ch62.json": {
+      "url": "https://hts.usitc.gov/reststop/exportList?from=6200&to=6299&format=JSON&styles=false",
+      "retrievedAt": "2026-11-14T16:41:30.235Z",
+      "sha256": "27f1d38549f6b1d0c17eb3bfa8fddcbb1651c4203add50649a10fcc2a5426b8c"
+    },
+    "hts/ch63.json": {
+      "url": "https://hts.usitc.gov/reststop/exportList?from=6300&to=6399&format=JSON&styles=false",
+      "retrievedAt": "2026-11-14T16:41:30.653Z",
+      "sha256": "3ee48ebca0de6af88105c9508fd5d794ccfee37f19fd62145e7e360735f50045"
+    },
+    "hts/ch64.json": {
+      "url": "https://hts.usitc.gov/reststop/exportList?from=6400&to=6499&format=JSON&styles=false",
+      "retrievedAt": "2026-11-14T16:41:30.940Z",
+      "sha256": "07d583112ee28c7efcae4dc27d3e8a8e1a65da2545c55332daa5498f32b67bef"
+    },
+    "hts/ch71.json": {
+      "url": "https://hts.usitc.gov/reststop/exportList?from=7100&to=7199&format=JSON&styles=false",
+      "retrievedAt": "2026-11-14T16:41:31.118Z",
+      "sha256": "250911954acac43762cbd09fc11a95f7f381e70d298ebcde95651f899e6daa19"
+    },
+    "hts/ch85.json": {
+      "url": "https://hts.usitc.gov/reststop/exportList?from=8500&to=8599&format=JSON&styles=false",
+      "retrievedAt": "2026-11-14T16:41:31.413Z",
+      "sha256": "b23c7fdf8255d691b3f309c0f98b206188561d4fb18486f4406bbffecd4ac446"
+    },
+    "hts/ch94.json": {
+      "url": "https://hts.usitc.gov/reststop/exportList?from=9400&to=9499&format=JSON&styles=false",
+      "retrievedAt": "2026-11-14T16:41:31.601Z",
+      "sha256": "0b0b9606ccfd021268600cd3c2fea9c8bbccd344b328bdb4163cdb7b896153e5"
+    },
+    "hts/ch95.json": {
+      "url": "https://hts.usitc.gov/reststop/exportList?from=9500&to=9599&format=JSON&styles=false",
+      "retrievedAt": "2026-11-14T16:41:31.754Z",
+      "sha256": "bf373dac900b459c0187bd106ceaaaa5f854c074b787a6e48c9d975d7e80cdfd"
+    }
+  }
+}
