@@ -20,7 +20,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `line-duty.test.ts` with `$996.92 × 6.5% = 64.80` (unrounded 64.7998), the formula id and inputs in `prov`. Covers R3.1, R3.2, R3.6, R3.7, R7.1, R7.2.
 - [x] 9. Add specific and compound duty and unit mismatch handling.
   - Test: `line-duty-specific.test.ts` for `kg` quantity, compound sum before rounding, and `unit_mismatch` result. Covers R3.3, R3.4.
-- [ ] 10. Return `unsupported` for unsupported rates with no numeric field.
+- [x] 10. Return `unsupported` for unsupported rates with no numeric field.
   - Test: `line-duty-unsupported.test.ts` asserts `status: 'unsupported'`, `raw` preserved, and a type test (`expectTypeOf`) that no `duty` field exists. Covers R3.5.
 - [ ] 11. Add `fee-table.ts` loader and `data/fees.json` with source fields for every entry. A human checks the values against CBP's notice before commit.
   - Test: `fee-table.test.ts` rejects entries missing a source field and overlapping date ranges, and accepts the shipped `fees.json`. Covers R6.1, R6.2, R6.3.
