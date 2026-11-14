@@ -8,7 +8,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `money-input.test.ts` passes a JS `number` and expects the typed error. Covers R1.3.
 - [x] 3. Add `provenance.ts` (types, Zod schemas, `MissingProvenanceError`, `makeFig`).
   - Test: `provenance.test.ts` expects a throw when `prov` is missing and a pass-through of `stated` provenance unchanged. Covers R7.4, R7.5.
-- [ ] 4. Implement `parseRateText` for `Free` and ad valorem.
+- [x] 4. Implement `parseRateText` for `Free` and ad valorem.
   - Test: `rate-text.test.ts` cases `Free`, `free `, `6.5%`, `0%`, `12%`, each asserting `raw` equals input. Covers R2.1, R2.2, R2.7.
 - [ ] 5. Extend the parser to specific and compound rates.
   - Test: `rate-text.test.ts` cases `2.4¢/kg`, `$1.20/doz`, `2.4¢/kg + 5%`. Covers R2.3, R2.4.
