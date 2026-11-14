@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import fees from '../data/fees.json';
@@ -75,5 +75,11 @@ describe('fees.json against its sources', () => {
     const { minimum, maximum } = e as { minimum?: string; maximum?: string };
     if (minimum !== undefined) expect(e.quotes.some((q) => q.includes('Minimum') && q.includes(minimum))).toBe(true);
     if (maximum !== undefined) expect(e.quotes.some((q) => q.includes('Maximum') && q.includes(maximum))).toBe(true);
+  });
+
+  // eCFR saves carried sign-in links with a session JWT; they were stripped and must not come back.
+  const sourcesDir = join(import.meta.dirname, '../data/sources');
+  it.each(readdirSync(sourcesDir))('%s has no jwt= link', (file) => {
+    expect(readFileSync(join(sourcesDir, file), 'utf8')).not.toContain('jwt=');
   });
 });
