@@ -30,7 +30,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `hmf.test.ts` for ocean, non-ocean (`not_applicable`), and rounding once. Covers R5.1 to R5.3.
 - [x] 14. Implement `compareFigures` and the notice total check.
   - Test: `compare.test.ts` for equal, differing, unsupported, and that the stated figure object is unchanged (deep equal before and after). Covers R8.1 to R8.4.
-- [ ] 15. Property tests for engine invariants.
+- [x] 15. Property tests for engine invariants.
   - Test: `engine.prop.test.ts` covers non-negativity, line sums equal total, single rounding, MPF bounds, ad valorem monotonicity, and provenance present on all outputs. Covers R9.1 to R9.3, R9.6 to R9.8.
 - [ ] 16. Export the public API from `index.ts` and add a boundary check that the package imports nothing but `decimal.js` and `zod`.
   - Test: `boundary.test.ts` scans package sources for imports of `node:fs`, `node:net`, `fetch`, or other workspace packages and fails if found. Covers the no-I/O rule in `structure.md`.
