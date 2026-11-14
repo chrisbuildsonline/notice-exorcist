@@ -10,9 +10,9 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `schemas.bun.test.ts` accepts verbatim excerpts of real rows, rejects a row missing `general`, and keeps empty strings as empty strings. Covers R4.9.
 - [x] 4. Write the HTS fetch script (`fetch/hts.ts`, `fetch/run.ts`): scope chapters only, temp-then-rename, manifest entries with sha256.
   - Test: `fetch-hts.bun.test.ts` with an injected `fetch`: writes raw bytes unchanged, fails on invalid JSON and on an empty list without touching existing files, requests only scope chapters. Then run `bun run data:fetch` once and commit `data/hts/`. Covers R1.1 to R1.5.
-- [ ] 5. Write the CROSS fetch script (`fetch/cross.ts`): search per scope heading, cap per heading, throttle, `User-Agent`, skip existing, `--refresh`, collect failures. Run it and commit `data/rulings/`.
+- [x] 5. Write the CROSS fetch script (`fetch/cross.ts`): search per scope heading, cap per heading, throttle, `User-Agent`, skip existing, `--refresh`, collect failures. Run it and commit `data/rulings/`.
   - Test: `fetch-cross.bun.test.ts` with an injected `fetch`: respects the cap, skips existing files, continues after one failure and exits non-zero. Check by listing `data/rulings/` that at least five rulings have a 6109 code. Covers R2.1 to R2.7.
-- [ ] 6. Write `data/SOURCES.md` (sources, URLs, public-domain statement, MIT does not cover the data, not legal advice) and `fetch/sources-note.ts` to regenerate the edition and date lines from the manifest.
+- [x] 6. Write `data/SOURCES.md` (sources, URLs, public-domain statement, MIT does not cover the data, not legal advice) and `fetch/sources-note.ts` to regenerate the edition and date lines from the manifest.
   - Test: `sources-note.bun.test.ts` regenerates lines without touching the rest, and the build fails when the file is missing. Covers R3.1 to R3.5.
 - [x] 7. Write `build/schema.sql` and the build script for `hts_lines`, `meta`, and `hts_fts`: Zod validation, normalization, verbatim text columns, temp-then-rename, deterministic order.
   - Test: `build-hts.bun.test.ts` builds to a temp path, checks row counts against raw files, builds twice and compares rows, and confirms a bad input file leaves the old index intact. Covers R4.1 to R4.3, R4.5 to R4.11.

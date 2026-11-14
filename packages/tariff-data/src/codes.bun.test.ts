@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { chapterOf, headingOf, isInScope, normalizeHts } from './codes';
+import { chapterOf, headingOf, isInScope, normalizeHts, parseTariffField } from './codes';
 
 describe('normalizeHts', () => {
   test('formats 4, 6, 8 and 10 digit codes with dots', () => {
@@ -18,6 +18,16 @@ describe('normalizeHts', () => {
     expect(normalizeHts('abc')).toBeNull();
     expect(normalizeHts('6109x10000')).toBeNull();
     expect(normalizeHts('0009.10.00')).toBeNull();
+  });
+});
+
+describe('parseTariffField', () => {
+  test('normalizes each code in a CROSS tariffs field', () => {
+    // tariffs field of https://rulings.cbp.gov/api/ruling/N338047
+    expect(parseTariffField('9004.90.0090, 9903.88.15')).toEqual(['9004.90.00.90', '9903.88.15']);
+    expect(parseTariffField('6109.10.0012; 6109.10.0012')).toEqual(['6109.10.00.12']);
+    expect(parseTariffField(null)).toEqual([]);
+    expect(parseTariffField('')).toEqual([]);
   });
 });
 

@@ -3,6 +3,9 @@
 The files in this directory are downloaded by `bun run data:fetch` from two US government sources. The search index in `.cache/` is built from them with `bun run data:build` and is not committed.
 
 <!-- generated from manifest.json -->
+- HTS edition: 2026 HTS Revision 23
+- HTS retrieved: 2026-11-14 (10 chapter files)
+- CROSS rulings retrieved: 2026-11-14 (108 rulings)
 <!-- end generated -->
 
 ## USITC Harmonized Tariff Schedule (HTS)

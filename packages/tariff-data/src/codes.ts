@@ -9,6 +9,12 @@ export function normalizeHts(input: string): string | null {
   return [d.slice(0, 4), d.slice(4, 6), d.slice(6, 8), d.slice(8, 10)].filter(Boolean).join('.');
 }
 
+/** A CROSS `tariffs` field ('9004.90.0090, 9903.88.15') as normalized codes, unparseable tokens dropped. */
+export function parseTariffField(tariffs: string | null): string[] {
+  const codes = (tariffs ?? '').split(/[,;\s]+/).map(normalizeHts);
+  return [...new Set(codes.filter((c): c is string => c !== null))];
+}
+
 export const chapterOf = (code: string) => code.slice(0, 2);
 export const headingOf = (code: string) => code.slice(0, 4);
 export const isInScope = (code: string) => (SCOPE_CHAPTERS as readonly string[]).includes(chapterOf(code));
