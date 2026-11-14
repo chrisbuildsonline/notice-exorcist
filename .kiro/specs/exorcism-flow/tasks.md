@@ -2,7 +2,7 @@
 
 Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` for tasks that touch UI or the approval flow. Each task names its test.
 
-- [ ] 1. Scaffold `apps/web` (Next.js, Tailwind) and add tokens from `design/DESIGN.md` 2.4 to `globals.css` and the Tailwind config. Load Geist and Geist Mono.
+- [x] 1. Scaffold `apps/web` (Next.js, Tailwind) and add tokens from `design/DESIGN.md` 2.4 to `globals.css` and the Tailwind config. Load Geist and Geist Mono.
   - Test: `tokens.test.ts` parses `globals.css` and checks every status token and the canvas value equal those in `design/DESIGN.md`. Covers R9.
 - [ ] 2. Build `Figure` with required `prov` and `source`, the unsourced fallback and the throw in dev/test.
   - Test: `Figure.test.tsx` renders sourced `stated`, `computed`, `tariff` values (2 decimals, comma, true minus, tag shown), and an unsourced one that throws in test and renders `—` plus `Unsourced` in production mode. Covers R5.3 to R5.5.
