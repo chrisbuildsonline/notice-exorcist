@@ -18,7 +18,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `rate-text.prop.test.ts` (a) generated supported strings keep `raw`, (b) generated strings outside the grammar return `unsupported` with identical `raw`. Covers R9.4, R9.5.
 - [x] 8. Implement `computeLineDuty` for `free` and `ad_valorem` with single half-up rounding and provenance.
   - Test: `line-duty.test.ts` with `$996.92 × 6.5% = 64.80` (unrounded 64.7998), the formula id and inputs in `prov`. Covers R3.1, R3.2, R3.6, R3.7, R7.1, R7.2.
-- [ ] 9. Add specific and compound duty and unit mismatch handling.
+- [x] 9. Add specific and compound duty and unit mismatch handling.
   - Test: `line-duty-specific.test.ts` for `kg` quantity, compound sum before rounding, and `unit_mismatch` result. Covers R3.3, R3.4.
 - [ ] 10. Return `unsupported` for unsupported rates with no numeric field.
   - Test: `line-duty-unsupported.test.ts` asserts `status: 'unsupported'`, `raw` preserved, and a type test (`expectTypeOf`) that no `duty` field exists. Covers R3.5.
