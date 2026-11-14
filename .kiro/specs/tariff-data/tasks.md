@@ -16,7 +16,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `sources-note.bun.test.ts` regenerates lines without touching the rest, and the build fails when the file is missing. Covers R3.1 to R3.5.
 - [x] 7. Write `build/schema.sql` and the build script for `hts_lines`, `meta`, and `hts_fts`: Zod validation, normalization, verbatim text columns, temp-then-rename, deterministic order.
   - Test: `build-hts.bun.test.ts` builds to a temp path, checks row counts against raw files, builds twice and compares rows, and confirms a bad input file leaves the old index intact. Covers R4.1 to R4.3, R4.5 to R4.11.
-- [ ] 8. Extend the build with `rulings`, `ruling_codes` and `rulings_fts`.
+- [x] 8. Extend the build with `rulings`, `ruling_codes` and `rulings_fts`.
   - Test: `build-rulings.bun.test.ts` checks code extraction comes from the tariff field only, codes are normalized, `url` and `source` are set, and a ruling listing 6109.10.00 has a `ruling_codes` row with heading `6109`. Covers R4.4, R4.6, R4.11, R4.12.
 - [ ] 9. Implement `toFtsExpression` and `searchRulings` / `searchHts` (bm25, AND then OR fallback, heading and chapter filters, snippets).
   - Test: `search.bun.test.ts` for quoting, inputs with `"`, `*`, `NEAR`, `-`, `:` (no throw), empty query (empty list), OR fallback, and filters. Covers R6.1 to R6.3, R6.5 to R6.8.
