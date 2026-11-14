@@ -24,7 +24,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `line-duty-unsupported.test.ts` asserts `status: 'unsupported'`, `raw` preserved, and a type test (`expectTypeOf`) that no `duty` field exists. Covers R3.5.
 - [x] 11. Add `fee-table.ts` loader and `data/fees.json` with source fields for every entry. A human checks the values against CBP's notice before commit.
   - Test: `fee-table.test.ts` rejects entries missing a source field and overlapping date ranges, and accepts the shipped `fees.json`. Covers R6.1, R6.2, R6.3.
-- [ ] 12. Implement `computeMpf` with min/max clamp from the table.
+- [x] 12. Implement `computeMpf` with min/max clamp from the table.
   - Test: `mpf.test.ts` for below-minimum, within range, above-maximum, date with no table, and no inferred exemption. Covers R4.1 to R4.4.
 - [ ] 13. Implement `computeHmf`.
   - Test: `hmf.test.ts` for ocean, non-ocean (`not_applicable`), and rounding once. Covers R5.1 to R5.3.
