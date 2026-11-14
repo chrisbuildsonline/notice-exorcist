@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "tariff-mcp": {
+      "command": "bun",
+      "args": ["run", "packages/tariff-mcp/src/server.ts"],
+      "disabled": false,
+      "autoApprove": ["lookup_tariff", "search_rulings", "explain_rate"]
+    }
+  }
+}

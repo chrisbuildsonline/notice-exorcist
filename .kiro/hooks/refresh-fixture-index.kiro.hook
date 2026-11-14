@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "refresh-fixture-index",
+  "description": "When fixtures or committed tariff data change, rebuild the tariff-data FTS5 index and refresh the fixture list.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["fixtures/**", "packages/tariff-data/data/**"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A file under fixtures/ or packages/tariff-data/data/ changed. Run `bun run --cwd packages/tariff-data test` from the repo root; per the project setup this rebuilds the SQLite FTS5 index in packages/tariff-data/.cache/ and runs the tariff-data tests. Do not run data:fetch or use the network. Report whether the rebuild and tests passed, and list any failures (integrity tests in test/integrity.bun.test.ts are the likely ones if the data or manifest.json is inconsistent). Then refresh the fixture list: list the files now under fixtures/ and report any added, removed or renamed since the last list. If a fixture index or list file already exists in the repo, update it to match; if none exists, only report the list and do not create a file."
+  }
+}

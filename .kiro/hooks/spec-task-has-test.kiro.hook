@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "spec-task-has-test",
+  "description": "When a spec tasks.md is edited, check that every ticked task names or points to a test that exists in the repo.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [".kiro/specs/*/tasks.md"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A .kiro/specs/*/tasks.md file was edited. For every ticked task (`- [x]`) in that file, check that the task names a test (a `Test:` line or a test file such as `foo.test.ts`, `*.bun.test.ts`, or a Playwright spec) or points to one. Then verify the named test file exists in the repo (use glob or grep; tariff-data tests are `*.bun.test.ts` under src/ or test/, engine tests sit beside the code in packages/duty-engine/src, e2e tests are under e2e/). Where the task names specific cases, spot-check that the file contains them. Report each ticked task that has no test reference, names a file that does not exist, or is missing a named case. Do not tick or untick tasks, and do not edit any file. If every ticked task passes, say so in one line."
+  }
+}

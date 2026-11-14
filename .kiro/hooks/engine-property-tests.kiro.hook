@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "engine-property-tests",
+  "description": "When a duty-engine source file is edited, run the duty-engine Vitest suite, including the fast-check property tests, and report failures.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["packages/duty-engine/src/**/*.ts"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A file under packages/duty-engine/src was edited. Run `bunx vitest run packages/duty-engine` from the repo root. This runs the whole duty-engine suite, including the fast-check property tests (engine.prop.test.ts, rate-text.prop.test.ts). Report the result. If anything fails, list each failing test with its file, the assertion message, and the fast-check seed and counterexample if there is one. Then explain the likely cause in the edited code. Do not edit tests to make them pass, and do not change code unless the user asks. Remember the engine is the only place duty math lives, uses decimal.js, rounds once, and has no I/O."
+  }
+}

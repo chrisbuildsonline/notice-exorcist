@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "ui-money-literals",
+  "description": "When a web UI component is edited, flag hard-coded currency amounts or percent literals that do not come from the duty engine with a provenance record.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["apps/web/**/*.tsx"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A UI component under apps/web was edited. Following .kiro/steering/no-model-math.md, inspect the edited file for hard-coded currency amounts (for example `$12.50`, `12.50 USD`, `€3`) and percent literals (for example `6.5%`, `0.3464`) in JSX text, string literals, props, and constants. Every displayed number needs a provenance record (`stated`, `computed` from packages/duty-engine with formula, inputs and rounding rule, or `tariff` with source and edition). Flag each literal that is rendered without one, with file, line, the literal, and the provenance-carrying value that should replace it. Ignore literals that are not figures shown to the user: test fixtures, CSS and Tailwind classes, design tokens, and dates. Do not fix anything unless asked. If nothing is found, say so in one line."
+  }
+}
