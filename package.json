@@ -11,7 +11,8 @@
     "build": "bun run --cwd apps/web build",
     "test": "vitest run && bun run --cwd packages/tariff-data test",
     "typecheck": "tsc -p . && tsc -p packages/tariff-data && bun run --cwd apps/web typecheck",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "rates:sweep": "vitest run packages/duty-engine/src/rate-text-sweep.test.ts --silent=false"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",
