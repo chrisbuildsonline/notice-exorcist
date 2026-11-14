@@ -6,7 +6,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Check: a short note in `design.md` "Data sources" with the confirmed URLs and field names. Covers R1, R2 design assumptions.
 - [x] 2. Scaffold `packages/tariff-data` (Bun workspace member, strict TS, `zod`). Add `config.ts` and `codes.ts` (`normalizeHts`, `chapterOf`, `headingOf`, `isInScope`). Add `.cache/` to `.gitignore`.
   - Test: `codes.bun.test.ts` for `6109100012`, `6109.10.00`, `6109`, 5-digit and non-digit input (invalid), chapters 39 and 99. Covers R5.1, R5.6, R5.7.
-- [ ] 3. Add Zod schemas for HTS rows, CROSS rulings and the manifest. Rejected input names the field.
+- [x] 3. Add Zod schemas for HTS rows, CROSS rulings and the manifest. Rejected input names the field.
   - Test: `schemas.bun.test.ts` accepts verbatim excerpts of real rows, rejects a row missing `general`, and keeps empty strings as empty strings. Covers R4.9.
 - [ ] 4. Write the HTS fetch script (`fetch/hts.ts`, `fetch/run.ts`): scope chapters only, temp-then-rename, manifest entries with sha256.
   - Test: `fetch-hts.bun.test.ts` with an injected `fetch`: writes raw bytes unchanged, fails on invalid JSON and on an empty list without touching existing files, requests only scope chapters. Then run `bun run data:fetch` once and commit `data/hts/`. Covers R1.1 to R1.5.
