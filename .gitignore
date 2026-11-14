@@ -16,3 +16,5 @@ test-results/
 playwright-report/
 # never ignore .kiro/: the hackathon requires it in the repo
 .claude/settings.local.json
+# built tariff index, rebuilt from packages/tariff-data/data
+packages/tariff-data/.cache/

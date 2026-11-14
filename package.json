@@ -9,8 +9,8 @@
   "scripts": {
     "dev": "bun run --cwd apps/web dev",
     "build": "bun run --cwd apps/web build",
-    "test": "vitest run",
-    "typecheck": "tsc -p . && bun run --cwd apps/web typecheck",
+    "test": "vitest run && bun run --cwd packages/tariff-data test",
+    "typecheck": "tsc -p . && tsc -p packages/tariff-data && bun run --cwd apps/web typecheck",
     "e2e": "playwright test"
   },
   "devDependencies": {

@@ -4,7 +4,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
 
 - [ ] 1. Confirm the data endpoints by hand. Fetch one HTS chapter export and one CROSS ruling, note the real field names and the edition source, and update `design.md` if anything differs.
   - Check: a short note in `design.md` "Data sources" with the confirmed URLs and field names. Covers R1, R2 design assumptions.
-- [ ] 2. Scaffold `packages/tariff-data` (Bun workspace member, strict TS, `zod`). Add `config.ts` and `codes.ts` (`normalizeHts`, `chapterOf`, `headingOf`, `isInScope`). Add `.cache/` to `.gitignore`.
+- [x] 2. Scaffold `packages/tariff-data` (Bun workspace member, strict TS, `zod`). Add `config.ts` and `codes.ts` (`normalizeHts`, `chapterOf`, `headingOf`, `isInScope`). Add `.cache/` to `.gitignore`.
   - Test: `codes.bun.test.ts` for `6109100012`, `6109.10.00`, `6109`, 5-digit and non-digit input (invalid), chapters 39 and 99. Covers R5.1, R5.6, R5.7.
 - [ ] 3. Add Zod schemas for HTS rows, CROSS rulings and the manifest. Rejected input names the field.
   - Test: `schemas.bun.test.ts` accepts verbatim excerpts of real rows, rejects a row missing `general`, and keeps empty strings as empty strings. Covers R4.9.
