@@ -1,0 +1,56 @@
+# Tasks: exorcism-flow
+
+Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` for tasks that touch UI or the approval flow. Each task names its test.
+
+- [ ] 1. Scaffold `apps/web` (Next.js, Tailwind) and add tokens from `design/DESIGN.md` 2.4 to `globals.css` and the Tailwind config. Load Geist and Geist Mono.
+  - Test: `tokens.test.ts` parses `globals.css` and checks every status token and the canvas value equal those in `design/DESIGN.md`. Covers R9.
+- [ ] 2. Build `Figure` with required `prov` and `source`, the unsourced fallback and the throw in dev/test.
+  - Test: `Figure.test.tsx` renders sourced `stated`, `computed`, `tariff` values (2 decimals, comma, true minus, tag shown), and an unsourced one that throws in test and renders `—` plus `Unsourced` in production mode. Covers R5.3 to R5.5.
+- [ ] 3. Add a repo check that money is not formatted outside `Figure`.
+  - Test: `no-raw-money.test.ts` scans `apps/web` sources for `toFixed(2)` and `Intl.NumberFormat` with currency outside `Figure.tsx` and fails on a hit. Covers R5.3.
+- [ ] 4. Implement `provenance-guard.ts` and the route wrapper.
+  - Test: `provenance-guard.test.ts` rejects a payload with a money field lacking `prov`, accepts a sourced one, and a route test confirms the wrapper returns 500 in test mode. Covers R5.8.
+- [ ] 5. Implement `states.ts` (`lineState`, `noticeStatus`, `fogOpacity`).
+  - Test: `states.test.ts` covers state precedence, fog `0.15 + 0.85 × share`, fog 0 when all verified, and `At peace`. Covers R4.2, R4.5, R4.6.
+- [ ] 6. Build `StatusPill`, `HauntedLine`, `Paper` and `Fog` with the glow rules and reduced-motion CSS.
+  - Test: `HauntedLine.test.tsx` checks each state has a word and an icon, only `disagrees` and `unverified` get a glow class, no glow class uses `accent`. `reduced-motion.test.ts` checks the media query sets `animation: none` and keeps a static box-shadow. Covers R4.3, R4.4, R4.8.
+- [ ] 7. Set up SQLite (`bun:sqlite`) with tables and the FTS5 rulings index. Add a specimen seed.
+  - Test: `db.test.ts` creates the schema in memory, inserts a ruling, and finds it with an FTS5 query. Covers R10.3.
+- [ ] 8. Implement `POST /api/notices` (upload), type and size validation, and storage.
+  - Test: `notices-upload.test.ts` accepts a PNG, rejects `.exe` and an oversized file, stores nothing on rejection. Covers R2.1, R2.2.
+- [ ] 9. Wire extraction (`notice-extract`) and engine comparison into `GET /api/notices/[id]`, with progress and failure states.
+  - Test: `notice-api.test.ts` in fixture mode returns lines with states from the engine, a failure fixture returns a reason with no figures, and every figure has `prov`. Covers R2.3, R2.4, R4.2, R4.7.
+- [ ] 10. Implement `POST /api/inbound`.
+  - Test: `inbound.test.ts` covers 401 without or with a wrong secret (nothing stored), 404 unknown token, 422 with no valid attachment, 202 with notice ids, no outbound mail call (spy), and no body content in logs. Covers R3.1 to R3.7.
+- [ ] 11. Build the Inbox page, `InboxRow`, empty state, `Dropzone`, forward address with Copy, and `Try a specimen`.
+  - Test: Playwright `inbox.spec.ts`: first screen shows the title and the single primary pill, the empty state has the headline, `Try a specimen` opens a notice with no key. A phone viewport test checks the sticky `Upload a notice` bar. Covers R1.1 to R1.7.
+- [ ] 12. Show the cloud-use notice when Bedrock is enabled.
+  - Test: `bedrock-notice.test.tsx` renders the notice when `meta.provider === 'bedrock'` and not otherwise. Covers R2.5.
+- [ ] 13. Build the notice view: summary figures, paper with rows, side panel with explanation, HTS candidates and CROSS rulings with citations, `Confirm` flow for low-confidence fields.
+  - Test: Playwright `notice-view.spec.ts` (disagreeing row shows stated and computed side by side, `Candidates, not a final classification` caption, low-confidence line must be confirmed before calculation). Covers R4.1, R4.7, R4.9, R4.10.
+- [ ] 14. Add the explanation-text figure check.
+  - Test: `explanation-guard.test.ts` keeps a sentence quoting a figure with provenance and drops one with an unknown number or an "approximately" value. Covers R4.11.
+- [ ] 15. Build `CalcDrawer` with focus trap, Esc, scrim close, focus return and the engine caption.
+  - Test: Playwright `drawer.spec.ts` checks the formula and sources show, Esc closes, focus returns to the trigger, and the caption is present. Covers R5.1, R5.2, R5.6, R5.7.
+- [ ] 16. Implement `hash.ts` (`canonicalDraft`, `draftHash`).
+  - Test: `hash.test.ts` same content gives the same hash regardless of key order, any paragraph or citation change gives a different hash, a golden value is fixed. Covers R7.2.
+- [ ] 17. Implement `draft-builder.ts` and `DraftEditor` with figure tokens and citation chips.
+  - Test: `draft-builder.test.ts` every claim has a citation, figures come from provenance refs, model output containing a bare number outside a token is rejected. `DraftEditor.test.tsx` rejects a typed number as a figure token. Covers R6.1 to R6.6.
+- [ ] 18. Implement draft `GET` and `PUT` where `PUT` clears the approval in the same transaction.
+  - Test: `drafts-put.test.ts` approves, edits, and checks the approval row is gone and state is `draft`. Covers R7.5.
+- [ ] 19. Implement `POST /api/drafts/[id]/approve` and `approval.ts`.
+  - Test: `approve.test.ts` records approval only when the posted hash equals the server-recomputed hash, and rejects a stale hash with 409. Approval state is derived from the stored record. Covers R7.2, R7.8.
+- [ ] 20. Build `ApprovalCard` and the export control with helper text and `aria-disabled`, and the persistent toast on edit.
+  - Test: Playwright `approval.spec.ts`: export is disabled and the box unticked on load, tick enables it, an edit unticks it and shows a toast that stays until dismissed, and viewing, saving and navigating never tick it. Covers R7.1, R7.3, R7.4, R7.7.
+- [ ] 21. Implement `POST /api/drafts/[id]/export` with the server-side hash check.
+  - Test: `export-gate.test.ts` direct request without approval returns 403, request with approval for a stale hash returns 403, request body claiming `approved: true` is ignored, valid approval returns a PDF. Covers R7.6.
+- [ ] 22. Implement `pdf.ts` with Playwright `page.pdf`, footer template, calculation trail and sources.
+  - Test: `pdf.test.ts` renders a multi-page draft, extracts text per page and checks each page contains the not-legal-advice footer, the approved hash and `page x of y`, and that the trail and citations exist. Covers R8.1 to R8.6.
+- [ ] 23. Playwright export flow against the real server.
+  - Test: `export.spec.ts`: export is blocked before the box is ticked, allowed after (download starts), blocked again after an edit, and the downloaded PDF contains the approved hash. Covers R7, R8 end to end.
+- [ ] 24. Check the phone layouts and the design checklist.
+  - Test: `layout.spec.ts` at 390 px checks targets are at least 44px, body text at least 16px, one primary pill per screen, and the sticky thumb bar. Screenshots are reviewed against `design/DESIGN.md` section 6. Covers R9.
+- [ ] 25. Verify local-only mode.
+  - Test: `local-mode.spec.ts` runs the specimen flow with `EXTRACT_MODE=fixture` and network blocked except localhost, and passes. Covers R10.1, R10.2.
+- [ ] 26. Add a check that the repo has no code path that sends mail or files with CBP.
+  - Test: `no-send.test.ts` scans for SMTP, mail-send and CBP filing endpoints in sources and fails on a hit. Covers R3.6, R6.7.
