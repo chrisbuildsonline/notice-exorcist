@@ -14,7 +14,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `fetch-cross.bun.test.ts` with an injected `fetch`: respects the cap, skips existing files, continues after one failure and exits non-zero. Check by listing `data/rulings/` that at least five rulings have a 6109 code. Covers R2.1 to R2.7.
 - [ ] 6. Write `data/SOURCES.md` (sources, URLs, public-domain statement, MIT does not cover the data, not legal advice) and `fetch/sources-note.ts` to regenerate the edition and date lines from the manifest.
   - Test: `sources-note.bun.test.ts` regenerates lines without touching the rest, and the build fails when the file is missing. Covers R3.1 to R3.5.
-- [ ] 7. Write `build/schema.sql` and the build script for `hts_lines`, `meta`, and `hts_fts`: Zod validation, normalization, verbatim text columns, temp-then-rename, deterministic order.
+- [x] 7. Write `build/schema.sql` and the build script for `hts_lines`, `meta`, and `hts_fts`: Zod validation, normalization, verbatim text columns, temp-then-rename, deterministic order.
   - Test: `build-hts.bun.test.ts` builds to a temp path, checks row counts against raw files, builds twice and compares rows, and confirms a bad input file leaves the old index intact. Covers R4.1 to R4.3, R4.5 to R4.11.
 - [ ] 8. Extend the build with `rulings`, `ruling_codes` and `rulings_fts`.
   - Test: `build-rulings.bun.test.ts` checks code extraction comes from the tariff field only, codes are normalized, `url` and `source` are set, and a ruling listing 6109.10.00 has a `ruling_codes` row with heading `6109`. Covers R4.4, R4.6, R4.11, R4.12.
