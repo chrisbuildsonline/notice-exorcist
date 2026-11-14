@@ -6,7 +6,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `decimal.test.ts` checks `0.1 + 0.2 = 0.3`, half-up at `.005`, and that `roundCents` is idempotent. Covers R1.1, R1.2.
 - [x] 2. Reject non-Decimal money input with `InvalidMoneyError`.
   - Test: `money-input.test.ts` passes a JS `number` and expects the typed error. Covers R1.3.
-- [ ] 3. Add `provenance.ts` (types, Zod schemas, `MissingProvenanceError`, `makeFig`).
+- [x] 3. Add `provenance.ts` (types, Zod schemas, `MissingProvenanceError`, `makeFig`).
   - Test: `provenance.test.ts` expects a throw when `prov` is missing and a pass-through of `stated` provenance unchanged. Covers R7.4, R7.5.
 - [ ] 4. Implement `parseRateText` for `Free` and ad valorem.
   - Test: `rate-text.test.ts` cases `Free`, `free `, `6.5%`, `0%`, `12%`, each asserting `raw` equals input. Covers R2.1, R2.2, R2.7.
