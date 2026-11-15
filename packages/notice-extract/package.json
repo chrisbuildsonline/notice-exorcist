@@ -3,5 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": "./src/index.ts"
+  "exports": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run --root ../.. packages/notice-extract --exclude 'packages/notice-extract/src/live/**'",
+    "ollama:start": "systemctl --user start ollama"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "fast-check": "^4.10.2"
+  }
 }

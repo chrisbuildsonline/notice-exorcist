@@ -2,7 +2,7 @@
 
 Run `bun run test` and `bun run typecheck` after each task. Each task names the test that proves it. Read `scripts/specimens/schema.ts` and `fixtures/specimens/*.fields.json` before tasks 2 to 8.
 
-- [ ] 1. Scaffold `packages/notice-extract` (workspace member, strict TS, Vitest, zod, fast-check as dev dependency). Add `field.ts` with the `Stated` wrapper and `common.ts` types (`Money`, `Dec`, `Iso`, `HtsCode` using the same patterns as the specimen schema).
+- [x] 1. Scaffold `packages/notice-extract` (workspace member, strict TS, Vitest, zod, fast-check as dev dependency). Add `field.ts` with the `Stated` wrapper and `common.ts` types (`Money`, `Dec`, `Iso`, `HtsCode` using the same patterns as the specimen schema).
   - Test: `field.test.ts` accepts a valid stated field and rejects confidence outside 0 to 1, a numeric money value, `3240` and `3,240.00` as money, and a missing page. Covers R1.4, R2.1, R2.2.
 - [ ] 2. Add `base.ts` with the header, line, fee and stated-total schemas, with the specimen key names, and the oracle keys left out.
   - Test: `schema-parity.test.ts` imports `scripts/specimens/schema.ts` and fails when the key tree differs from the specimen schema minus the oracle keys, or when the `kind`, `actionType` or fee `kind` enums or any regex source differ. Covers R1.2, R1.5.
