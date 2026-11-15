@@ -32,5 +32,5 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `test/kiro-config.test.ts` itself. The `refresh-fixture-index patterns each match a real path` case passes with the exemption removed, and fails if `fixtures/specimens/` is deleted. Covers R11.1.
 - [x] 15. Document: add a short "Specimens" section to the README (command, outputs, license note: specimens MIT, tariff data public domain) and keep the Measured accuracy placeholder untouched.
   - Test: `readme.test.ts` asserts the README mentions `specimens:generate` and `fixtures/specimens/`, and that the generator does not run under `bun run test` (the root `test` script string does not contain `specimens:generate`). Covers R11.2, R11.3.
-- [ ] 16. Final check of the whole feature.
+- [x] 16. Final check of the whole feature.
   - Test: `bun run test`, `bun run typecheck`, and `bun run specimens:generate` followed by `git status --porcelain fixtures/specimens/` showing only binary differences, no JSON difference. Covers R1.4, R1.5, R10.4.
