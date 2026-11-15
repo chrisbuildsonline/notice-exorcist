@@ -144,4 +144,63 @@ const specimen2: Specimen = {
   ],
 };
 
-export const SPECIMENS: Specimen[] = [specimen1, specimen2];
+const specimen3: Specimen = {
+  specimenId: 'specimen-3-courier',
+  kind: 'courier_duty_invoice',
+  noticeType: 'Duty and Tax Invoice',
+  actionType: null,
+  entryNumber: 'ZZ9-0431962-4',
+  dates: { entry: '2026-10-14', notice: '2026-10-19', responseDeadline: '2026-11-02' },
+  importer: { name: 'Marigold Thimble Studio', address: '9 Wrenfield Court, Portland, OR 97214' },
+  port: null,
+  courier: { name: 'Tumbleweed Air Parcel', invoiceNumber: 'TAP-448120', waybill: '7731 0492 5586' },
+  informationRequested: [],
+  lines: [
+    {
+      n: 1,
+      description: 'Base metal fashion earrings',
+      hts: '7117.19.90.00',
+      value: '860.00',
+      quantity: '6',
+      unit: 'kg',
+      rateText: '11%',
+      dutyStated: '94.60',
+    },
+    {
+      n: 2,
+      description: 'Microfiber cleaning cloths',
+      hts: '6307.10.20',
+      value: '540.00',
+      quantity: '40',
+      unit: 'doz.',
+      rateText: '5.3%',
+      dutyStated: '28.62',
+    },
+    {
+      n: 3,
+      description: 'Plastic kitchen utensils',
+      hts: '3924.10.40.00',
+      value: '780.00',
+      quantity: '120',
+      unit: 'No.',
+      rateText: '3.4%',
+      dutyStated: '26.52',
+    },
+  ],
+  fees: [
+    // Planted: the bare 0.3464% of 2180.00, without the fee-table minimum the engine clamps to.
+    { name: 'Merchandise Processing Fee', kind: 'mpf', stated: '7.55', plantedError: true, expectedFee: '34.58' },
+    { name: 'Duty disbursement fee', kind: 'courier_fee', stated: '18.00' },
+  ],
+  statedTotals: [
+    { name: 'Total entered value', stated: '2180.00' },
+    { name: 'Total payable', stated: '175.29' },
+  ],
+  notes: [
+    'The MPF is a planted error: it is the ad valorem percentage of the total entered value, without the fee-table minimum.',
+    'The duty disbursement fee is the courier’s own charge, not a government fee. The duty engine has no formula for it.',
+    'Total payable is the arithmetic sum of the stated line duties, the stated MPF and the duty disbursement fee.',
+  ],
+};
+
+export const SPECIMENS: Specimen[] = [specimen1, specimen2, specimen3];

@@ -98,3 +98,63 @@ describe('specimen 2 (Form 29 rate advance)', () => {
     expect(fees[0]!.stated).toBe(mpf(s));
   });
 });
+
+describe('specimen 3 (courier duty invoice)', () => {
+  const s = byId('specimen-3-courier');
+  const mpfFee = s.fees.find((f) => f.kind === 'mpf')!;
+
+  it('is a courier invoice with courier details and at least three ad valorem lines', () => {
+    expect(s.kind).toBe('courier_duty_invoice');
+    expect(s.actionType).toBeNull();
+    expect(s.courier).not.toBeNull();
+    expect(s.port).toBeNull();
+    expect(s.lines.length).toBeGreaterThanOrEqual(3);
+    for (const l of s.lines) {
+      expect(parseRateText(l.rateText).kind).toBe('ad_valorem');
+      expect(l.dutyStated).not.toBeNull();
+      expect(l.quantity).not.toBeNull();
+      expect(l.unit).not.toBeNull();
+    }
+  });
+
+  it('states an MPF, a courier fee and a total payable', () => {
+    expect(s.fees.map((f) => f.kind).sort()).toEqual(['courier_fee', 'mpf']);
+    expect(s.statedTotals.some((t) => t.name === 'Total payable')).toBe(true);
+  });
+
+  it('has exactly one planted error, on the MPF', () => {
+    expect(s.lines.filter((l) => l.plantedError).length).toBe(0);
+    expect(s.fees.filter((f) => f.plantedError)).toEqual([mpfFee]);
+  });
+
+  it('every line duty equals the engine to the cent', () => {
+    for (const l of s.lines) expect(l.dutyStated, `line ${l.n}`).toBe(lineDuty(s, l));
+  });
+
+  it('stated MPF disagrees with the engine by at least $1.00 and expectedFee is the engine figure', () => {
+    const engine = mpf(s);
+    expect(mpfFee.stated).not.toBe(engine);
+    expect(mpfFee.expectedFee).toBe(engine);
+    expect(atLeastOneDollar(mpfFee.stated, engine)).toBe(true);
+  });
+
+  it('the planted MPF is the clamp case: the engine figure is the fee-table minimum or maximum', () => {
+    const r = computeMpf({ enteredValue: stated(s, totalEnteredValue(s)), entryDate: s.dates.entry, table: FEE_TABLE, applies: true });
+    if (r.status !== 'ok') throw new Error(r.status);
+    const { minimum, maximum } = r.fee.prov.kind === 'computed' ? r.fee.prov.inputs : {};
+    expect([minimum?.value.toFixed(2), maximum?.value.toFixed(2)]).toContain(r.fee.value.toFixed(2));
+  });
+
+  it('never hands the courier fee to the engine and claims no engine figure for it', () => {
+    const courierFee = s.fees.find((f) => f.kind === 'courier_fee')!;
+    expect(courierFee.plantedError).toBeUndefined();
+    expect(courierFee.expectedFee).toBeUndefined();
+    // The only fee this test checks with the engine is the MPF; the courier fee has no engine formula.
+    const checked = s.fees.filter((f) => f.kind === 'mpf' || f.kind === 'hmf');
+    expect(checked).not.toContain(courierFee);
+  });
+
+  it('notes that the total payable is the arithmetic sum of the stated figures', () => {
+    expect(s.notes.some((n) => n.includes('Total payable'))).toBe(true);
+  });
+});

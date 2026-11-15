@@ -94,6 +94,14 @@ describe('Fields schema', () => {
 });
 
 describe('specimen data', () => {
+  it('has the three specimens with 0, 1 and 1 planted errors', () => {
+    expect(SPECIMENS.map((s) => [s.specimenId, plantedCount(s)])).toEqual([
+      ['specimen-1-form28', 0],
+      ['specimen-2-form29', 1],
+      ['specimen-3-courier', 1],
+    ]);
+  });
+
   it.each(SPECIMENS.map((s) => [s.specimenId, s]))('%s parses with the schema', (_, s) => {
     expect(Fields.parse(s)).toEqual(s);
   });
