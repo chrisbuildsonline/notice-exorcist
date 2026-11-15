@@ -30,7 +30,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `fields.snapshot.test.ts` compares `serialize(specimen)` to each committed `*.fields.json` byte for byte and to a `toMatchSnapshot` copy. It also fails if a committed file is missing, or if two runs of the serializer differ. Covers R1.4, R10.1.
 - [x] 14. Stop exempting `fixtures/**` in `test/kiro-config.test.ts`: delete the `MAY_MATCH_NOTHING_YET` set and its comment, and the `continue` that uses it, in the same commit as task 13.
   - Test: `test/kiro-config.test.ts` itself. The `refresh-fixture-index patterns each match a real path` case passes with the exemption removed, and fails if `fixtures/specimens/` is deleted. Covers R11.1.
-- [ ] 15. Document: add a short "Specimens" section to the README (command, outputs, license note: specimens MIT, tariff data public domain) and keep the Measured accuracy placeholder untouched.
+- [x] 15. Document: add a short "Specimens" section to the README (command, outputs, license note: specimens MIT, tariff data public domain) and keep the Measured accuracy placeholder untouched.
   - Test: `readme.test.ts` asserts the README mentions `specimens:generate` and `fixtures/specimens/`, and that the generator does not run under `bun run test` (the root `test` script string does not contain `specimens:generate`). Covers R11.2, R11.3.
 - [ ] 16. Final check of the whole feature.
   - Test: `bun run test`, `bun run typecheck`, and `bun run specimens:generate` followed by `git status --porcelain fixtures/specimens/` showing only binary differences, no JSON difference. Covers R1.4, R1.5, R10.4.

@@ -17,7 +17,7 @@ TypeScript monorepo (Bun workspaces). Next.js and Tailwind front end; a pure pac
 ```sh
 bun install
 bun run dev        # web app on http://localhost:3000
-bun run test       # Vitest across all workspaces, then bun test for packages/tariff-data
+bun run test       # Vitest across all workspaces, then bun test for packages/tariff-data and *.bun.test.ts
 bun run typecheck
 bun run e2e        # Playwright (chromium); first run: bunx playwright install chromium
 
@@ -27,6 +27,17 @@ bun run --cwd packages/tariff-data data:build   # build the SQLite FTS5 index in
 ```
 
 The tariff and ruling data in `packages/tariff-data/data/` is US government public domain, not MIT; see its `SOURCES.md`.
+
+## Specimens
+
+Three fictional notices for tests, the empty-Inbox "Try a specimen" action and the demo: a request for information (Form 28 style), a rate-advance notice of action (Form 29 style) with one wrong line duty, and a courier duty invoice with a wrong MPF. Every page is stamped SPECIMEN; names, addresses and entry numbers are invented, and HTS codes and rate text are real lines from the tariff index.
+
+```sh
+bun run --cwd packages/tariff-data data:build   # once: the generator checks the index exists
+bun run specimens:generate                      # writes fixtures/specimens/ (needs Playwright Chromium)
+```
+
+`fixtures/specimens/` holds, per specimen, a PDF, a PNG of page 1 and a `*.fields.json` ground truth (every figure as stated on the document; the two planted errors carry the engine's figure as `expectedDuty` / `expectedFee`), plus `specimen-2-form29.photo.jpg`, a seeded phone photo of the Form 29. The fields JSON is the stable contract; PDF and image bytes can change between runs or Chromium versions. The files are committed and `bun run test` does not regenerate them. The specimens are MIT (see `fixtures/specimens/LICENSE.txt`); the tariff data they quote is public domain.
 
 ## License
 
