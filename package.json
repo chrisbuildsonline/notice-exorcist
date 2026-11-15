@@ -12,6 +12,7 @@
     "test": "vitest run && bun run --cwd packages/tariff-data test && bun test .bun.test.ts --path-ignore-patterns='packages/**' --path-ignore-patterns='apps/**'",
     "typecheck": "tsc -p . && tsc -p packages/tariff-data && tsc -p scripts && bun run --cwd apps/web typecheck",
     "e2e": "playwright test",
+    "specimens:generate": "bun scripts/specimens/generate.ts",
     "rates:sweep": "vitest run packages/duty-engine/src/rate-text-sweep.test.ts --silent=false"
   },
   "devDependencies": {
