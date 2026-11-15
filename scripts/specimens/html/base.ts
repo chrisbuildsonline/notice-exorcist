@@ -1,4 +1,5 @@
 /** Shared page chrome for every specimen: CSS, SPECIMEN stamp and boxed mark, fixed footer. No I/O. */
+import type { SpecimenLine } from '../schema';
 
 export const STAMP_TEXT = 'SPECIMEN';
 export const FOOTER_TEXT = 'SPECIMEN. Fictional document for software testing. Not issued by CBP or any courier.';
@@ -19,6 +20,39 @@ export const fmtDate = (iso: string): string => {
   const [y, m, d] = iso.split('-');
   return `${m}/${d}/${y}`;
 };
+
+/** Labelled value cells for the header grid. */
+export const meta = (items: Array<[string, string]>): string =>
+  `<div class="meta">${items.map(([k, v]) => `<div><span>${esc(k)}</span>${esc(v)}</div>`).join('')}</div>`;
+
+/** The entry lines table. Every cell is a value from the specimen, formatted, never computed. */
+export function linesTable(lines: SpecimenLine[], withDuty: boolean): string {
+  const head = ['Line', 'Description', 'HTS number', 'Entered value', 'Quantity', 'Rate of duty', ...(withDuty ? ['Duty'] : [])];
+  const numCols = new Set(['Entered value', 'Quantity', 'Duty']);
+  const rows = lines.map((l) => {
+    const cells = [
+      `<td>${l.n}</td>`,
+      `<td>${esc(l.description)}</td>`,
+      `<td class="code">${esc(l.hts)}</td>`,
+      `<td class="num">${fmtMoney(l.value)}</td>`,
+      `<td class="num">${l.quantity === null ? '' : esc(`${l.quantity} ${l.unit ?? ''}`.trim())}</td>`,
+      `<td class="code">${esc(l.rateText)}</td>`,
+      ...(withDuty ? [`<td class="num">${l.dutyStated === null ? '' : fmtMoney(l.dutyStated)}</td>`] : []),
+    ];
+    return `<tr data-line="${l.n}">${cells.join('')}</tr>`;
+  });
+  const th = head.map((h) => `<th${numCols.has(h) ? ' class="num"' : ''}>${h}</th>`).join('');
+  return `<table class="lines"><thead><tr>${th}</tr></thead><tbody>\n${rows.join('\n')}\n</tbody></table>`;
+}
+
+/** Stated totals and fees in the order given; a total named `grand` is printed last, in bold. */
+export function sumsTable(rows: Array<{ name: string; stated: string }>, grand?: string): string {
+  const order = [...rows.filter((r) => r.name !== grand), ...rows.filter((r) => r.name === grand)];
+  const tr = order.map(
+    (r) => `<tr${r.name === grand ? ' class="grand"' : ''}><td>${esc(r.name)}</td><td class="num">${fmtMoney(r.stated)}</td></tr>`,
+  );
+  return `<table class="sums">${tr.join('')}</table>`;
+}
 
 // Colours: DESIGN.md greys only (ink, text-muted, line) on white paper. No accent or status hue.
 const CSS = `
