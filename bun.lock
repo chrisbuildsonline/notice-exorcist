@@ -5,10 +5,14 @@
     "": {
       "name": "notice-exorcist",
       "devDependencies": {
+        "@notice-exorcist/duty-engine": "workspace:*",
+        "@notice-exorcist/tariff-data": "workspace:*",
         "@playwright/test": "^1.65.1",
+        "@types/bun": "^1.4.4",
         "@types/node": "^26.6.6",
         "typescript": "^7.0.2",
         "vitest": "^5.1.0",
+        "zod": "^4.6.7",
       },
     },
     "apps/web": {

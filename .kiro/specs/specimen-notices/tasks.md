@@ -2,7 +2,7 @@
 
 Run `bun run test` and `bun run typecheck` after each task. Each task names the test that proves it. Do not add dependencies.
 
-- [ ] 1. Create `scripts/specimens/schema.ts` (Zod `Fields`, `Line`, `Fee`) and `serialize.ts` (sorted keys, two-space indent, trailing newline). Include `scripts/**` in the root Vitest config and typecheck.
+- [x] 1. Create `scripts/specimens/schema.ts` (Zod `Fields`, `Line`, `Fee`) and `serialize.ts` (sorted keys, two-space indent, trailing newline). Include `scripts/**` in the root Vitest config and typecheck.
   - Test: `schema.test.ts` and `serialize.test.ts`. The schema accepts a valid sample and rejects a numeric money value, a missing HTS, an unknown key, and a bad ISO date. `serialize` is stable under key reordering. Covers R9.1 to R9.4, R9.6.
 - [ ] 2. Choose real HTS codes. Query the built index (`searchHts`, `lookupHts`) for goods a small importer buys. Keep codes with a supported rate text and no AD/CVD or Chapter 99 note. Record the code and exact `general` text in `data.ts` notes.
   - Test: `tariff.bun.test.ts` (bun test) asserts, for every code in `data.ts`, that `lookupHts` returns `ok`, the printed `rateText` equals `general` exactly, and `parseRateText` does not return `unsupported`, except a line named in `notes`. Covers R4.1 to R4.3, R10.3.
