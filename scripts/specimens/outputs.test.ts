@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { SPECIMENS } from './data';
+import { LICENSE_TEXT } from './license';
 import { serialize } from './serialize';
 
 // Runs the real generator (bun + Playwright Chromium) into a temp dir. It never writes to fixtures/.
@@ -17,6 +18,7 @@ export const pngSize = (png: Buffer) => ({ width: png.readUInt32BE(16), height: 
 const EXPECTED_FILES = [
   ...SPECIMENS.flatMap((s) => ['pdf', 'png', 'fields.json'].map((ext) => `${s.specimenId}.${ext}`)),
   'specimen-2-form29.photo.jpg',
+  'LICENSE.txt',
 ].sort();
 
 describe('generator outputs', () => {
@@ -29,6 +31,10 @@ describe('generator outputs', () => {
 
   it('writes exactly the expected files and nothing else', () => {
     expect(readdirSync(out).sort()).toEqual(EXPECTED_FILES);
+  });
+
+  it('writes LICENSE.txt', () => {
+    expect(readFileSync(join(out, 'LICENSE.txt'), 'utf8')).toBe(LICENSE_TEXT);
   });
 
   it.each(SPECIMENS.map((s) => [s.specimenId]))('%s.pdf is a PDF with at least one page', (id) => {

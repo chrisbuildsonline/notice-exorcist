@@ -11,6 +11,7 @@ import { join, resolve } from 'node:path';
 import { IndexNotBuiltError, openIndex } from '@notice-exorcist/tariff-data';
 import { SPECIMENS } from './data';
 import { specimenHtml } from './html';
+import { LICENSE_TEXT } from './license';
 import { renderPhoto } from './photo';
 import { chromiumMissing, renderSpecimen, withBrowser } from './render';
 import { Fields } from './schema';
@@ -44,6 +45,7 @@ export async function generate(outDir: string): Promise<string[]> {
       if (s.specimenId === PHOTO_OF) files.set(`${s.specimenId}.photo.jpg`, await renderPhoto(browser, png));
     }
   });
+  files.set('LICENSE.txt', LICENSE_TEXT);
   mkdirSync(outDir, { recursive: true });
   for (const [name, data] of files) writeFileSync(join(outDir, name), data);
   return [...files.keys()];
