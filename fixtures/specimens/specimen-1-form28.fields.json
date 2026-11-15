@@ -1,0 +1,60 @@
+{
+  "actionType": null,
+  "courier": null,
+  "dates": {
+    "entry": "2026-10-05",
+    "notice": "2026-10-21",
+    "responseDeadline": "2026-11-20"
+  },
+  "entryNumber": "ZZ9-0417726-3",
+  "fees": [],
+  "importer": {
+    "address": "418 Larch Hollow Road, Asheville, NC 28801",
+    "name": "Hollowmere Home Goods LLC"
+  },
+  "informationRequested": [
+    "Commercial invoice and packing list for every line on this entry",
+    "Specification sheet giving the material and construction of each item",
+    "Photographs of the kitchen towels showing the weave of the fabric",
+    "Statement of whether the plates are sold for household or commercial use",
+    "Proof of payment to the seller for the goods on this entry"
+  ],
+  "kind": "cbp_form_28",
+  "lines": [
+    {
+      "description": "Melamine dinner plates and bowls",
+      "dutyStated": null,
+      "hts": "3924.10.20.00",
+      "n": 1,
+      "quantity": "410",
+      "rateText": "6.5%",
+      "unit": "kg",
+      "value": "3240.00"
+    },
+    {
+      "description": "Cotton terry kitchen towels",
+      "dutyStated": null,
+      "hts": "6302.60.00",
+      "n": 2,
+      "quantity": "150",
+      "rateText": "9.1%",
+      "unit": "doz.",
+      "value": "1875.00"
+    },
+    {
+      "description": "Acacia wood kitchen carts",
+      "dutyStated": null,
+      "hts": "9403.60.80",
+      "n": 3,
+      "quantity": "24",
+      "rateText": "Free",
+      "unit": "No.",
+      "value": "2160.00"
+    }
+  ],
+  "notes": [],
+  "noticeType": "Request for Information",
+  "port": "Savannah, GA",
+  "specimenId": "specimen-1-form28",
+  "statedTotals": []
+}

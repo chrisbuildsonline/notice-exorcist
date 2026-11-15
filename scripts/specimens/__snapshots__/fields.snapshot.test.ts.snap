@@ -1,0 +1,241 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`committed specimens > specimen-1-form28.fields.json equals serialize(specimen) byte for byte 1`] = `
+"{
+  "actionType": null,
+  "courier": null,
+  "dates": {
+    "entry": "2026-10-05",
+    "notice": "2026-10-21",
+    "responseDeadline": "2026-11-20"
+  },
+  "entryNumber": "ZZ9-0417726-3",
+  "fees": [],
+  "importer": {
+    "address": "418 Larch Hollow Road, Asheville, NC 28801",
+    "name": "Hollowmere Home Goods LLC"
+  },
+  "informationRequested": [
+    "Commercial invoice and packing list for every line on this entry",
+    "Specification sheet giving the material and construction of each item",
+    "Photographs of the kitchen towels showing the weave of the fabric",
+    "Statement of whether the plates are sold for household or commercial use",
+    "Proof of payment to the seller for the goods on this entry"
+  ],
+  "kind": "cbp_form_28",
+  "lines": [
+    {
+      "description": "Melamine dinner plates and bowls",
+      "dutyStated": null,
+      "hts": "3924.10.20.00",
+      "n": 1,
+      "quantity": "410",
+      "rateText": "6.5%",
+      "unit": "kg",
+      "value": "3240.00"
+    },
+    {
+      "description": "Cotton terry kitchen towels",
+      "dutyStated": null,
+      "hts": "6302.60.00",
+      "n": 2,
+      "quantity": "150",
+      "rateText": "9.1%",
+      "unit": "doz.",
+      "value": "1875.00"
+    },
+    {
+      "description": "Acacia wood kitchen carts",
+      "dutyStated": null,
+      "hts": "9403.60.80",
+      "n": 3,
+      "quantity": "24",
+      "rateText": "Free",
+      "unit": "No.",
+      "value": "2160.00"
+    }
+  ],
+  "notes": [],
+  "noticeType": "Request for Information",
+  "port": "Savannah, GA",
+  "specimenId": "specimen-1-form28",
+  "statedTotals": []
+}
+"
+`;
+
+exports[`committed specimens > specimen-2-form29.fields.json equals serialize(specimen) byte for byte 1`] = `
+"{
+  "actionType": "rate_advance",
+  "courier": null,
+  "dates": {
+    "entry": "2026-10-08",
+    "notice": "2026-10-27",
+    "responseDeadline": "2026-11-16"
+  },
+  "entryNumber": "ZZ9-0423518-7",
+  "fees": [
+    {
+      "kind": "mpf",
+      "name": "Merchandise Processing Fee",
+      "stated": "44.50"
+    }
+  ],
+  "importer": {
+    "address": "2210 Quarry Mill Drive, Boise, ID 83702",
+    "name": "Fernhollow Supply LLC"
+  },
+  "informationRequested": [],
+  "kind": "cbp_form_29",
+  "lines": [
+    {
+      "description": "Cotton waffle-weave kitchen towels",
+      "dutyStated": "385.02",
+      "expectedDuty": "442.98",
+      "hts": "6302.91.00",
+      "n": 1,
+      "plantedError": true,
+      "quantity": "320",
+      "rateText": "9.2%",
+      "unit": "doz.",
+      "value": "4815.00"
+    },
+    {
+      "description": "Card wallets, outer surface of laminated plastic sheeting",
+      "dutyStated": "136.59",
+      "hts": "4202.32.10.00",
+      "n": 2,
+      "quantity": "186",
+      "rateText": "12.1¢/kg + 4.6%",
+      "unit": "kg",
+      "value": "2480.00"
+    },
+    {
+      "description": "Acacia wood side tables",
+      "dutyStated": "0.00",
+      "hts": "9403.60.80",
+      "n": 3,
+      "quantity": "40",
+      "rateText": "Free",
+      "unit": "No.",
+      "value": "3600.00"
+    },
+    {
+      "description": "Melamine dinner plates",
+      "dutyStated": "126.75",
+      "hts": "3924.10.20.00",
+      "n": 4,
+      "quantity": "260",
+      "rateText": "6.5%",
+      "unit": "kg",
+      "value": "1950.00"
+    }
+  ],
+  "notes": [
+    "Line 1 stated duty is a planted error: the rate is applied to the entered value with two digits transposed.",
+    "Total duty is the arithmetic sum of the stated line duties, so it carries the planted error."
+  ],
+  "noticeType": "Notice of Action",
+  "port": "Long Beach, CA",
+  "specimenId": "specimen-2-form29",
+  "statedTotals": [
+    {
+      "name": "Total entered value",
+      "stated": "12845.00"
+    },
+    {
+      "name": "Total duty",
+      "stated": "648.36"
+    }
+  ]
+}
+"
+`;
+
+exports[`committed specimens > specimen-3-courier.fields.json equals serialize(specimen) byte for byte 1`] = `
+"{
+  "actionType": null,
+  "courier": {
+    "invoiceNumber": "TAP-448120",
+    "name": "Tumbleweed Air Parcel",
+    "waybill": "7731 0492 5586"
+  },
+  "dates": {
+    "entry": "2026-10-14",
+    "notice": "2026-10-19",
+    "responseDeadline": "2026-11-02"
+  },
+  "entryNumber": "ZZ9-0431962-4",
+  "fees": [
+    {
+      "expectedFee": "34.58",
+      "kind": "mpf",
+      "name": "Merchandise Processing Fee",
+      "plantedError": true,
+      "stated": "7.55"
+    },
+    {
+      "kind": "courier_fee",
+      "name": "Duty disbursement fee",
+      "stated": "18.00"
+    }
+  ],
+  "importer": {
+    "address": "9 Wrenfield Court, Portland, OR 97214",
+    "name": "Marigold Thimble Studio"
+  },
+  "informationRequested": [],
+  "kind": "courier_duty_invoice",
+  "lines": [
+    {
+      "description": "Base metal fashion earrings",
+      "dutyStated": "94.60",
+      "hts": "7117.19.90.00",
+      "n": 1,
+      "quantity": "6",
+      "rateText": "11%",
+      "unit": "kg",
+      "value": "860.00"
+    },
+    {
+      "description": "Microfiber cleaning cloths",
+      "dutyStated": "28.62",
+      "hts": "6307.10.20",
+      "n": 2,
+      "quantity": "40",
+      "rateText": "5.3%",
+      "unit": "doz.",
+      "value": "540.00"
+    },
+    {
+      "description": "Plastic kitchen utensils",
+      "dutyStated": "26.52",
+      "hts": "3924.10.40.00",
+      "n": 3,
+      "quantity": "120",
+      "rateText": "3.4%",
+      "unit": "No.",
+      "value": "780.00"
+    }
+  ],
+  "notes": [
+    "The MPF is a planted error: it is the ad valorem percentage of the total entered value, without the fee-table minimum.",
+    "The duty disbursement fee is the courier’s own charge, not a government fee. The duty engine has no formula for it.",
+    "Total payable is the arithmetic sum of the stated line duties, the stated MPF and the duty disbursement fee."
+  ],
+  "noticeType": "Duty and Tax Invoice",
+  "port": null,
+  "specimenId": "specimen-3-courier",
+  "statedTotals": [
+    {
+      "name": "Total entered value",
+      "stated": "2180.00"
+    },
+    {
+      "name": "Total payable",
+      "stated": "175.29"
+    }
+  ]
+}
+"
+`;

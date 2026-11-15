@@ -7,8 +7,6 @@ const hooksDir = join(root, '.kiro/hooks');
 const mcpFile = join(root, '.kiro/settings/mcp.json');
 
 const EXPECTED_HOOKS = ['engine-property-tests', 'ui-money-literals', 'spec-task-has-test', 'refresh-fixture-index'];
-// fixtures/ arrives with the extraction feature; until then refresh-fixture-index may watch an empty tree.
-const MAY_MATCH_NOTHING_YET = new Set(['fixtures/**']);
 
 const skipBuildDirs = (p: string) => /(^|[/\\])(node_modules|\.next|\.git)$/.test(p);
 const matchesSomething = (pattern: string) => globSync(pattern, { cwd: root, exclude: skipBuildDirs }).length > 0;
@@ -43,7 +41,6 @@ describe('.kiro/hooks', () => {
 
   it.each(hooks)('%s patterns each match a real path', (_, h) => {
     for (const p of h.when.patterns as string[]) {
-      if (MAY_MATCH_NOTHING_YET.has(p)) continue;
       expect(matchesSomething(p), `${p} matches nothing`).toBe(true);
     }
   });
