@@ -77,4 +77,71 @@ const specimen1: Specimen = {
   notes: [],
 };
 
-export const SPECIMENS: Specimen[] = [specimen1];
+const specimen2: Specimen = {
+  specimenId: 'specimen-2-form29',
+  kind: 'cbp_form_29',
+  noticeType: 'Notice of Action',
+  actionType: 'rate_advance',
+  entryNumber: 'ZZ9-0423518-7',
+  dates: { entry: '2026-10-08', notice: '2026-10-27', responseDeadline: '2026-11-16' },
+  importer: { name: 'Fernhollow Supply LLC', address: '2210 Quarry Mill Drive, Boise, ID 83702' },
+  port: 'Long Beach, CA',
+  courier: null,
+  informationRequested: [],
+  lines: [
+    {
+      n: 1,
+      description: 'Cotton waffle-weave kitchen towels',
+      hts: '6302.91.00',
+      value: '4815.00',
+      quantity: '320',
+      unit: 'doz.',
+      rateText: '9.2%',
+      // Planted: the rate applied to 4185.00, the entered value with two digits transposed.
+      dutyStated: '385.02',
+      plantedError: true,
+      expectedDuty: '442.98',
+    },
+    {
+      n: 2,
+      description: 'Card wallets, outer surface of laminated plastic sheeting',
+      hts: '4202.32.10.00',
+      value: '2480.00',
+      quantity: '186',
+      unit: 'kg',
+      rateText: '12.1¢/kg + 4.6%',
+      dutyStated: '136.59',
+    },
+    {
+      n: 3,
+      description: 'Acacia wood side tables',
+      hts: '9403.60.80',
+      value: '3600.00',
+      quantity: '40',
+      unit: 'No.',
+      rateText: 'Free',
+      dutyStated: '0.00',
+    },
+    {
+      n: 4,
+      description: 'Melamine dinner plates',
+      hts: '3924.10.20.00',
+      value: '1950.00',
+      quantity: '260',
+      unit: 'kg',
+      rateText: '6.5%',
+      dutyStated: '126.75',
+    },
+  ],
+  fees: [{ name: 'Merchandise Processing Fee', kind: 'mpf', stated: '44.50' }],
+  statedTotals: [
+    { name: 'Total entered value', stated: '12845.00' },
+    { name: 'Total duty', stated: '648.36' },
+  ],
+  notes: [
+    'Line 1 stated duty is a planted error: the rate is applied to the entered value with two digits transposed.',
+    'Total duty is the arithmetic sum of the stated line duties, so it carries the planted error.',
+  ],
+};
+
+export const SPECIMENS: Specimen[] = [specimen1, specimen2];
