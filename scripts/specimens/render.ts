@@ -25,6 +25,17 @@ async function offlinePage(browser: Browser, viewport: { width: number; height: 
   return { context, page: await context.newPage() };
 }
 
+/** HTML -> JPG screenshot of the viewport at scale 1. */
+export async function renderJpg(browser: Browser, html: string, viewport: { width: number; height: number }, quality: number): Promise<Buffer> {
+  const { context, page } = await offlinePage(browser, viewport, 1);
+  try {
+    await page.setContent(html, { waitUntil: 'load' });
+    return await page.screenshot({ type: 'jpeg', quality });
+  } finally {
+    await context.close();
+  }
+}
+
 /** HTML -> Letter PDF (print media) and a PNG of page 1 (screen media, same layout box). */
 export async function renderSpecimen(browser: Browser, html: string): Promise<{ pdf: Buffer; png: Buffer }> {
   const { context, page } = await offlinePage(browser, VIEWPORT, SCALE);

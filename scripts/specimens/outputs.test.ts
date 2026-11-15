@@ -14,7 +14,10 @@ const run = (out: string, env: NodeJS.ProcessEnv = process.env) =>
 export const pdfPageCount = (pdf: Buffer) => (pdf.toString('latin1').match(/\/Type\s*\/Page(?![a-zA-Z])/g) ?? []).length;
 export const pngSize = (png: Buffer) => ({ width: png.readUInt32BE(16), height: png.readUInt32BE(20) });
 
-const EXPECTED_FILES = SPECIMENS.flatMap((s) => ['pdf', 'png', 'fields.json'].map((ext) => `${s.specimenId}.${ext}`)).sort();
+const EXPECTED_FILES = [
+  ...SPECIMENS.flatMap((s) => ['pdf', 'png', 'fields.json'].map((ext) => `${s.specimenId}.${ext}`)),
+  'specimen-2-form29.photo.jpg',
+].sort();
 
 describe('generator outputs', () => {
   let out: string;
