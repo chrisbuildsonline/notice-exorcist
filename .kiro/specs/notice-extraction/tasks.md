@@ -1,38 +1,68 @@
 # Tasks: notice-extraction
 
-Run `bun run test` and `bun run typecheck` after each task. Each task names the test that proves it.
+Run `bun run test` and `bun run typecheck` after each task. Each task names the test that proves it. Read `scripts/specimens/schema.ts` and `fixtures/specimens/*.fields.json` before tasks 2 to 8.
 
-- [ ] 1. Scaffold `packages/notice-extract` (workspace member, strict TS, Vitest, zod). Add `field.ts` with the `Stated` wrapper and `common.ts` types (decimal-string money, HTS code, entry number).
-  - Test: `field.test.ts` accepts a valid stated field and rejects confidence outside 0 to 1, a numeric money value, and a missing page. Covers R1.4, R2.1, R2.2.
-- [ ] 2. Define `form29.ts` (action type, proposed changes with per-line fields) and the `notice.ts` union.
-  - Test: `form29.test.ts` parses a valid sample and rejects one missing the entry number unless it is `null` with confidence 0. Covers R1.1, R1.2, R1.3, R1.5.
-- [ ] 3. Define `form28.ts` (information requested list, response deadline).
-  - Test: `form28.test.ts` valid and invalid samples. Covers R1.1, R1.3.
-- [ ] 4. Define `courier.ts` (duty, tax, fee lines, courier stated totals).
-  - Test: `courier.test.ts` valid sample, and a check that the schema has no field not printed on the document, such as a recomputed total (key-list snapshot). Covers R1.3, R3.2, R3.4.
-- [ ] 5. Add `confidence.ts` with `markNeedsConfirmation` and a configurable threshold.
+- [ ] 1. Scaffold `packages/notice-extract` (workspace member, strict TS, Vitest, zod, fast-check as dev dependency). Add `field.ts` with the `Stated` wrapper and `common.ts` types (`Money`, `Dec`, `Iso`, `HtsCode` using the same patterns as the specimen schema).
+  - Test: `field.test.ts` accepts a valid stated field and rejects confidence outside 0 to 1, a numeric money value, `3240` and `3,240.00` as money, and a missing page. Covers R1.4, R2.1, R2.2.
+- [ ] 2. Add `base.ts` with the header, line, fee and stated-total schemas, with the specimen key names, and the oracle keys left out.
+  - Test: `schema-parity.test.ts` imports `scripts/specimens/schema.ts` and fails when the key tree differs from the specimen schema minus the oracle keys, or when the `kind`, `actionType` or fee `kind` enums or any regex source differ. Covers R1.2, R1.5.
+- [ ] 3. Define `form29.ts` (`actionType` as a stated enum, lines with `dutyStated`, fees, stated totals).
+  - Test: `form29.test.ts` parses a valid sample, rejects `actionType` outside the enum, rejects a null `actionType` value on Form 29 unless confidence is 0, and rejects a missing entry number unless it is `null` with confidence 0. Covers R1.1, R1.3, R1.6.
+- [ ] 4. Define `form28.ts` (`informationRequested` list, response deadline, `actionType` null).
+  - Test: `form28.test.ts` valid and invalid samples, including an empty `informationRequested`. Covers R1.1, R1.3.
+- [ ] 5. Define `courier.ts` (`courier` object, `courier_fee` and `mpf` fees, stated totals).
+  - Test: `courier.test.ts` valid sample, and a key-list snapshot showing no field that is not printed on the document, such as a recomputed total. Covers R1.3, R3.2, R3.4.
+- [ ] 6. Add `notice.ts`, the union on `kind` with the three `cbp_*` and `courier_duty_invoice` literals.
+  - Test: `notice.test.ts` wraps each `fixtures/specimens/*.fields.json` in stated fields with a test helper and parses it with `Notice`. Also rejects `kind: 'unknown'` and an old kind name such as `form28`. Covers R1.1, R1.2.
+- [ ] 7. Add `map/toSpecimen.ts`.
+  - Test: `toSpecimen.test.ts` wraps each ground truth, unwraps it, and expects equality with the truth minus the oracle keys. The output also parses with the specimen `Fields` schema once `specimenId` is added. Covers R10.1.
+- [ ] 8. Add `map/compare.ts` with `compareToSpecimen`.
+  - Test: `compare.test.ts` identical input gives all `match: true`. A change to one field gives exactly one mismatch at its path, such as `lines[1].hts`. A missing line and an extra line count as wrong fields. `flagged` follows `needs_confirmation`. A truth with `expectedDuty` gives the same result as one without. `"385.02"` against `"385.020"` is a mismatch. Covers R10.2 to R10.5.
+- [ ] 9. Add `confidence.ts` with `markNeedsConfirmation` and a configurable threshold.
   - Test: `confidence.test.ts` marks 0.79 and 0 as needing confirmation and 0.8 as not, with a custom threshold. Covers R2.3, R2.4.
-- [ ] 6. Add `config.ts` parsing env vars (`EXTRACT_PROVIDER`, `EXTRACT_MODE`, `EXTRACT_BASE_URL`, `EXTRACT_MODEL`, `EXTRACT_TIMEOUT_MS`) with defaults.
-  - Test: `config.test.ts` defaults are local, `qwen2.5vl:7b`, `http://localhost:11434/v1`, 120000, and invalid values throw. Covers R5.1, R5.2, R5.5, R7.2.
-- [ ] 7. Write `prompt.ts` asking for text only.
-  - Test: `prompt.test.ts` asserts the prompt contains no request for total, sum, convert, percentage or approximate (word-list check), and includes the JSON shape. Covers R3.1.
-- [ ] 8. Implement `providers/ollama.ts` using `fetch`, base64 image data URLs, JSON output, and a timeout.
+- [ ] 10. Add `config.ts` parsing env vars (`EXTRACT_PROVIDER`, `EXTRACT_MODE`, `EXTRACT_BASE_URL`, `EXTRACT_MODEL`, `EXTRACT_TIMEOUT_MS`, `EXTRACT_MAX_PAGES`, `EXTRACT_LIVE`) with defaults.
+  - Test: `config.test.ts` defaults are local, `qwen2.5vl:7b`, `http://localhost:11434/v1`, 120000, 5, and invalid values throw. Covers R5.1, R5.2, R5.5, R7.2, R11.3.
+- [ ] 11. Write `prompt.ts` asking for text only, with the field list from the schema and an instruction to write amounts as digits with two decimals, no symbol, no separator.
+  - Test: `prompt.test.ts` asserts the prompt contains no request for total, sum, convert, percentage or approximate (word-list check) beyond copying printed totals, and includes the JSON shape and every top-level key of the schema. Covers R3.1, R1.4.
+- [ ] 12. Implement `providers/ollama.ts` using `fetch`, base64 image data URLs (mime kept per image), JSON output, and a timeout.
   - Test: `ollama.test.ts` runs against a stub HTTP server and checks the request body (model, image data URL, response format) and the timeout result. Covers R5.1, R5.3, R5.5.
-- [ ] 9. Implement `extract.ts` with validate, one retry, and typed failures.
+- [ ] 13. Implement `extract.ts` with validate, one retry, and typed failures.
   - Test: `extract.test.ts` with a stub provider: valid response is `ok`, non-JSON gives `not_json`, invalid shape retries once with issues in the prompt then returns `schema_invalid`, `unknown` kind gives `unrecognized_document`, and no value is defaulted or coerced. Covers R4.1 to R4.5.
-- [ ] 10. Handle an unreachable local server without cloud fall-through.
-  - Test: `unreachable.test.ts` points at a closed port with Bedrock env vars set but provider unset, expects `model_unreachable` and no Bedrock call (spy on the lazy import). Covers R5.4.
-- [ ] 11. Implement `providers/fixture.ts` and `EXTRACT_MODE` fixture and record modes.
-  - Test: `fixture.test.ts` with network blocked: hit returns the recorded notice, miss returns `no_fixture`, record mode writes a file to a temp dir. Covers R6.1 to R6.4.
-- [ ] 12. Create synthetic specimen inputs and recorded fixtures for Form 28, Form 29 and a courier invoice. Review each by hand.
-  - Test: `fixtures.test.ts` loads each fixture, validates against the schema, and asserts that the stated totals are present as stated fields. Covers R6.5, R8.3.
-- [ ] 13. Implement `providers/bedrock.ts` with a dynamic import, enabled only by `EXTRACT_PROVIDER=bedrock`. Add the AWS SDK Bedrock runtime client as an optional dependency and record the reason in the PR.
-  - Test: `bedrock.test.ts` with a mocked client checks it uses the same prompt and schema, that unset provider never imports it, and that credentials never appear in thrown errors. Covers R7.1 to R7.4.
-- [ ] 14. Expose `meta.provider` so the UI can show the cloud-use notice when Bedrock is on.
-  - Test: `meta.test.ts` checks `meta.provider` is `ollama`, `fixture` or `bedrock`. The UI assertion lives in the exorcism-flow Playwright test. Covers R7.5.
-- [ ] 15. Add the privacy-safe logger wrapper.
-  - Test: `logger.test.ts` runs a full extraction with a spy on console and asserts no notice value, response text or key appears in output. Covers R8.1, R8.2.
-- [ ] 16. Add `eval/run-eval.ts` and hand-labelled expected JSON for the fixtures.
-  - Test: `eval.test.ts` runs on a two-field labelled set and checks exact-match rate and flagged-wrong share. Covers R9.1, R9.2.
-- [ ] 17. Add a stated-only guard: no code path in the package produces `computed` provenance.
+- [ ] 14. Handle an unreachable local server without cloud fall-through.
+  - Test: `unreachable.test.ts` points at a closed port with Bedrock env vars set but provider unset, expects `model_unreachable` and no Bedrock loader call (spy on the loader). Covers R5.4.
+- [ ] 15. Add `input/sniff.ts` and wire it into `extractNotice`.
+  - Test: `sniff.test.ts` detects PNG, JPEG and PDF from the three specimen files and the phone photo regardless of file name, and returns `unsupported_input` for a GIF header, empty bytes and a text file named `.pdf`. Covers R11.1.
+- [ ] 16. Add `input/rasterize.ts` (pdf.js in Playwright Chromium, scale 2, page cap, browser closed in `finally`). Add `pdfjs-dist` and record the reason in the PR.
+  - Test: `rasterize.test.ts` renders each specimen PDF, checks at least one page, PNG magic bytes, width and height above 800 px, page count within the cap, and `too_many_pages` with `EXTRACT_MAX_PAGES=0`. Uses the Chromium gate from task 20 (visible skip, fail under `EXTRACT_LIVE=require`). Covers R11.2, R11.3, R12.5.
+- [ ] 17. Pass PNG and JPG through unchanged, and send rasterized PDF pages as PNG.
+  - Test: `images.test.ts` with a stub provider: the photo `specimen-2-form29.photo.jpg` arrives as one `data:image/jpeg;base64,` URL whose bytes equal the file, the PNG as `image/png` equal to the file, and a PDF gives one `image/png` per page (Chromium gate). Covers R11.2, R11.4.
+- [ ] 18. Implement `providers/fixture.ts` and `EXTRACT_MODE` fixture and record modes. Fixture mode hashes the original bytes and starts no browser.
+  - Test: `fixture.test.ts` with network blocked and `rasterize` spied: hit on a PDF input returns the recorded notice without calling `rasterize`, miss returns `no_fixture`, record mode with a stub provider writes `{ inputSha256, responseSha256, raw, provider, model, recordedAt, recordedFrom }` to a temp dir. Covers R6.1 to R6.4, R6.6.
+- [ ] 19. Add `src/live/probe.ts` (`probeOllama`, `waitForOllama`, `liveGate`) and `src/live/wait.ts` (CLI wrapper that exits non-zero with the reason after 60 s).
+  - Test: `probe.test.ts` against stub servers and a closed port: down gives a reason with the URL and `ECONNREFUSED`, HTTP 500 gives the status, a server without the model gives `model qwen2.5vl:7b not installed (installed: ...)`, `liveGate` logs a line starting `LIVE SKIPPED:` and returns `skip: true`, and with `EXTRACT_LIVE=require` it throws. `waitForOllama` returns once a stub starts late. Covers R12.1 to R12.4, R13.2.
+- [ ] 20. Add the Chromium gate (`liveGate('chromium')`) using the same skip-or-fail rule.
+  - Test: `probe-chromium.test.ts` with a fake missing executable path: logs the reason, skips, and throws under `EXTRACT_LIVE=require`. Covers R12.5.
+- [ ] 21. Add package scripts `ollama:start`, `eval:live`, `eval:fixture`, `test:live`, and exclude `src/live/**` from the default `test` script so `bun run test` never needs Ollama.
+  - Test: `scripts.test.ts` reads `package.json` and asserts `ollama:start` is exactly `systemctl --user start ollama`, `eval:live` and `test:live` begin with `bun run ollama:start` and run `src/live/wait.ts` before the model call, both set `EXTRACT_LIVE=require`, and `eval:live` sets `EXTRACT_MODE=record`. The test never runs `systemctl`. Covers R13.1 to R13.4.
+- [ ] 22. Add `eval/run-eval.ts` with `--mode live|fixture`, per-path and overall rates, flagged share, and `latest.json` and `RESULTS.md` output to a given directory.
+  - Test: `eval.test.ts` runs on a two-input labelled set with a stub extractor into a temp dir. It checks per-path rate, overall rate, flagged-wrong share, that an `ok: false` input counts all its truth fields as wrong, and that both files are written. Covers R9.1 to R9.3.
+- [ ] 23. Write the live integration test `src/live/live.test.ts`: the five acceptance inputs through Ollama, using `describe.skipIf(gate.skip)`.
+  - Test: `live.test.ts` itself. Each input must give `ok: true`, `Notice` schema-valid, and `kind` equal to its `.fields.json` `kind`. With Ollama stopped (`systemctl --user stop ollama`), `bun run vitest run src/live` prints `LIVE SKIPPED: ...` with the reason and lists the suite as skipped. Under `EXTRACT_LIVE=require` the same run fails. Covers R11.5, R12.1 to R12.4.
+- [ ] 24. Run the live eval and commit its output: `bun run --cwd packages/notice-extract eval:live`. This records `fixtures/<inputSha256>.json` for the five inputs and writes `eval/results/latest.json` and `RESULTS.md`. Do not edit any generated file. If an input fails, commit the failure and the result, then fix the cause in a separate task and re-run.
+  - Test: `bun run --cwd packages/notice-extract test:live` passes with Ollama up. Evidence is the command output and the committed files. Covers R6.5, R9.3, R11.5, R11.6.
+- [ ] 25. Check the recorded fixtures offline.
+  - Test: `fixtures.test.ts` (always runs, no Ollama, no Chromium): one fixture per acceptance input, file name equals the sha256 of the input file, `responseSha256` matches `raw`, `provider` is `ollama`, `model` is `qwen2.5vl:7b`, `recordedFrom` is `live`, `raw` parses with `Notice`, and fixture-mode `extractNotice` returns `ok: true` for all five. Covers R6.5, R6.6, R6.7, R8.3, R11.5.
+- [ ] 26. Check that the committed result matches the fixtures.
+  - Test: `results.test.ts` runs the eval in fixture mode and requires the numbers to equal `eval/results/latest.json` (ignoring `generatedAt`), and `RESULTS.md` to contain the overall figure from `latest.json`. Covers R9.2, R9.6.
+- [ ] 27. Fill in the README line "Measured accuracy: [fill in measured result]" with figures copied from `RESULTS.md`.
+  - Test: `readme.test.ts` extracts every percentage from that README sentence and requires each to equal a value in `latest.json`, and fails if the placeholder text remains. Covers R9.4.
+- [ ] 28. Add `fuzz.test.ts` with fast-check: arbitrary strings, arbitrary JSON, and near-miss mutations of the recorded Form 29 notice, through a stub provider that returns the same text on the retry.
+  - Test: `fuzz.test.ts` asserts that `extractNotice` never throws, that every `ok: true` result has stated values deeply equal to those in the parsed response, and that each listed near-miss (numeric money, `3,240.00`, one-decimal money, confidence 1.2, missing key, extra key, wrong `kind`, `actionType` outside the enum, non-null value with confidence 0 where the form requires null) gives `ok: false`. Fixed seed in the file, at least 500 runs. Covers R14.1 to R14.5.
+- [ ] 29. Implement `providers/bedrock.ts` with an injectable `loadClient` whose default is a dynamic `import()`, enabled only by `EXTRACT_PROVIDER=bedrock`. Add the AWS SDK Bedrock runtime client as an optional dependency and record the reason in the PR.
+  - Test: `bedrock.test.ts` with a mock loader (no AWS SDK installed, no network): same prompt and schema as the local path, unset provider never calls the loader, and credentials never appear in thrown errors. Covers R7.1 to R7.6.
+- [ ] 30. Expose `meta.provider` so the UI can show the cloud-use notice when Bedrock is on.
+  - Test: `meta.test.ts` checks `meta.provider` is `ollama`, `fixture` or `bedrock`. The UI assertion lives in the exorcism-flow Playwright test. Covers R7.7.
+- [ ] 31. Add the privacy-safe logger wrapper.
+  - Test: `logger.test.ts` runs a full extraction with a spy on console and asserts no notice value, response text or key appears in output. It also checks that the `LIVE SKIPPED:` line contains only the URL, model and error code. Covers R8.1, R8.2, R8.4.
+- [ ] 32. Add a stated-only guard: no code path in the package produces `computed` provenance.
   - Test: `stated-only.test.ts` greps package sources for `'computed'` and fails on any hit outside tests. Covers R2.5, R3.3.
