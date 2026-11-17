@@ -37,6 +37,9 @@ export function readConfig(env: Record<string, string | undefined> = process.env
     throw new Error(`invalid extract config: ${bad}`);
   }
   const e = r.data;
+  if (e.EXTRACT_PROVIDER === 'bedrock' && set.EXTRACT_MODEL === undefined) {
+    throw new Error('invalid extract config: EXTRACT_MODEL must name a Bedrock model id when EXTRACT_PROVIDER=bedrock');
+  }
   return {
     provider: e.EXTRACT_PROVIDER,
     mode: e.EXTRACT_MODE,

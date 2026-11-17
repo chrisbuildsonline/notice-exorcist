@@ -4,6 +4,7 @@ import { DEFAULT_THRESHOLD, fieldsNeedingConfirmation, markNeedsConfirmation } f
 import { type Config, readConfig } from './config';
 import { sniff } from './input/sniff';
 import { buildPrompt, type PromptIssue, retryNote } from './prompt';
+import { bedrockProvider, type LoadBedrock } from './providers/bedrock';
 import { ollamaProvider } from './providers/ollama';
 import { type PageImage, type Provider, ProviderError, type ProviderName } from './providers/types';
 import { type Box, provSource } from './schema/field';
@@ -49,6 +50,8 @@ export type ExtractDeps = {
   /** Overrides the provider chosen from config (tests). */
   provider?: Provider;
   threshold?: number;
+  /** Loader of the AWS SDK, used only when EXTRACT_PROVIDER=bedrock (tests pass a mock). */
+  loadBedrock?: LoadBedrock;
 };
 
 const sha256 = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
@@ -86,7 +89,11 @@ export function validateResponse(raw: string): Validated {
   return { ok: true, notice: notice.data };
 }
 
-function defaultProvider(config: Config): Provider {
+/** Local unless EXTRACT_PROVIDER=bedrock. An unreachable local model is a failure, never a switch to the cloud. */
+function defaultProvider(config: Config, deps: ExtractDeps): Provider {
+  if (config.provider === 'bedrock') {
+    return bedrockProvider({ model: config.model, timeoutMs: config.timeoutMs, ...(deps.loadBedrock ? { loadClient: deps.loadBedrock } : {}) });
+  }
   return ollamaProvider(config);
 }
 
@@ -108,7 +115,7 @@ export async function extractNotice(input: { bytes: Uint8Array }, deps: ExtractD
     const images = await pageImages(input.bytes);
     if (!Array.isArray(images)) return fail(images.reason);
 
-    const provider = deps.provider ?? defaultProvider(config);
+    const provider = deps.provider ?? defaultProvider(config, deps);
     const prompt = buildPrompt();
     let raw = await provider.complete({ ...prompt, images });
     let v = validateResponse(raw);

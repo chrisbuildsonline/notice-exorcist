@@ -51,6 +51,12 @@
       "devDependencies": {
         "fast-check": "^4.10.2",
       },
+      "peerDependencies": {
+        "@aws-sdk/client-bedrock-runtime": "^3.0.0",
+      },
+      "optionalPeers": [
+        "@aws-sdk/client-bedrock-runtime",
+      ],
     },
     "packages/tariff-data": {
       "name": "@notice-exorcist/tariff-data",

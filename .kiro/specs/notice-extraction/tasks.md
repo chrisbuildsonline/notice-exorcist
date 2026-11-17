@@ -28,7 +28,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `ollama.test.ts` runs against a stub HTTP server and checks the request body (model, image data URL, response format) and the timeout result. Covers R5.1, R5.3, R5.5.
 - [x] 13. Implement `extract.ts` with validate, one retry, and typed failures.
   - Test: `extract.test.ts` with a stub provider: valid response is `ok`, non-JSON gives `not_json`, invalid shape retries once with issues in the prompt then returns `schema_invalid`, `unknown` kind gives `unrecognized_document`, and no value is defaulted or coerced. Covers R4.1 to R4.5.
-- [ ] 14. Handle an unreachable local server without cloud fall-through.
+- [x] 14. Handle an unreachable local server without cloud fall-through.
   - Test: `unreachable.test.ts` points at a closed port with Bedrock env vars set but provider unset, expects `model_unreachable` and no Bedrock loader call (spy on the loader). Covers R5.4.
 - [x] 15. Add `input/sniff.ts` and wire it into `extractNotice`.
   - Test: `sniff.test.ts` detects PNG, JPEG and PDF from the three specimen files and the phone photo regardless of file name, and returns `unsupported_input` for a GIF header, empty bytes and a text file named `.pdf`. Covers R11.1.
@@ -58,7 +58,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `readme.test.ts` extracts every percentage from that README sentence and requires each to equal a value in `latest.json`, and fails if the placeholder text remains. Covers R9.4.
 - [ ] 28. Add `fuzz.test.ts` with fast-check: arbitrary strings, arbitrary JSON, and near-miss mutations of the recorded Form 29 notice, through a stub provider that returns the same text on the retry.
   - Test: `fuzz.test.ts` asserts that `extractNotice` never throws, that every `ok: true` result has stated values deeply equal to those in the parsed response, and that each listed near-miss (numeric money, `3,240.00`, one-decimal money, confidence 1.2, missing key, extra key, wrong `kind`, `actionType` outside the enum, non-null value with confidence 0 where the form requires null) gives `ok: false`. Fixed seed in the file, at least 500 runs. Covers R14.1 to R14.5.
-- [ ] 29. Implement `providers/bedrock.ts` with an injectable `loadClient` whose default is a dynamic `import()`, enabled only by `EXTRACT_PROVIDER=bedrock`. Add the AWS SDK Bedrock runtime client as an optional dependency and record the reason in the PR.
+- [x] 29. Implement `providers/bedrock.ts` with an injectable `loadClient` whose default is a dynamic `import()`, enabled only by `EXTRACT_PROVIDER=bedrock`. Add the AWS SDK Bedrock runtime client as an optional dependency and record the reason in the PR.
   - Test: `bedrock.test.ts` with a mock loader (no AWS SDK installed, no network): same prompt and schema as the local path, unset provider never calls the loader, and credentials never appear in thrown errors. Covers R7.1 to R7.6.
 - [ ] 30. Expose `meta.provider` so the UI can show the cloud-use notice when Bedrock is on.
   - Test: `meta.test.ts` checks `meta.provider` is `ollama`, `fixture` or `bedrock`. The UI assertion lives in the exorcism-flow Playwright test. Covers R7.7.
