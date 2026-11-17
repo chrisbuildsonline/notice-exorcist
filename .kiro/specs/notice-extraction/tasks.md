@@ -20,7 +20,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `compare.test.ts` identical input gives all `match: true`. A change to one field gives exactly one mismatch at its path, such as `lines[1].hts`. A missing line and an extra line count as wrong fields. `flagged` follows `needs_confirmation`. A truth with `expectedDuty` gives the same result as one without. `"385.02"` against `"385.020"` is a mismatch. Covers R10.2 to R10.5.
 - [x] 9. Add `confidence.ts` with `markNeedsConfirmation` and a configurable threshold.
   - Test: `confidence.test.ts` marks 0.79 and 0 as needing confirmation and 0.8 as not, with a custom threshold. Covers R2.3, R2.4.
-- [ ] 10. Add `config.ts` parsing env vars (`EXTRACT_PROVIDER`, `EXTRACT_MODE`, `EXTRACT_BASE_URL`, `EXTRACT_MODEL`, `EXTRACT_TIMEOUT_MS`, `EXTRACT_MAX_PAGES`, `EXTRACT_LIVE`) with defaults.
+- [x] 10. Add `config.ts` parsing env vars (`EXTRACT_PROVIDER`, `EXTRACT_MODE`, `EXTRACT_BASE_URL`, `EXTRACT_MODEL`, `EXTRACT_TIMEOUT_MS`, `EXTRACT_MAX_PAGES`, `EXTRACT_LIVE`) with defaults.
   - Test: `config.test.ts` defaults are local, `qwen2.5vl:7b`, `http://localhost:11434/v1`, 120000, 5, and invalid values throw. Covers R5.1, R5.2, R5.5, R7.2, R11.3.
 - [ ] 11. Write `prompt.ts` asking for text only, with the field list from the schema and an instruction to write amounts as digits with two decimals, no symbol, no separator.
   - Test: `prompt.test.ts` asserts the prompt contains no request for total, sum, convert, percentage or approximate (word-list check) beyond copying printed totals, and includes the JSON shape and every top-level key of the schema. Covers R3.1, R1.4.
