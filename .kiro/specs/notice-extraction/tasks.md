@@ -26,11 +26,11 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `prompt.test.ts` asserts the prompt contains no request for total, sum, convert, percentage or approximate (word-list check) beyond copying printed totals, and includes the JSON shape and every top-level key of the schema. Covers R3.1, R1.4.
 - [x] 12. Implement `providers/ollama.ts` using `fetch`, base64 image data URLs (mime kept per image), JSON output, and a timeout.
   - Test: `ollama.test.ts` runs against a stub HTTP server and checks the request body (model, image data URL, response format) and the timeout result. Covers R5.1, R5.3, R5.5.
-- [ ] 13. Implement `extract.ts` with validate, one retry, and typed failures.
+- [x] 13. Implement `extract.ts` with validate, one retry, and typed failures.
   - Test: `extract.test.ts` with a stub provider: valid response is `ok`, non-JSON gives `not_json`, invalid shape retries once with issues in the prompt then returns `schema_invalid`, `unknown` kind gives `unrecognized_document`, and no value is defaulted or coerced. Covers R4.1 to R4.5.
 - [ ] 14. Handle an unreachable local server without cloud fall-through.
   - Test: `unreachable.test.ts` points at a closed port with Bedrock env vars set but provider unset, expects `model_unreachable` and no Bedrock loader call (spy on the loader). Covers R5.4.
-- [ ] 15. Add `input/sniff.ts` and wire it into `extractNotice`.
+- [x] 15. Add `input/sniff.ts` and wire it into `extractNotice`.
   - Test: `sniff.test.ts` detects PNG, JPEG and PDF from the three specimen files and the phone photo regardless of file name, and returns `unsupported_input` for a GIF header, empty bytes and a text file named `.pdf`. Covers R11.1.
 - [ ] 16. Add `input/rasterize.ts` (pdf.js in Playwright Chromium, scale 2, page cap, browser closed in `finally`). Add `pdfjs-dist` and record the reason in the PR.
   - Test: `rasterize.test.ts` renders each specimen PDF, checks at least one page, PNG magic bytes, width and height above 800 px, page count within the cap, and `too_many_pages` with `EXTRACT_MAX_PAGES=0`. Uses the Chromium gate from task 20 (visible skip, fail under `EXTRACT_LIVE=require`). Covers R11.2, R11.3, R12.5.
