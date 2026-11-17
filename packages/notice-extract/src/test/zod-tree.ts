@@ -1,4 +1,5 @@
 import type { z } from 'zod';
+import { ORACLE_KEYS } from '../schema/common';
 
 /** Test helper: flattens a Zod schema to leaf paths (`lines[].hts`) and a descriptor of each leaf. */
 
@@ -74,7 +75,7 @@ export function diffTrees(expected: Map<string, string>, actual: Map<string, str
   return diffs;
 }
 
-export const ORACLE_KEYS = ['specimenId', 'notes', 'plantedError', 'expectedDuty', 'expectedFee'] as const;
+export { ORACLE_KEYS };
 
 /** Drops every path whose last key is an oracle key. */
 export function withoutOracleKeys(tree: Map<string, string>): Map<string, string> {

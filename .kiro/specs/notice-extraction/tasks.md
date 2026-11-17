@@ -14,9 +14,9 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `courier.test.ts` valid sample, and a key-list snapshot showing no field that is not printed on the document, such as a recomputed total. Covers R1.3, R3.2, R3.4.
 - [x] 6. Add `notice.ts`, the union on `kind` with the three `cbp_*` and `courier_duty_invoice` literals.
   - Test: `notice.test.ts` wraps each `fixtures/specimens/*.fields.json` in stated fields with a test helper and parses it with `Notice`. Also rejects `kind: 'unknown'` and an old kind name such as `form28`. Covers R1.1, R1.2.
-- [ ] 7. Add `map/toSpecimen.ts`.
+- [x] 7. Add `map/toSpecimen.ts`.
   - Test: `toSpecimen.test.ts` wraps each ground truth, unwraps it, and expects equality with the truth minus the oracle keys. The output also parses with the specimen `Fields` schema once `specimenId` is added. Covers R10.1.
-- [ ] 8. Add `map/compare.ts` with `compareToSpecimen`.
+- [x] 8. Add `map/compare.ts` with `compareToSpecimen`.
   - Test: `compare.test.ts` identical input gives all `match: true`. A change to one field gives exactly one mismatch at its path, such as `lines[1].hts`. A missing line and an extra line count as wrong fields. `flagged` follows `needs_confirmation`. A truth with `expectedDuty` gives the same result as one without. `"385.02"` against `"385.020"` is a mismatch. Covers R10.2 to R10.5.
 - [ ] 9. Add `confidence.ts` with `markNeedsConfirmation` and a configurable threshold.
   - Test: `confidence.test.ts` marks 0.79 and 0 as needing confirmation and 0.8 as not, with a custom threshold. Covers R2.3, R2.4.

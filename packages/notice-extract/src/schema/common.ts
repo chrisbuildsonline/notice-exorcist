@@ -14,3 +14,6 @@ export type NoticeKind = (typeof NOTICE_KINDS)[number];
 
 export const ACTION_TYPES = ['rate_advance'] as const;
 export const FEE_KINDS = ['mpf', 'hmf', 'courier_fee'] as const;
+
+/** Specimen keys that exist for tests and are not printed on a document. */
+export const ORACLE_KEYS = ['specimenId', 'notes', 'plantedError', 'expectedDuty', 'expectedFee'] as const;
