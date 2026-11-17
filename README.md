@@ -6,7 +6,7 @@ Built for [Kiroween 2026](https://kiroween.devpost.com/). Submissions close 2026
 
 ## What it does
 
-A user uploads a scan or photo of a customs notice. Notice Exorcist extracts every field and line item, rewrites the jargon in plain English, and maps each described product to candidate tariff codes using the official tariff schedule and a searchable archive of past published customs rulings. A deterministic calculator then recomputes the duty and fees line by line, shows the formula for each, and flags where the notice and the recomputation disagree. For each flagged line, it drafts a cited response or protest letter that the user must review and approve before anything is exported as a PDF. Nothing is ever filed automatically. Measured accuracy: [fill in measured result].
+A user uploads a scan or photo of a customs notice. Notice Exorcist extracts every field and line item, rewrites the jargon in plain English, and maps each described product to candidate tariff codes using the official tariff schedule and a searchable archive of past published customs rulings. A deterministic calculator then recomputes the duty and fees line by line, shows the formula for each, and flags where the notice and the recomputation disagree. For each flagged line, it drafts a cited response or protest letter that the user must review and approve before anything is exported as a PDF. Nothing is ever filed automatically. Measured accuracy: 95.5% of fields read exactly right (232 of 243) across five test notices with the local qwen2.5vl:7b model, from 93.6% to 96.2% per notice (the skewed phone photo scored 96.2%); 9.1% of the wrong fields were flagged for confirmation.
 
 ## Stack
 

@@ -18,8 +18,8 @@ describe('README Specimens section', () => {
     expect(specimensSection).toMatch(/public domain/i);
   });
 
-  it('leaves the Measured accuracy placeholder untouched', () => {
-    expect(readme).toContain('Measured accuracy: [fill in measured result].');
+  it('keeps the Measured accuracy sentence (its figures are checked by notice-extract eval/readme.test.ts)', () => {
+    expect(readme).toContain('Measured accuracy: ');
   });
 });
 
