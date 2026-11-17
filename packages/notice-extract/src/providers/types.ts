@@ -40,11 +40,15 @@ const isTimeout = (e: unknown) => {
   return name === 'TimeoutError' || name === 'AbortError';
 };
 
-/** fetch with a timeout, turning network failures into ProviderError. */
+/**
+ * fetch with our own timeout, turning network failures into ProviderError.
+ * `timeout: false` turns off Bun's built-in fetch limit (about 300 s), which would cut long inference short.
+ */
 export async function fetchOrFail(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
   let res: Response;
   try {
-    res = await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+    const full: RequestInit & { timeout: false } = { ...init, signal: AbortSignal.timeout(timeoutMs), timeout: false };
+    res = await fetch(url, full);
   } catch (e) {
     if (isTimeout(e)) throw new ProviderError('timeout', `${url} gave no reply within ${timeoutMs} ms`);
     throw new ProviderError('model_unreachable', `${init.method ?? 'GET'} ${url} failed: ${netErrorCode(e)}`);

@@ -11,7 +11,8 @@ export function ollamaProvider({ baseUrl, model, timeoutMs }: OllamaOpts): Provi
     async complete({ system, user, images }) {
       const body = {
         model,
-        stream: false,
+        // Streamed so headers and chunks arrive while the model works; fetch idle limits never see a silent socket.
+        stream: true,
         temperature: 0,
         response_format: { type: 'json_object' },
         messages: [
@@ -23,15 +24,44 @@ export function ollamaProvider({ baseUrl, model, timeoutMs }: OllamaOpts): Provi
         ],
       };
       const res = await fetchOrFail(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }, timeoutMs);
-      let json: { choices?: { message?: { content?: unknown } }[] };
+      let text: string;
       try {
-        json = (await res.json()) as typeof json;
+        text = await res.text();
       } catch (e) {
-        if ((e as { name?: string })?.name === 'TimeoutError') throw new ProviderError('timeout', `${url} reply did not finish within ${timeoutMs} ms`);
+        const name = (e as { name?: string })?.name;
+        if (name === 'TimeoutError' || name === 'AbortError') throw new ProviderError('timeout', `${url} reply did not finish within ${timeoutMs} ms`);
         return '';
       }
-      const content = json.choices?.[0]?.message?.content;
-      return typeof content === 'string' ? content : '';
+      return (res.headers.get('content-type') ?? '').includes('text/event-stream') ? joinStream(text) : messageContent(text);
     },
   };
+}
+
+type Choice = { message?: { content?: unknown }; delta?: { content?: unknown } };
+
+const parse = (s: string): { choices?: Choice[] } | undefined => {
+  try {
+    return JSON.parse(s) as { choices?: Choice[] };
+  } catch {
+    return undefined;
+  }
+};
+
+/** Content of a whole (non-streamed) chat completion, or '' when there is none. */
+function messageContent(text: string): string {
+  const content = parse(text)?.choices?.[0]?.message?.content;
+  return typeof content === 'string' ? content : '';
+}
+
+/** Joins the delta content of every `data:` event of a streamed chat completion. */
+function joinStream(text: string): string {
+  let out = '';
+  for (const line of text.split('\n')) {
+    if (!line.startsWith('data:')) continue;
+    const data = line.slice(5).trim();
+    if (data === '[DONE]') break;
+    const content = parse(data)?.choices?.[0]?.delta?.content;
+    if (typeof content === 'string') out += content;
+  }
+  return out;
 }

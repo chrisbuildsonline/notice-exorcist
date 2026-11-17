@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { closedPort, sendJson, startStub, type Stub } from '../test/stub-server';
 import { ollamaProvider } from './ollama';
 import { ProviderError } from './types';
@@ -26,7 +26,7 @@ describe('ollama provider (OpenAI-compatible chat completions)', () => {
     const body = JSON.parse(sent.body);
     expect(body.model).toBe('qwen2.5vl:7b');
     expect(body.response_format).toEqual({ type: 'json_object' });
-    expect(body.stream).toBe(false);
+    expect(body.stream).toBe(true);
     expect(body.messages[0]).toEqual({ role: 'system', content: 'sys' });
     const parts = body.messages[1].content;
     expect(parts[0]).toEqual({ type: 'text', text: 'read it' });
@@ -53,6 +53,53 @@ describe('ollama provider (OpenAI-compatible chat completions)', () => {
     const err2 = await q.complete(req).catch((e) => e);
     expect(err2.code).toBe('model_unreachable');
     expect(err2.detail).toMatch(/HTTP 500/);
+  });
+
+  it('streams the reply (headers come at once, so long inference does not hit fetch idle limits) and joins the chunks', async () => {
+    stub = await startStub((_r, _b, res) => {
+      res.writeHead(200, { 'content-type': 'text/event-stream' });
+      const chunks = ['{"kind":', '"cbp_', 'form_29"}'];
+      let i = 0;
+      const next = () => {
+        if (i < chunks.length) {
+          res.write(`data: ${JSON.stringify({ choices: [{ index: 0, delta: { role: 'assistant', content: chunks[i++] } }] })}\n\n`);
+          setTimeout(next, 20);
+        } else res.end('data: [DONE]\n\n');
+      };
+      next();
+    });
+    const p = ollamaProvider({ baseUrl: `${stub.url}/v1`, model: 'm', timeoutMs: 5000 });
+    expect(await p.complete(req)).toBe('{"kind":"cbp_form_29"}');
+    expect(JSON.parse(stub.requests[0]!.body).stream).toBe(true);
+  });
+
+  it("turns off Bun's own fetch timeout and keeps its own abort signal", async () => {
+    let init: (RequestInit & { timeout?: unknown }) | undefined;
+    const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (_u, i) => {
+      init = i as typeof init;
+      return new Response('data: {"choices":[{"delta":{"content":"{}"}}]}\n\ndata: [DONE]\n\n', {
+        status: 200,
+        headers: { 'content-type': 'text/event-stream' },
+      });
+    });
+    try {
+      expect(await ollamaProvider({ baseUrl: 'http://127.0.0.1:1/v1', model: 'm', timeoutMs: 5000 }).complete(req)).toBe('{}');
+    } finally {
+      spy.mockRestore();
+    }
+    expect(init?.timeout).toBe(false);
+    expect(init?.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it('gives a timeout error when the stream stalls after the first chunk', async () => {
+    stub = await startStub((_r, _b, res) => {
+      res.writeHead(200, { 'content-type': 'text/event-stream' });
+      res.write(`data: ${JSON.stringify({ choices: [{ delta: { content: '{' } }] })}\n\n`);
+    });
+    const p = ollamaProvider({ baseUrl: `${stub.url}/v1`, model: 'm', timeoutMs: 200 });
+    const err = await p.complete(req).catch((e) => e);
+    expect(err).toBeInstanceOf(ProviderError);
+    expect(err.code).toBe('timeout');
   });
 
   it('returns an empty string when the reply has no message content, so the caller reports not_json', async () => {
