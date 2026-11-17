@@ -12,6 +12,7 @@
     "test:live": "bun run ollama:start && bun run src/live/wait.ts && EXTRACT_LIVE=require EXTRACT_TIMEOUT_MS=900000 vitest run src/live"
   },
   "dependencies": {
+    "pdfjs-dist": "^6.5.438",
     "zod": "^4.6.7"
   },
   "devDependencies": {
