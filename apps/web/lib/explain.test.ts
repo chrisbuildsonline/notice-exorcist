@@ -12,6 +12,7 @@ const line = (over: Partial<AssessedLine>): AssessedLine => ({
   hts: '6302.91.00',
   rateText: '9.2%',
   confirm: [],
+  calc: null,
   ...over,
 });
 

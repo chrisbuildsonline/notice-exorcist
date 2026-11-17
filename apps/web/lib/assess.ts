@@ -13,6 +13,7 @@ import {
   type StatedProv,
 } from '@notice-exorcist/duty-engine';
 import type { ExtractOk } from '@notice-exorcist/notice-extract';
+import { type Calc, calcOf } from './calc';
 import { fogOpacity, lineState, type LineState, noticeStatus, type NoticeStatus } from './states';
 
 /** A figure as the API sends it: decimal string, provenance kind and a human source. */
@@ -32,13 +33,23 @@ export type AssessedLine = {
   rateText: string | null;
   /** Flagged inputs of this line. While any is left, the line is not calculated. */
   confirm: Flag[];
+  /** How the engine computed this line (the calculation drawer), or null when it did not. */
+  calc: Calc | null;
 };
 
 /**
  * The notice's printed total next to the engine's recomputation of the same total.
  * A flagged printed total is never shown as the total (statedTotal null, flagged true).
  */
-export type Totals = { name: string | null; statedTotal: FigureJson | null; computedTotal: FigureJson | null; difference: FigureJson | null; flagged: boolean };
+export type Totals = {
+  name: string | null;
+  statedTotal: FigureJson | null;
+  computedTotal: FigureJson | null;
+  difference: FigureJson | null;
+  flagged: boolean;
+  /** The engine's sum behind computedTotal, each part labelled with its line. */
+  calc: Calc | null;
+};
 
 export type Assessment = {
   lines: AssessedLine[];
@@ -127,11 +138,12 @@ export function assess(r: ExtractOk): Assessment {
         difference: c?.state === 'disagrees' ? figJson(c.difference) : null,
         ...extra,
         confirm,
+        calc: computed ? calcOf(computed) : null,
       },
     });
   };
 
-  let totals: Totals = { name: null, statedTotal: null, computedTotal: null, difference: null, flagged: false };
+  let totals: Totals = { name: null, statedTotal: null, computedTotal: null, difference: null, flagged: false, calc: null };
 
   if (n.kind !== 'cbp_form_28') {
     n.lines.forEach((l, i) => {
@@ -185,6 +197,7 @@ export function assess(r: ExtractOk): Assessment {
         computedTotal: computedTotal ? figJson(computedTotal) : null,
         difference: cmp?.state === 'disagrees' ? figJson(cmp.difference) : null,
         flagged: isFlagged,
+        calc: computedTotal ? calcOf(computedTotal, scope.map((it) => it.line.label)) : null,
       };
     }
   }

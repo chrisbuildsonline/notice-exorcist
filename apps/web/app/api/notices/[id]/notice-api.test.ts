@@ -4,6 +4,7 @@ import { freshDataDir, specimenBytes } from '../../../../lib/test-env';
 import { GET } from './route';
 
 type Fig = { value: string; prov: string; source: string };
+type Calc = { formulaId: string; inputs: (Fig & { key: string; label: string })[] };
 type Body = {
   id: string;
   status: string;
@@ -12,7 +13,8 @@ type Body = {
   assessment?: {
     status: { kind: string; count?: number };
     atStake: Fig | null;
-    lines: { label: string; state: string; stated: Fig | null; computed: Fig | null; difference: Fig | null }[];
+    lines: { label: string; state: string; stated: Fig | null; computed: Fig | null; difference: Fig | null; calc: Calc | null }[];
+    totals: { computedTotal: Fig | null; calc: Calc | null };
   };
 };
 
@@ -54,6 +56,33 @@ describe('GET /api/notices/[id] (fixture mode)', () => {
     expect(b.assessment!.status).toEqual({ kind: 'haunted', count: 1 });
     // engine total of the four line duties and the MPF
     expect(b.assessment!.atStake).toMatchObject({ prov: 'computed', value: '750.82' });
+  });
+
+  it('each computed line and the recomputed total carry the engine trail for the drawer', async () => {
+    const b = await fileAndGet('specimen-2-form29.pdf');
+    const a = b.assessment!;
+    const bad = a.lines[0]!;
+    expect(bad.calc).toMatchObject({
+      formulaId: 'line.ad_valorem',
+      formula: 'duty = entered value × rate',
+      rate: { text: '9.2%', prov: 'stated' },
+      rounding: 'half-up to cents, once',
+      result: { value: '442.98', prov: 'computed' },
+    });
+    expect(bad.calc!.inputs.map((i) => [i.key, i.prov])).toEqual([
+      ['enteredValue', 'stated'],
+      ['percent', 'stated'],
+    ]);
+    const mpf = a.lines.find((l) => l.label === 'Merchandise Processing Fee')!;
+    expect(mpf.calc).toMatchObject({ formulaId: 'fee.mpf', rate: { prov: 'tariff' } });
+    expect(a.totals.calc).toMatchObject({ formulaId: 'total.sum', result: a.totals.computedTotal! });
+    // the printed total is a duty total, so it sums the duty lines, each labelled
+    expect(a.totals.calc!.inputs.map((i) => i.label)).toEqual(a.lines.filter((l) => l.label.startsWith('Line ')).map((l) => l.label));
+  });
+
+  it('a line the engine cannot check has no trail', async () => {
+    const b = await fileAndGet('specimen-3-courier.pdf');
+    expect(b.assessment!.lines.find((l) => l.label === 'Duty disbursement fee')!.calc).toBeNull();
   });
 
   it('courier: the planted MPF disagrees (the engine clamps to the minimum), the courier fee is not checked', async () => {
