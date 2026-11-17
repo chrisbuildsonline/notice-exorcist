@@ -1,5 +1,6 @@
+import { parseRateText } from '@notice-exorcist/duty-engine';
 import { z } from 'zod';
-import { toolError } from '../result';
+import { ok, parsedRateToJson } from '../result';
 import { QUOTE_FIGURES, type Tool } from './tool';
 
 const schema = z.object({
@@ -12,5 +13,5 @@ export const explainRate: Tool<typeof schema> = {
     'Parse HTS rate text with the duty engine and return its structure (free, ad valorem, specific, compound or unsupported), with the ' +
     `raw text verbatim and numbers as decimal strings. ${QUOTE_FIGURES}`,
   schema,
-  handler: () => toolError('explain_rate is not implemented yet'),
+  handler: ({ rateText }) => ok({ ...parsedRateToJson(parseRateText(rateText)), prov: { kind: 'stated', source: 'explain_rate input' } }),
 };
