@@ -6,9 +6,9 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: `tokens.test.ts` parses `globals.css` and checks every status token and the canvas value equal those in `design/DESIGN.md`. Covers R9.
 - [x] 2. Build `Figure` with required `prov` and `source`, the unsourced fallback and the throw in dev/test.
   - Test: `Figure.test.tsx` renders sourced `stated`, `computed`, `tariff` values (2 decimals, comma, true minus, tag shown), and an unsourced one that throws in test and renders `—` plus `Unsourced` in production mode. Covers R5.3 to R5.5.
-- [ ] 3. Add a repo check that money is not formatted outside `Figure`.
+- [x] 3. Add a repo check that money is not formatted outside `Figure`.
   - Test: `no-raw-money.test.ts` scans `apps/web` sources for `toFixed(2)` and `Intl.NumberFormat` with currency outside `Figure.tsx` and fails on a hit. Covers R5.3.
-- [ ] 4. Implement `provenance-guard.ts` and the route wrapper.
+- [x] 4. Implement `provenance-guard.ts` and the route wrapper.
   - Test: `provenance-guard.test.ts` rejects a payload with a money field lacking `prov`, accepts a sourced one, and a route test confirms the wrapper returns 500 in test mode. Covers R5.8.
 - [x] 5. Implement `states.ts` (`lineState`, `noticeStatus`, `fogOpacity`).
   - Test: `states.test.ts` covers state precedence, fog `0.15 + 0.85 × share`, fog 0 when all verified, and `At peace`. Covers R4.2, R4.5, R4.6.
