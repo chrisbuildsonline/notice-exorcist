@@ -17,6 +17,7 @@ function index(): DatabaseSync {
   hts.run(3, '63', '6302.93.20', 2, 'Kitchen towels of man-made fibers', '10.8%', '', '40%', '["doz."]', src('63'));
   hts.run(4, '42', '4202.32.10', 2, 'Wallets with outer surface of reinforced or laminated plastics', '12.1¢/kg + 4.6%', '', '', '[]', src('42'));
   hts.run(5, '42', '4202.32.10.00', 3, 'Card wallets', '', '', '', '["No."]', src('42'));
+  hts.run(6, '85', '8509.80.20.00', 2, 'Kitchen waste disposers (disposals)', 'Free', '', '', '[]', src('85'));
   db.exec("INSERT INTO hts_fts(hts_fts) VALUES('rebuild')");
   const ruling = db.prepare('INSERT INTO rulings (number, date, title, hts_codes, text, url, source) VALUES (?, ?, ?, ?, ?, ?, ?)');
   const code = db.prepare('INSERT INTO ruling_codes (number, code, heading) VALUES (?, ?, ?)');
@@ -48,6 +49,17 @@ describe('tariff index under Node (node:sqlite over the tariff-data index)', () 
   it('a statistical suffix with no rate of its own takes the rate line above it, cited to that line', () => {
     const [first] = htsCandidates(index(), { hts: '4202.32.10.00', description: null });
     expect(first).toMatchObject({ code: '4202.32.10.00', rate: '12.1¢/kg + 4.6%', printed: true });
+  });
+
+  it('a short description gets its parent line for context', () => {
+    const [first] = htsCandidates(index(), { hts: '4202.32.10.00', description: null });
+    expect(first!.description).toBe('Wallets with outer surface of reinforced or laminated plastics › Card wallets');
+  });
+
+  it('with a printed code, description matches stay in its chapter', () => {
+    const c = htsCandidates(index(), { hts: '6302.91.00', description: 'kitchen waste towels' });
+    expect(c.map((x) => x.code)).not.toContain('8509.80.20.00');
+    expect(htsCandidates(index(), { hts: null, description: 'kitchen waste towels' }).map((x) => x.code)).toContain('8509.80.20.00');
   });
 
   it('CROSS rulings: same subheading first, then the heading, each with number, date, title and url', () => {

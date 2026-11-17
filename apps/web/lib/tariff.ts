@@ -46,30 +46,44 @@ function andThenOr<T>(q: string | null, run: (expr: string) => T[]): T[] {
   return [];
 }
 
-type Line = { code: string; description: string; general: string; source: string };
+type Line = { seq: number; chapter: string; indent: number; code: string; description: string; general: string; source: string };
+const COLS = 'h.seq, h.chapter, h.indent, h.code, h.description, h.general, h.source';
 
 const edition = (db: DatabaseSync) => (db.prepare("SELECT value FROM meta WHERE key = 'edition'").get() as { value: string } | undefined)?.value ?? '';
 
-/** The printed code's HTS line, then lines whose description matches the goods. Only lines with rate text. */
+/** "Of cotton" alone says little: a short description is shown under its nearest parent line. */
+function described(db: DatabaseSync, l: Line): string {
+  if (l.description.length >= 40) return l.description;
+  const parent = db
+    .prepare('SELECT description FROM hts_lines WHERE chapter = ? AND seq < ? AND indent < ? ORDER BY seq DESC LIMIT 1')
+    .get(l.chapter, l.seq, l.indent) as { description: string } | undefined;
+  return parent ? `${parent.description} › ${l.description}` : l.description;
+}
+
+/**
+ * The printed code's HTS line, then lines whose description matches the goods (in the printed code's chapter
+ * when there is one). Only lines with rate text.
+ */
 export function htsCandidates(db: DatabaseSync, q: Query, limit = 3): HtsCandidate[] {
   const ed = edition(db);
   const out: HtsCandidate[] = [];
   const code = normalize(q.hts);
   if (code) {
-    const byCode = db.prepare('SELECT code, description, general, source FROM hts_lines WHERE code = ?');
+    const byCode = db.prepare(`SELECT ${COLS} FROM hts_lines h WHERE h.code = ?`);
     const own = byCode.get(code) as Line | undefined;
     // A 10-digit statistical suffix has no rate of its own: the rate is on its 8-digit line, cited as that line.
     const rated = own?.general ? own : code.length === 13 ? (byCode.get(code.slice(0, 10)) as Line | undefined) : undefined;
-    if (own && rated?.general) out.push({ code, description: own.description, rate: rated.general, source: rated.source, edition: ed, printed: true });
+    if (own && rated?.general) out.push({ code, description: described(db, own), rate: rated.general, source: rated.source, edition: ed, printed: true });
   }
   const search = db.prepare(`
-    SELECT h.code, h.description, h.general, h.source FROM hts_fts JOIN hts_lines h ON h.seq = hts_fts.rowid
-    WHERE hts_fts MATCH ? AND h.code <> '' AND h.general <> '' ORDER BY bm25(hts_fts) LIMIT ?`);
-  const hits = andThenOr(q.description, (expr) => search.all(expr, limit + 1) as Line[]);
+    SELECT ${COLS} FROM hts_fts JOIN hts_lines h ON h.seq = hts_fts.rowid
+    WHERE hts_fts MATCH ? AND h.code <> '' AND h.general <> '' AND (? IS NULL OR h.chapter = ?) ORDER BY bm25(hts_fts) LIMIT ?`);
+  const chapter = code?.slice(0, 2) ?? null;
+  const hits = andThenOr(q.description, (expr) => search.all(expr, chapter, chapter, limit + 1) as Line[]);
   for (const h of hits) {
     if (out.length >= limit) break;
     if (out.some((c) => c.code === h.code)) continue;
-    out.push({ code: h.code, description: h.description, rate: h.general, source: h.source, edition: ed, printed: false });
+    out.push({ code: h.code, description: described(db, h), rate: h.general, source: h.source, edition: ed, printed: false });
   }
   return out;
 }
