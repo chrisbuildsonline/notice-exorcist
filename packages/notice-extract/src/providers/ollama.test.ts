@@ -73,8 +73,9 @@ describe('ollama provider (OpenAI-compatible chat completions)', () => {
     expect(JSON.parse(stub.requests[0]!.body).stream).toBe(true);
   });
 
-  it("turns off Bun's own fetch timeout and keeps its own abort signal", async () => {
+  it("under Bun, turns off Bun's own fetch timeout and keeps its own abort signal", async () => {
     let init: (RequestInit & { timeout?: unknown }) | undefined;
+    vi.stubGlobal('Bun', {});
     const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (_u, i) => {
       init = i as typeof init;
       return new Response('data: {"choices":[{"delta":{"content":"{}"}}]}\n\ndata: [DONE]\n\n', {
@@ -86,6 +87,7 @@ describe('ollama provider (OpenAI-compatible chat completions)', () => {
       expect(await ollamaProvider({ baseUrl: 'http://127.0.0.1:1/v1', model: 'm', timeoutMs: 5000 }).complete(req)).toBe('{}');
     } finally {
       spy.mockRestore();
+      vi.unstubAllGlobals();
     }
     expect(init?.timeout).toBe(false);
     expect(init?.signal).toBeInstanceOf(AbortSignal);

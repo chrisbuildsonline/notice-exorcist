@@ -1,3 +1,5 @@
+import { Agent, fetch as undiciFetch, type RequestInit as UndiciInit } from 'undici';
+
 export type ImageMime = 'image/png' | 'image/jpeg';
 export type PageImage = { mime: ImageMime; bytes: Uint8Array };
 
@@ -40,15 +42,25 @@ const isTimeout = (e: unknown) => {
   return name === 'TimeoutError' || name === 'AbortError';
 };
 
+/** Under Node, undici's header and body limits (300 s each) are off, so a model queued behind another is not cut short. */
+export const nodeAgentOptions = { headersTimeout: 0, bodyTimeout: 0 } as const;
+let nodeAgent: Agent | undefined;
+
 /**
- * fetch with our own timeout, turning network failures into ProviderError.
- * `timeout: false` turns off Bun's built-in fetch limit (about 300 s), which would cut long inference short.
+ * Bun: `timeout: false` turns off its built-in fetch limit (about 300 s).
+ * Node: undici's own fetch through an Agent without limits (Node's global fetch may ignore a newer undici's dispatcher).
  */
+function send(url: string, init: RequestInit): Promise<Response> {
+  if ('Bun' in globalThis) return fetch(url, { ...init, timeout: false } as RequestInit);
+  nodeAgent ??= new Agent(nodeAgentOptions);
+  return undiciFetch(url, { ...init, dispatcher: nodeAgent } as UndiciInit) as unknown as Promise<Response>;
+}
+
+/** fetch with our own timeout, turning network failures into ProviderError. Our timeout is the only limit. */
 export async function fetchOrFail(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
   let res: Response;
   try {
-    const full: RequestInit & { timeout: false } = { ...init, signal: AbortSignal.timeout(timeoutMs), timeout: false };
-    res = await fetch(url, full);
+    res = await send(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
   } catch (e) {
     if (isTimeout(e)) throw new ProviderError('timeout', `${url} gave no reply within ${timeoutMs} ms`);
     throw new ProviderError('model_unreachable', `${init.method ?? 'GET'} ${url} failed: ${netErrorCode(e)}`);
