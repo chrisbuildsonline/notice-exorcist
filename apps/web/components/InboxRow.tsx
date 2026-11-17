@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ago } from '../lib/inbox';
 import type { NoticeView } from '../lib/notice-view';
 import { Figure } from './Figure';
@@ -30,12 +31,15 @@ export function InboxRow({ v }: { v: NoticeView }) {
   const status = v.assessment?.status ?? { kind: v.status === 'failed' ? ('failed' as const) : ('reading' as const) };
   return (
     // Phone: stacked (title, short line, then amount + pill + time). Desktop: one 72px row.
-    <li className="-mx-3 flex min-h-[72px] gap-3 rounded-sm px-3 py-3 transition-colors duration-120 hover:bg-surface-muted md:items-center md:gap-4">
+    <li className="relative -mx-3 flex min-h-[72px] gap-3 rounded-sm px-3 py-3 transition-colors duration-120 hover:bg-surface-muted md:items-center md:gap-4">
       <KindIcon kind={v.kind} />
       <div className="min-w-0 flex-1 md:flex md:items-center md:gap-5">
         <div className="min-w-0 md:flex-1">
+          {/* The whole row opens the notice; the figure's source tag stays its own button above the link. */}
           <p data-testid="row-title" className="line-clamp-2 text-body font-medium md:line-clamp-none md:truncate">
-            {v.title}
+            <Link href={`/notices/${v.id}`} className="rounded-sm after:absolute after:inset-0 after:rounded-sm after:content-['']">
+              {v.title}
+            </Link>
           </p>
           <p data-testid="row-summary" className="mt-0.5 truncate text-caption text-text-muted">
             {v.summary}

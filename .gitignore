@@ -21,3 +21,4 @@ packages/tariff-data/.cache/
 # local notice store (NOTICE_DATA_DIR default) and the e2e one
 .data/
 .e2e-data/
+.e2e-data-strict/

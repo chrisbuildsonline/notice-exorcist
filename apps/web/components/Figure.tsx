@@ -8,7 +8,7 @@ export type FigureProps = {
   prov: FigureProv;
   /** Where the figure came from: notice page and box, engine formula, or HTS edition. */
   source: string;
-  size?: 'display' | 'number';
+  size?: 'display' | 'lg' | 'number';
 };
 
 /** "$1,234.50" or "−$1,234.50": 2 decimals (half up), comma grouping, a true minus. */
@@ -23,7 +23,7 @@ function money(value: string): string {
   return `${sign}$${whole}.${(cents % 100n).toString().padStart(2, '0')}`;
 }
 
-const SIZE = { display: 'text-display', number: 'text-number' } as const;
+const SIZE = { display: 'text-display', lg: 'text-number-lg', number: 'text-number' } as const;
 
 /** The only place money is drawn. A figure without provenance is never shown. */
 export function Figure({ value, prov, source, size = 'number' }: FigureProps) {
