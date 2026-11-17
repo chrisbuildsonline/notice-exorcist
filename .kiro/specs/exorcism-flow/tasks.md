@@ -22,13 +22,13 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: `notice-api.test.ts` in fixture mode returns lines with states from the engine, a failure fixture returns a reason with no figures, and every figure has `prov`. Covers R2.3, R2.4, R4.2, R4.7.
 - [x] 10. Implement `POST /api/inbound`.
   - Test: `inbound.test.ts` covers 401 without or with a wrong secret (nothing stored), 404 unknown token, 422 with no valid attachment, 202 with notice ids, no outbound mail call (spy), and no body content in logs. Covers R3.1 to R3.7.
-- [ ] 11. Build the Inbox page, `InboxRow`, empty state, `Dropzone`, forward address with Copy, and `Try a specimen`.
+- [x] 11. Build the Inbox page, `InboxRow`, empty state, `Dropzone`, forward address with Copy, and `Try a specimen`.
   - Test: Playwright `inbox.spec.ts`: first screen shows the title and the single primary pill, the empty state has the headline, `Try a specimen` opens a notice with no key. A phone viewport test checks the sticky `Upload a notice` bar. Covers R1.1 to R1.7.
 - [ ] 12. Show the cloud-use notice when Bedrock is enabled.
   - Test: `bedrock-notice.test.tsx` renders the notice when `meta.provider === 'bedrock'` and not otherwise. Covers R2.5.
-- [ ] 13. Build the notice view: summary figures, paper with rows, side panel with explanation, HTS candidates and CROSS rulings with citations, `Confirm` flow for low-confidence fields.
+- [x] 13. Build the notice view: summary figures, paper with rows, side panel with explanation, HTS candidates and CROSS rulings with citations, `Confirm` flow for low-confidence fields.
   - Test: Playwright `notice-view.spec.ts` (disagreeing row shows stated and computed side by side, `Candidates, not a final classification` caption, low-confidence line must be confirmed before calculation). Covers R4.1, R4.7, R4.9, R4.10.
-- [ ] 14. Add the explanation-text figure check.
+- [x] 14. Add the explanation-text figure check.
   - Test: `explanation-guard.test.ts` keeps a sentence quoting a figure with provenance and drops one with an unknown number or an "approximately" value. Covers R4.11.
 - [ ] 15. Build `CalcDrawer` with focus trap, Esc, scrim close, focus return and the engine caption.
   - Test: Playwright `drawer.spec.ts` checks the formula and sources show, Esc closes, focus returns to the trigger, and the caption is present. Covers R5.1, R5.2, R5.6, R5.7.
