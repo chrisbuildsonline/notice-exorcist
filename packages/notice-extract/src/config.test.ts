@@ -11,6 +11,7 @@ describe('readConfig', () => {
       timeoutMs: 120000,
       maxPages: 5,
       live: 'auto',
+      log: false,
     });
   });
 
@@ -28,8 +29,10 @@ describe('readConfig', () => {
         EXTRACT_TIMEOUT_MS: '600000',
         EXTRACT_MAX_PAGES: '0',
         EXTRACT_LIVE: 'require',
+        EXTRACT_LOG: '1',
       }),
     ).toEqual({
+      log: true,
       provider: 'bedrock',
       mode: 'record',
       baseUrl: 'http://127.0.0.1:9999/v1',

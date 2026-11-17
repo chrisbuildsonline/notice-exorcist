@@ -16,6 +16,8 @@ const Env = z.object({
   EXTRACT_MAX_PAGES: intString(0).default(5),
   /** `require`: a live test fails instead of skipping when Ollama or Chromium is down. */
   EXTRACT_LIVE: z.enum(['auto', 'require']).default('auto'),
+  /** `1`: log one privacy-safe line per extraction (kind, hash, duration, code). */
+  EXTRACT_LOG: z.enum(['0', '1']).default('0'),
 });
 
 export type Config = {
@@ -26,6 +28,7 @@ export type Config = {
   timeoutMs: number;
   maxPages: number;
   live: 'auto' | 'require';
+  log: boolean;
 };
 
 /** Reads the EXTRACT_* env vars. Empty strings count as unset. Throws naming the bad variable. */
@@ -48,5 +51,6 @@ export function readConfig(env: Record<string, string | undefined> = process.env
     timeoutMs: e.EXTRACT_TIMEOUT_MS,
     maxPages: e.EXTRACT_MAX_PAGES,
     live: e.EXTRACT_LIVE,
+    log: e.EXTRACT_LOG === '1',
   };
 }

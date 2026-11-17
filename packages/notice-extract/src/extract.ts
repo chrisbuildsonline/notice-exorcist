@@ -3,6 +3,7 @@ import { DEFAULT_THRESHOLD, fieldsNeedingConfirmation, markNeedsConfirmation } f
 import { type Config, readConfig } from './config';
 import type { RasterResult } from './input/rasterize';
 import { type InputType, sniff } from './input/sniff';
+import { logEvent } from './logger';
 import { DEFAULT_FIXTURES_DIR, readFixture, recordFixture, sha256 } from './providers/fixture';
 import { buildPrompt, type PromptIssue, retryNote } from './prompt';
 import { bedrockProvider, type LoadBedrock } from './providers/bedrock';
@@ -117,6 +118,20 @@ const defaultRasterize: Rasterize = async (pdf, opts) => (await import('./input/
 
 /** Reads one notice (PNG, JPEG or PDF bytes) and returns schema-validated stated fields, or a typed failure. */
 export async function extractNotice(input: { bytes: Uint8Array }, deps: ExtractDeps = {}): Promise<ExtractResult> {
+  const t0 = Date.now();
+  const r = await extractInner(input, deps);
+  if ((deps.config ?? readConfig()).log) {
+    logEvent('extract', {
+      code: r.ok ? 'ok' : r.reason,
+      hash: r.ok ? r.meta.hash : r.hash,
+      durationMs: Date.now() - t0,
+      ...(r.ok ? { kind: r.meta.kind, provider: r.meta.provider } : {}),
+    });
+  }
+  return r;
+}
+
+async function extractInner(input: { bytes: Uint8Array }, deps: ExtractDeps): Promise<ExtractResult> {
   const hash = sha256(input.bytes);
   const fail = (reason: FailureReason, extra: Partial<ExtractFailure> = {}): ExtractFailure => ({ ok: false, reason, hash, ...extra });
   try {

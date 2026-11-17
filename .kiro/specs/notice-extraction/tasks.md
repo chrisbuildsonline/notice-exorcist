@@ -60,9 +60,9 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `fuzz.test.ts` asserts that `extractNotice` never throws, that every `ok: true` result has stated values deeply equal to those in the parsed response, and that each listed near-miss (numeric money, `3,240.00`, one-decimal money, confidence 1.2, missing key, extra key, wrong `kind`, `actionType` outside the enum, non-null value with confidence 0 where the form requires null) gives `ok: false`. Fixed seed in the file, at least 500 runs. Covers R14.1 to R14.5.
 - [x] 29. Implement `providers/bedrock.ts` with an injectable `loadClient` whose default is a dynamic `import()`, enabled only by `EXTRACT_PROVIDER=bedrock`. Add the AWS SDK Bedrock runtime client as an optional dependency and record the reason in the PR.
   - Test: `bedrock.test.ts` with a mock loader (no AWS SDK installed, no network): same prompt and schema as the local path, unset provider never calls the loader, and credentials never appear in thrown errors. Covers R7.1 to R7.6.
-- [ ] 30. Expose `meta.provider` so the UI can show the cloud-use notice when Bedrock is on.
+- [x] 30. Expose `meta.provider` so the UI can show the cloud-use notice when Bedrock is on.
   - Test: `meta.test.ts` checks `meta.provider` is `ollama`, `fixture` or `bedrock`. The UI assertion lives in the exorcism-flow Playwright test. Covers R7.7.
-- [ ] 31. Add the privacy-safe logger wrapper.
+- [x] 31. Add the privacy-safe logger wrapper.
   - Test: `logger.test.ts` runs a full extraction with a spy on console and asserts no notice value, response text or key appears in output. It also checks that the `LIVE SKIPPED:` line contains only the URL, model and error code. Covers R8.1, R8.2, R8.4.
-- [ ] 32. Add a stated-only guard: no code path in the package produces `computed` provenance.
+- [x] 32. Add a stated-only guard: no code path in the package produces `computed` provenance.
   - Test: `stated-only.test.ts` greps package sources for `'computed'` and fails on any hit outside tests. Covers R2.5, R3.3.
