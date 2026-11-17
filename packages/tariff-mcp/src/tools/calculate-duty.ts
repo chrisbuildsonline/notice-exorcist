@@ -1,6 +1,7 @@
-import { computeLineDuty, makeFig, parseRateText, type StatedProv } from '@notice-exorcist/duty-engine';
+import { computeLineDuty, makeFig, parseRateText, type StatedProv, type TariffProv } from '@notice-exorcist/duty-engine';
 import { z } from 'zod';
-import { figToJson, ok, parsedRateToJson, toolError } from '../result';
+import { figToJson, ok, parsedRateToJson } from '../result';
+import { lookupError, resolveRate } from './lookup-tariff';
 import { QUOTE_FIGURES, type Tool } from './tool';
 
 const STATED: StatedProv = { kind: 'stated', source: 'calculate_duty input' };
@@ -26,16 +27,37 @@ export const calculateDuty: Tool<typeof schema> = {
     'quantities are decimal strings. Returns the duty with a computed provenance tree, or status "unsupported" when the engine cannot ' +
     `compute the rate. ${QUOTE_FIGURES}`,
   schema,
-  handler: ({ enteredValue, rateText, quantity }) => {
-    if (rateText === undefined) return toolError('htsCode mode is not available yet');
-    const rate = parseRateText(rateText);
+  handler: ({ enteredValue, htsCode, rateText, quantity }) => {
+    // Rate source: the HTS line (same lookup and walk-up as lookup_tariff), or the text exactly as the caller stated it.
+    let text: string;
+    let rateProv: TariffProv | StatedProv = STATED;
+    let rateSource: Record<string, unknown> | undefined;
+    if (htsCode !== undefined) {
+      const found = resolveRate(htsCode);
+      if (found.status !== 'ok') return lookupError(found);
+      text = found.general;
+      rateProv = found.prov;
+      rateSource = { requestedCode: found.line.code, rateSourceCode: found.rateSourceCode, walkedUp: found.walkedUp };
+    } else {
+      text = rateText!;
+    }
+
+    const rate = parseRateText(text);
     const r = computeLineDuty({
       rate,
-      rateProv: STATED,
+      rateProv,
       enteredValue: makeFig(enteredValue, STATED, 'enteredValue'),
       ...(quantity && { quantity: { value: makeFig(quantity.value, STATED, 'quantity'), unit: quantity.unit } }),
     });
-    if (r.status !== 'ok') return ok({ status: 'unsupported', raw: r.raw, reason: r.reason ?? 'rate_not_supported' });
-    return ok({ status: 'ok', duty: figToJson(r.duty), unrounded: r.unrounded.toFixed(), formulaId: r.formulaId, rate: parsedRateToJson(rate) });
+    const source = rateSource && { rateSource };
+    if (r.status !== 'ok') return ok({ status: 'unsupported', raw: r.raw, reason: r.reason ?? 'rate_not_supported', ...source });
+    return ok({
+      status: 'ok',
+      duty: figToJson(r.duty),
+      unrounded: r.unrounded.toFixed(),
+      formulaId: r.formulaId,
+      rate: parsedRateToJson(rate),
+      ...source,
+    });
   },
 };
