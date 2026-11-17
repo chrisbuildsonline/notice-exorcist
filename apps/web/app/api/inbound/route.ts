@@ -1,6 +1,6 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { getDb } from '../../../lib/db';
-import { bodyTooBig, checkFile, fileNotice } from '../../../lib/intake';
+import { cappedRequest, checkFile, fileNotice } from '../../../lib/intake';
 import { type MailPart, parseEml } from '../../../lib/mime';
 
 export const dynamic = 'force-dynamic';
@@ -46,9 +46,10 @@ const knownToken = (to: string) => {
  * A forwarded email from the mail provider's webhook. Files one notice per valid attachment.
  * Never replies or sends mail, and never logs the subject, body or attachments.
  */
-export async function POST(req: Request) {
-  if (!authorized(req)) return Response.json({ error: 'unauthorized' }, { status: 401 });
-  if (bodyTooBig(req, MAX_ATTACHMENTS)) return Response.json({ error: 'too_large' }, { status: 413 });
+export async function POST(request: Request) {
+  if (!authorized(request)) return Response.json({ error: 'unauthorized' }, { status: 401 });
+  const req = await cappedRequest(request, MAX_ATTACHMENTS);
+  if (!req) return Response.json({ error: 'too_large' }, { status: 413 });
   let mail: Mail | null;
   try {
     mail = await readMail(req);

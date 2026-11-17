@@ -1,10 +1,11 @@
-import { bodyTooBig, checkFile, fileNotice, MAX_BYTES, TOO_BIG } from '../../../lib/intake';
+import { cappedRequest, checkFile, fileNotice, MAX_BYTES, TOO_BIG } from '../../../lib/intake';
 
 export const dynamic = 'force-dynamic';
 
 /** Upload one notice (field `file`): PDF, PNG or JPEG up to 10 MB. Nothing is stored on rejection. */
-export async function POST(req: Request) {
-  if (bodyTooBig(req)) return Response.json({ error: TOO_BIG }, { status: 413 });
+export async function POST(request: Request) {
+  const req = await cappedRequest(request);
+  if (!req) return Response.json({ error: TOO_BIG }, { status: 413 });
   let file: FormDataEntryValue | null = null;
   try {
     file = (await req.formData()).get('file');

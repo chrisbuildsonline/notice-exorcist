@@ -38,6 +38,8 @@ describe('POST /api/notices', () => {
     const res = await upload(big, 'big.pdf');
     expect(res.status).toBe(413);
     expect(((await res.json()) as { error: string }).error).toBe('That file is over 10 MB.');
+    // a body far past the cap is cut off while it streams in
+    expect((await upload(new Uint8Array(16 * 1024 * 1024), 'huge.pdf')).status).toBe(413);
     expect(noticeCount()).toBe(0);
     expect(storedFiles(dir)).toHaveLength(0);
   });

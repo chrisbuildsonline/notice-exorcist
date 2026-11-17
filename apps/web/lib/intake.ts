@@ -11,8 +11,26 @@ export type Source = 'upload' | 'email' | 'specimen';
 
 export const TOO_BIG = 'That file is over 10 MB.';
 
-/** Rejects a request body before parsing when its declared length is past the cap (plus room for an envelope). */
-export const bodyTooBig = (req: Request, files = 1) => Number(req.headers.get('content-length') ?? 0) > files * MAX_BYTES * 1.4 + 256 * 1024;
+/**
+ * Buffers the request body, stopping as soon as it passes the cap for `files` files (plus room for base64 and
+ * the envelope), whatever Content-Length claims. Returns a copy of the request to parse, or null when too big.
+ */
+export async function cappedRequest(req: Request, files = 1): Promise<Request | null> {
+  const limit = files * MAX_BYTES * 1.4 + 256 * 1024;
+  if (Number(req.headers.get('content-length') ?? 0) > limit) return null;
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  if (req.body) {
+    const reader = req.body.getReader();
+    for (let r = await reader.read(); !r.done; r = await reader.read()) {
+      size += r.value.byteLength;
+      // Stop reading; the rest is never buffered.
+      if (size > limit) return null;
+      chunks.push(r.value);
+    }
+  }
+  return new Request(req.url, { method: req.method, headers: req.headers, body: Buffer.concat(chunks) });
+}
 
 export type Checked = { ok: true; mime: string } | { ok: false; status: 413 | 415; error: string };
 
