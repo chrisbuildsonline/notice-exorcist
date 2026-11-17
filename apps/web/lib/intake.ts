@@ -9,11 +9,16 @@ const MIME = { pdf: 'application/pdf', png: 'image/png', jpeg: 'image/jpeg' } as
 
 export type Source = 'upload' | 'email' | 'specimen';
 
+export const TOO_BIG = 'That file is over 10 MB.';
+
+/** Rejects a request body before parsing when its declared length is past the cap (plus room for an envelope). */
+export const bodyTooBig = (req: Request, files = 1) => Number(req.headers.get('content-length') ?? 0) > files * MAX_BYTES * 1.4 + 256 * 1024;
+
 export type Checked = { ok: true; mime: string } | { ok: false; status: 413 | 415; error: string };
 
 /** Type by magic bytes (never the name or the client's content type), size up to 10 MB. */
 export function checkFile(bytes: Uint8Array): Checked {
-  if (bytes.byteLength > MAX_BYTES) return { ok: false, status: 413, error: 'That file is over 10 MB.' };
+  if (bytes.byteLength > MAX_BYTES) return { ok: false, status: 413, error: TOO_BIG };
   const type = sniff(bytes);
   if (!type) return { ok: false, status: 415, error: 'That file is not a PDF, PNG or JPEG.' };
   return { ok: true, mime: MIME[type] };

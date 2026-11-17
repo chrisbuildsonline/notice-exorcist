@@ -1,9 +1,10 @@
-import { checkFile, fileNotice } from '../../../lib/intake';
+import { bodyTooBig, checkFile, fileNotice, MAX_BYTES, TOO_BIG } from '../../../lib/intake';
 
 export const dynamic = 'force-dynamic';
 
 /** Upload one notice (field `file`): PDF, PNG or JPEG up to 10 MB. Nothing is stored on rejection. */
 export async function POST(req: Request) {
+  if (bodyTooBig(req)) return Response.json({ error: TOO_BIG }, { status: 413 });
   let file: FormDataEntryValue | null = null;
   try {
     file = (await req.formData()).get('file');
@@ -11,6 +12,7 @@ export async function POST(req: Request) {
     // not multipart: falls through to the 400 below
   }
   if (!(file instanceof File)) return Response.json({ error: 'Choose a file to upload.' }, { status: 400 });
+  if (file.size > MAX_BYTES) return Response.json({ error: TOO_BIG }, { status: 413 });
   const bytes = new Uint8Array(await file.arrayBuffer());
   const checked = checkFile(bytes);
   if (!checked.ok) return Response.json({ error: checked.error }, { status: checked.status });
