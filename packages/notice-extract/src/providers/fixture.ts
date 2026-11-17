@@ -1,11 +1,14 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
-/** packages/notice-extract/fixtures: recorded live replies, one file per input, named by the input's sha256. */
-export const DEFAULT_FIXTURES_DIR = fileURLToPath(new URL('../../fixtures', import.meta.url));
+/**
+ * packages/notice-extract/fixtures: recorded live replies, one file per input, named by the input's sha256.
+ * Built with join, not `new URL('../../fixtures', import.meta.url)`, which bundlers treat as an asset to resolve.
+ */
+export const DEFAULT_FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'fixtures');
 
 const Sha = z.string().regex(/^[0-9a-f]{64}$/);
 
