@@ -31,7 +31,8 @@ export type NoticeView = {
   assessment?: Assessment;
 };
 
-const last4 = (s: string | null) => (s ? `…${s.replace(/\D/g, '').slice(-4)}` : '');
+// "ending 5187", not "…5187": CSS truncation adds its own ellipsis.
+const last4 = (s: string | null) => (s ? `ending ${s.replace(/\D/g, '').slice(-4)}` : 'unknown');
 
 function summary(r: Extract<ExtractResult, { ok: true }>): string {
   const n = r.notice;

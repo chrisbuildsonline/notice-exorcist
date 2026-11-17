@@ -29,20 +29,24 @@ export function InboxRow({ v }: { v: NoticeView }) {
   const stake = v.assessment?.atStake;
   const status = v.assessment?.status ?? { kind: v.status === 'failed' ? ('failed' as const) : ('reading' as const) };
   return (
-    <li className="-mx-3 flex min-h-[72px] items-center gap-3 rounded-sm px-3 py-3 transition-colors duration-120 hover:bg-surface-muted md:gap-4">
+    // Phone: stacked (title, short line, then amount + pill + time). Desktop: one 72px row.
+    <li className="-mx-3 flex min-h-[72px] gap-3 rounded-sm px-3 py-3 transition-colors duration-120 hover:bg-surface-muted md:items-center md:gap-4">
       <KindIcon kind={v.kind} />
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-body font-medium">{v.title}</p>
-        <p className="mt-0.5 line-clamp-2 text-caption text-text-muted md:truncate">
-          {v.summary}
-          <span className="md:hidden"> · {time}</span>
-        </p>
+      <div className="min-w-0 flex-1 md:flex md:items-center md:gap-5">
+        <div className="min-w-0 md:flex-1">
+          <p data-testid="row-title" className="line-clamp-2 text-body font-medium md:line-clamp-none md:truncate">
+            {v.title}
+          </p>
+          <p data-testid="row-summary" className="mt-0.5 truncate text-caption text-text-muted">
+            {v.summary}
+          </p>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 md:mt-0 md:shrink-0 md:flex-nowrap md:gap-5">
+          {stake ? <Figure value={stake.value} prov={stake.prov} source={stake.source} /> : <span className="text-number num text-text-muted">—</span>}
+          <StatusPill notice={status} />
+          <span className="ml-auto whitespace-nowrap text-caption text-text-muted md:ml-0 md:w-16 md:text-right">{time}</span>
+        </div>
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-1.5 md:flex-row md:items-center md:gap-5">
-        {stake ? <Figure value={stake.value} prov={stake.prov} source={stake.source} /> : <span className="text-number num text-text-muted">—</span>}
-        <StatusPill notice={status} />
-      </div>
-      <span className="hidden w-16 shrink-0 text-right text-caption text-text-muted md:block">{time}</span>
     </li>
   );
 }

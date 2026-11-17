@@ -137,6 +137,18 @@ for (const [name, vp] of [['desktop', desktop], ['phone', phone]] as const) {
     if (name === 'phone') {
       await expect(page.getByTestId('thumb-bar').getByRole('button', { name: 'Upload a notice' })).toBeInViewport();
       expect(await overflowing(page)).toEqual([]);
+      // stacked rows: full titles (wrapping, never cut), and a short line with no ellipsis of its own
+      const rows = await page.getByRole('listitem').evaluateAll((lis) =>
+        lis.map((li) => {
+          const t = li.querySelector<HTMLElement>('[data-testid=row-title]')!;
+          const s = li.querySelector<HTMLElement>('[data-testid=row-summary]')!;
+          return { title: t.textContent, cut: t.scrollWidth > t.clientWidth || t.scrollHeight > t.clientHeight, summary: s.textContent };
+        }),
+      );
+      for (const r of rows) {
+        expect(r.cut, r.title ?? '').toBe(false);
+        expect(r.summary).not.toContain('…');
+      }
     }
     await shot(page, `inbox-notices-${name}`);
     expect(errors).toEqual([]);
