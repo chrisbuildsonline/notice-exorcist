@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readConfig } from '../src/config';
 import { type ExtractResult, extractNotice } from '../src/extract';
+import type { GuardRecord } from '../src/honesty';
 import { compareToSpecimen, type FieldResult, groupPath } from '../src/map/compare';
 import { sha256 } from '../src/providers/fixture';
 import type { Notice } from '../src/schema/notice';
@@ -41,6 +42,8 @@ export type InputResult = {
   total: number;
   rate: number;
   needsConfirmation: number;
+  /** What the honesty guard cleared or flagged, without the model's value. */
+  guards: Omit<GuardRecord, 'modelValue'>[];
   wrong: Omit<FieldResult, 'match'>[];
 };
 
@@ -84,6 +87,7 @@ export async function runEval(opts: {
       total: fields.length,
       rate: pct(matched, fields.length),
       needsConfirmation: r.ok ? r.needsConfirmation.length : 0,
+      guards: r.ok ? r.honesty.map(({ rule, path, action }) => ({ rule, path, action })) : [],
       wrong: fields.filter((f) => !f.match).map(({ match: _m, ...rest }) => rest),
     });
   }
@@ -135,6 +139,14 @@ export function renderMarkdown(r: EvalResult): string {
     '| Field | Matched | Rate |',
     '|---|---|---|',
     ...Object.entries(r.perField).map(([p, g]) => `| \`${p}\` | ${g.matched} / ${g.total} | ${g.rate}% |`),
+    '',
+    '## Guard records',
+    '',
+    'What the honesty guard cleared or flagged before the comparison. The figures above are for the guarded notice.',
+    '',
+    '| Input | Rule | Field | Action |',
+    '|---|---|---|---|',
+    ...r.inputs.flatMap((i) => i.guards.map((g) => `| ${i.file} | ${g.rule} | \`${g.path}\` | ${g.action} |`)),
     '',
     '## Wrong fields',
     '',

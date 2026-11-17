@@ -6,7 +6,8 @@ import { markNeedsConfirmation } from '../src/confidence';
 import type { ExtractResult } from '../src/extract';
 import { Notice } from '../src/schema/notice';
 import { loadTruth, wrapTruth } from '../src/test/wrap';
-import { runEval, writeResults } from './run-eval';
+import type { GuardRecord } from '../src/honesty';
+import { evalAcceptance, renderMarkdown, runEval, writeResults } from './run-eval';
 
 const truth29 = loadTruth('specimen-2-form29');
 const truth28 = loadTruth('specimen-1-form28');
@@ -19,7 +20,8 @@ function stubExtract(name: string): ExtractResult {
   n.lines[0].hts.confidence = 0.5;
   n.entryNumber.value = 'ZZ9-0423518-1';
   const notice = markNeedsConfirmation(n as Notice);
-  return { ok: true, notice, needsConfirmation: [], honesty: [], meta: { kind: 'cbp_form_29', hash: 'a'.repeat(64), provider: 'ollama', model: 'm' } };
+  const honesty: GuardRecord[] = [{ rule: 'form29_total_repeats_fee', path: 'statedTotals[2].stated', action: 'flagged', modelValue: '44.50' }];
+  return { ok: true, notice, needsConfirmation: [], honesty, meta: { kind: 'cbp_form_29', hash: 'a'.repeat(64), provider: 'ollama', model: 'm' } };
 }
 
 const inputs = [
@@ -64,5 +66,29 @@ describe('eval', async () => {
     expect(md).toContain('lines[].hts');
     expect(r.inputs[0]!.sha256).toMatch(/^[0-9a-f]{64}$/);
     expect(md).toContain(r.inputs[0]!.sha256);
+  });
+
+  it('writes the guard records per input, with rule, path and action but no model value', () => {
+    expect(r.inputs[0]!.guards).toEqual([{ rule: 'form29_total_repeats_fee', path: 'statedTotals[2].stated', action: 'flagged' }]);
+    expect(r.inputs[1]!.guards).toEqual([]);
+    expect(JSON.stringify(r)).not.toContain('modelValue');
+    const md = renderMarkdown(r);
+    expect(md).toContain('## Guard records');
+    expect(md).toContain('| a.png | form29_total_repeats_fee | `statedTotals[2].stated` | flagged |');
+  });
+});
+
+describe('eval over the recorded fixtures', async () => {
+  const r = await evalAcceptance('fixture');
+  const form28 = r.inputs.find((i) => i.kind === 'cbp_form_28')!;
+
+  it('compares the guarded notice: no Form 28 line duty is left among the wrong fields', () => {
+    expect(form28.wrong.filter((w) => w.path.endsWith('.dutyStated'))).toEqual([]);
+    expect(form28.guards.length).toBeGreaterThan(0);
+    expect(form28.guards.every((g) => g.rule === 'form28_no_line_duty' && g.action === 'cleared')).toBe(true);
+  });
+
+  it('every wrong field that a guard flagged is reported as flagged', () => {
+    for (const i of r.inputs) for (const w of i.wrong) if (i.guards.some((g) => g.action === 'flagged' && g.path === w.path)) expect(w.flagged, `${i.file} ${w.path}`).toBe(true);
   });
 });

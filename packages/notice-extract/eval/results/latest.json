@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T08:35:30.201Z",
+  "generatedAt": "2026-11-17T08:36:44.068Z",
   "model": "qwen2.5vl:7b",
   "threshold": 0.8,
   "inputs": [
@@ -14,6 +14,18 @@
       "total": 40,
       "rate": 100,
       "needsConfirmation": 1,
+      "guards": [
+        {
+          "rule": "form28_no_line_duty",
+          "path": "lines[0].dutyStated",
+          "action": "cleared"
+        },
+        {
+          "rule": "form28_no_line_duty",
+          "path": "lines[1].dutyStated",
+          "action": "cleared"
+        }
+      ],
       "wrong": []
     },
     {
@@ -27,6 +39,18 @@
       "total": 52,
       "rate": 96.2,
       "needsConfirmation": 2,
+      "guards": [
+        {
+          "rule": "form29_total_repeats_fee",
+          "path": "statedTotals[2].name",
+          "action": "flagged"
+        },
+        {
+          "rule": "form29_total_repeats_fee",
+          "path": "statedTotals[2].stated",
+          "action": "flagged"
+        }
+      ],
       "wrong": [
         {
           "path": "statedTotals[2].name",
@@ -53,6 +77,18 @@
       "total": 47,
       "rate": 93.6,
       "needsConfirmation": 4,
+      "guards": [
+        {
+          "rule": "courier_importer_is_courier",
+          "path": "importer.name",
+          "action": "flagged"
+        },
+        {
+          "rule": "courier_importer_is_courier",
+          "path": "importer.address",
+          "action": "flagged"
+        }
+      ],
       "wrong": [
         {
           "path": "importer.address",
@@ -88,6 +124,18 @@
       "total": 52,
       "rate": 96.2,
       "needsConfirmation": 2,
+      "guards": [
+        {
+          "rule": "form29_total_repeats_fee",
+          "path": "statedTotals[2].name",
+          "action": "flagged"
+        },
+        {
+          "rule": "form29_total_repeats_fee",
+          "path": "statedTotals[2].stated",
+          "action": "flagged"
+        }
+      ],
       "wrong": [
         {
           "path": "statedTotals[2].name",
@@ -114,6 +162,18 @@
       "total": 52,
       "rate": 96.2,
       "needsConfirmation": 2,
+      "guards": [
+        {
+          "rule": "form29_total_repeats_fee",
+          "path": "statedTotals[2].name",
+          "action": "flagged"
+        },
+        {
+          "rule": "form29_total_repeats_fee",
+          "path": "statedTotals[2].stated",
+          "action": "flagged"
+        }
+      ],
       "wrong": [
         {
           "path": "statedTotals[2].name",
