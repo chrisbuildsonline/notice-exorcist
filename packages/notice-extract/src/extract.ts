@@ -1,8 +1,9 @@
-import { createHash } from 'node:crypto';
 import type { z } from 'zod';
 import { DEFAULT_THRESHOLD, fieldsNeedingConfirmation, markNeedsConfirmation } from './confidence';
 import { type Config, readConfig } from './config';
-import { sniff } from './input/sniff';
+import type { RasterResult } from './input/rasterize';
+import { type InputType, sniff } from './input/sniff';
+import { DEFAULT_FIXTURES_DIR, readFixture, recordFixture, sha256 } from './providers/fixture';
 import { buildPrompt, type PromptIssue, retryNote } from './prompt';
 import { bedrockProvider, type LoadBedrock } from './providers/bedrock';
 import { ollamaProvider } from './providers/ollama';
@@ -52,9 +53,13 @@ export type ExtractDeps = {
   threshold?: number;
   /** Loader of the AWS SDK, used only when EXTRACT_PROVIDER=bedrock (tests pass a mock). */
   loadBedrock?: LoadBedrock;
+  /** PDF rasterizer; loaded lazily so fixture mode never loads Playwright. */
+  rasterize?: Rasterize;
+  fixturesDir?: string;
+  now?: () => Date;
 };
 
-const sha256 = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
+type Rasterize = (pdf: Uint8Array, opts: { maxPages: number }) => Promise<RasterResult>;
 
 type Validated = { ok: true; notice: Notice } | { ok: false; reason: 'not_json' | 'schema_invalid' | 'unrecognized_document'; issues?: z.core.$ZodIssue[] };
 
@@ -97,14 +102,18 @@ function defaultProvider(config: Config, deps: ExtractDeps): Provider {
   return ollamaProvider(config);
 }
 
-async function pageImages(bytes: Uint8Array): Promise<PageImage[] | { reason: FailureReason }> {
-  const type = sniff(bytes);
+/** PNG and JPEG go as they are; a PDF is rasterized to one PNG per page. Nothing is cropped or enhanced. */
+async function pageImages(bytes: Uint8Array, type: InputType, maxPages: number, raster: Rasterize): Promise<PageImage[] | { reason: FailureReason }> {
   if (type === 'png') return [{ mime: 'image/png', bytes }];
   if (type === 'jpeg') return [{ mime: 'image/jpeg', bytes }];
-  return { reason: 'unsupported_input' };
+  const r = await raster(bytes, { maxPages });
+  if (!r.ok) return { reason: r.reason };
+  return r.pages.map((p) => ({ mime: 'image/png' as const, bytes: p }));
 }
 
 const NOT_JSON_ISSUE: PromptIssue = { path: [], message: 'the reply was not a JSON object' };
+
+const defaultRasterize: Rasterize = async (pdf, opts) => (await import('./input/rasterize')).rasterize(pdf, opts);
 
 /** Reads one notice (PNG, JPEG or PDF bytes) and returns schema-validated stated fields, or a typed failure. */
 export async function extractNotice(input: { bytes: Uint8Array }, deps: ExtractDeps = {}): Promise<ExtractResult> {
@@ -112,17 +121,36 @@ export async function extractNotice(input: { bytes: Uint8Array }, deps: ExtractD
   const fail = (reason: FailureReason, extra: Partial<ExtractFailure> = {}): ExtractFailure => ({ ok: false, reason, hash, ...extra });
   try {
     const config = deps.config ?? readConfig();
-    const images = await pageImages(input.bytes);
-    if (!Array.isArray(images)) return fail(images.reason);
+    const fixturesDir = deps.fixturesDir ?? DEFAULT_FIXTURES_DIR;
+    const type = sniff(input.bytes);
+    if (!type) return fail('unsupported_input');
 
-    const provider = deps.provider ?? defaultProvider(config, deps);
-    const prompt = buildPrompt();
-    let raw = await provider.complete({ ...prompt, images });
-    let v = validateResponse(raw);
-    if (!v.ok && v.reason !== 'unrecognized_document') {
-      const note = retryNote(v.reason === 'not_json' ? [NOT_JSON_ISSUE] : (v.issues ?? []));
-      raw = await provider.complete({ system: prompt.system, user: prompt.user + note, images });
+    let raw: string;
+    let v: Validated;
+    let source: { name: ProviderName; model: string };
+    if (config.mode === 'fixture') {
+      // Keyed by the hash of the original bytes: no browser, no network, no retry.
+      const fixture = await readFixture(fixturesDir, hash);
+      if (!fixture) return fail('no_fixture');
+      raw = fixture.raw;
       v = validateResponse(raw);
+      source = { name: 'fixture', model: fixture.model };
+    } else {
+      const images = await pageImages(input.bytes, type, config.maxPages, deps.rasterize ?? defaultRasterize);
+      if (!Array.isArray(images)) return fail(images.reason);
+      const provider = deps.provider ?? defaultProvider(config, deps);
+      source = { name: provider.name, model: provider.model };
+      const prompt = buildPrompt();
+      raw = await provider.complete({ ...prompt, images });
+      v = validateResponse(raw);
+      if (!v.ok && v.reason !== 'unrecognized_document') {
+        const note = retryNote(v.reason === 'not_json' ? [NOT_JSON_ISSUE] : (v.issues ?? []));
+        raw = await provider.complete({ system: prompt.system, user: prompt.user + note, images });
+        v = validateResponse(raw);
+      }
+      if (config.mode === 'record' && provider.name !== 'fixture') {
+        await recordFixture(fixturesDir, { inputSha256: hash, raw, provider: provider.name, model: provider.model, recordedAt: (deps.now ?? (() => new Date()))() });
+      }
     }
     if (!v.ok) return fail(v.reason, { raw, ...(v.issues ? { issues: v.issues } : {}) });
 
@@ -131,7 +159,7 @@ export async function extractNotice(input: { bytes: Uint8Array }, deps: ExtractD
       ok: true,
       notice,
       needsConfirmation: fieldsNeedingConfirmation(notice),
-      meta: { kind: notice.kind, hash, provider: provider.name, model: provider.model },
+      meta: { kind: notice.kind, hash, provider: source.name, model: source.model },
     };
   } catch (e) {
     if (e instanceof ProviderError) return fail(e.code, { detail: e.detail });
