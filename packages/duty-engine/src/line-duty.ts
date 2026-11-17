@@ -1,11 +1,11 @@
 import { D, roundCents, type Decimal } from './decimal';
-import { assertFig, assertProv, type Fig, type TariffProv } from './provenance';
+import { assertFig, assertProv, type Fig, type StatedProv, type TariffProv } from './provenance';
 import type { ParsedRate, Specific } from './rate-text';
 
 export type LineInput = {
   rate: ParsedRate;
-  /** Where the rate text came from (HTS line and edition). */
-  rateProv: TariffProv;
+  /** Where the rate text came from: an HTS line and edition, or a caller who stated the rate text (no HTS line). */
+  rateProv: TariffProv | StatedProv;
   enteredValue: Fig;
   /** Needed for specific and compound rates. `unit` must equal the rate's `per` exactly; no conversion. */
   quantity?: { value: Fig; unit: string };

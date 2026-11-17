@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { computeLineDuty } from './line-duty';
-import { makeFig, MissingProvenanceError, type Prov, type TariffProv } from './provenance';
+import { makeFig, MissingProvenanceError, type Prov, type StatedProv, type TariffProv } from './provenance';
 import { parseRateText } from './rate-text';
 
 const stated: Prov = { kind: 'stated', source: 'CBP Form 7501 p1 line 001 box 32' };
@@ -37,6 +37,18 @@ describe('computeLineDuty: ad valorem', () => {
     if (c.status !== 'ok') throw new Error('expected ok');
     expect(c.unrounded.toString()).toBe('0.005');
     expect(c.duty.value.toFixed(2)).toBe('0.01');
+  });
+});
+
+describe('computeLineDuty: stated rate', () => {
+  it('accepts rate text a caller stated (no HTS line) and keeps that provenance on the rate input', () => {
+    // same figures as above: 996.92 x 6.5 / 100 = 64.7998 -> 64.80
+    const statedRate: StatedProv = { kind: 'stated', source: 'calculate_duty input' };
+    const r = computeLineDuty({ rate: parseRateText('6.5%'), rateProv: statedRate, enteredValue: makeFig('996.92', stated) });
+    expect(r.status).toBe('ok');
+    if (r.status !== 'ok' || r.duty.prov.kind !== 'computed') throw new Error('expected ok');
+    expect(r.duty.value.toFixed(2)).toBe('64.80');
+    expect(r.duty.prov.inputs.percent?.prov).toEqual(statedRate);
   });
 });
 

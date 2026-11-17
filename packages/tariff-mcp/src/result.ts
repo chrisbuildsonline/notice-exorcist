@@ -1,7 +1,23 @@
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import type { AdValorem, ParsedRate, Specific } from '@notice-exorcist/duty-engine';
+import type { AdValorem, Fig, ParsedRate, Prov, Specific } from '@notice-exorcist/duty-engine';
 
 type Data = Record<string, unknown>;
+
+/** Provenance as JSON. Computed provenance recurses into its inputs, each with its own provenance. */
+export function provToJson(prov: Prov): Data {
+  if (prov.kind !== 'computed') return { ...prov };
+  const inputs = Object.fromEntries(Object.entries(prov.inputs).map(([k, f]) => [k, figToJson(f)]));
+  return { ...prov, inputs };
+}
+
+/**
+ * A figure as JSON: the value as a decimal string plus its provenance tree. A value the engine rounded to cents is
+ * written with both cent digits ("64.80", "0.00"); the value is already rounded, so this only pads, it never rounds.
+ */
+export function figToJson(fig: Fig): Data {
+  const cents = fig.prov.kind === 'computed' && fig.prov.rounding === 'half-up-cents-once';
+  return { value: cents ? fig.value.toFixed(2) : fig.value.toFixed(), prov: provToJson(fig.prov) };
+}
 
 const specificToJson = (s: Specific) => ({ kind: s.kind, raw: s.raw, amount: s.amount.toFixed(), currencyUnit: s.currencyUnit, per: s.per });
 const adValoremToJson = (a: AdValorem) => ({ kind: a.kind, raw: a.raw, percent: a.percent.toFixed() });
