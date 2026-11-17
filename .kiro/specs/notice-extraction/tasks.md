@@ -91,7 +91,7 @@ Tests first (33 to 37), then implementation (38 to 40), then re-run of fixture a
   - Test: `bun run --cwd packages/notice-extract test` passes, including `results.test.ts` (fixture mode equals `latest.json`) and `fixtures.test.ts`. The recorded Form 28 shows no `dutyStated` value in `latest.json` wrong fields. Any wrong field that remains is listed as is. Covers R15.6.3, R15.6.5, R9.6.
 - [x] 42. Copy the new "Measured accuracy" sentence from `RESULTS.md` into the repo README: overall rate and counts, per-notice range, flagged share of wrong fields. Do not carry over the old figures (232 of 243, 93.6% to 96.2%, 9.1%) unless the new `RESULTS.md` contains them.
   - Test: `readme.test.ts` passes: every percentage in the sentence equals a value in `latest.json`, and no placeholder remains. Covers R15.6.4, R9.4.
-- [ ] 43. Re-run the live acceptance test if Ollama is available: `bun run --cwd packages/notice-extract test:live`.
+- [x] 43. Re-run the live acceptance test if Ollama is available: `bun run --cwd packages/notice-extract test:live`.
   - Test: the five inputs give `ok: true` with schema-valid JSON and the expected `kind`. With Ollama down, the run prints `LIVE SKIPPED: ...` and the task records that the check did not run, rather than passing it. Covers R11.5, R12.2.
 - [x] 44. Run the full checks from the repo root and confirm the Form 28 invariant against the committed files.
   - Test: `bun run test` and `bun run typecheck` pass. A grep of `eval/results/latest.json` and `RESULTS.md` shows no Form 28 `lines[n].dutyStated` in the wrong-field list, and the README accuracy numbers match `RESULTS.md`. `bun run e2e` runs only if a UI file changed in tasks 38 to 40. Covers R15.6.1 to R15.6.4.
