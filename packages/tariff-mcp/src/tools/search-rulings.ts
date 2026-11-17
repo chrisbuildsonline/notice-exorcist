@@ -1,6 +1,13 @@
+import { normalizeHts, rulingsByHtsPrefix, type RulingHit, type RulingRef, searchRulings as searchIndex } from '@notice-exorcist/tariff-data';
 import { z } from 'zod';
-import { toolError } from '../result';
+import { getDb } from '../context';
+import { ok, toolError } from '../result';
 import { QUOTE_FIGURES, type Tool } from './tool';
+
+export const NOTICE = 'Candidate rulings for review. Not a classification and not legal advice.';
+
+/** Rulings fetched by query before filtering by prefix, so the filter still leaves up to `limit`. */
+const OVERFETCH = 50;
 
 const schema = z
   .object({
@@ -16,5 +23,22 @@ export const searchRulings: Tool<typeof schema> = {
     'Search the local snapshot of CBP CROSS rulings by text, by cited HTS code prefix, or both. Results are candidate citations to review, ' +
     `not a classification and not legal advice. ${QUOTE_FIGURES}`,
   schema,
-  handler: () => toolError('search_rulings is not implemented yet'),
+  handler: ({ query, htsPrefix, limit }) => {
+    const prefix = htsPrefix ? normalizeHts(htsPrefix) : null;
+    if (htsPrefix && prefix === null) {
+      return toolError(`invalid_code: ${htsPrefix} is not an HTS prefix (4, 6, 8 or 10 digits, dots optional)`, { status: 'invalid_code', code: htsPrefix });
+    }
+    const db = getDb();
+    let rulings: (RulingHit | RulingRef)[];
+    if (query && prefix) {
+      rulings = searchIndex(db, query, { heading: prefix.slice(0, 4), limit: OVERFETCH })
+        .filter((r) => r.htsCodes.some((c) => c.startsWith(prefix)))
+        .slice(0, limit);
+    } else if (query) {
+      rulings = searchIndex(db, query, { limit });
+    } else {
+      rulings = rulingsByHtsPrefix(db, prefix!, { limit });
+    }
+    return ok({ notice: NOTICE, count: rulings.length, rulings });
+  },
 };
