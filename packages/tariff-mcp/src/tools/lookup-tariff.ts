@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { getDb } from '../context';
 import { toolError } from '../result';
 import { QUOTE_FIGURES, type Tool } from './tool';
 
@@ -13,5 +14,8 @@ export const lookupTariff: Tool<typeof schema> = {
     'with tariff provenance (source, HTS code, edition). A 10-digit statistical line with an empty General column takes the rate of its ' +
     `8-digit parent (walkedUp: true). Rate text is not parsed. ${QUOTE_FIGURES}`,
   schema,
-  handler: () => toolError('lookup_tariff is not implemented yet'),
+  handler: () => {
+    getDb();
+    return toolError('lookup_tariff is not implemented yet');
+  },
 };
