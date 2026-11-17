@@ -17,7 +17,8 @@ export const tariffIndexPath = () => process.env.TARIFF_INDEX_PATH || join(repoR
 
 /** The index, or null when it has not been built (`bun run data:build` in packages/tariff-data). */
 export function openTariff(path = tariffIndexPath()): DatabaseSync | null {
-  if (!existsSync(path)) return null;
+  // a runtime path: Turbopack must not try to trace the index into the build
+  if (!existsSync(/* turbopackIgnore: true */ path)) return null;
   return new DatabaseSync(path, { readOnly: true });
 }
 
