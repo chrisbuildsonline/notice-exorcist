@@ -3,5 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "exports": "./src/index.ts"
+  "exports": "./src/index.ts",
+  "scripts": {
+    "start": "bun src/server.ts",
+    "test": "bun test .bun.test.ts",
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@notice-exorcist/duty-engine": "workspace:*",
+    "@notice-exorcist/tariff-data": "workspace:*",
+    "zod": "^4.6.7"
+  }
 }
