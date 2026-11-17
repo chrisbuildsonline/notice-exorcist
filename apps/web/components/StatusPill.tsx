@@ -33,8 +33,15 @@ function noticeLook(s: PillStatus): Look {
 }
 
 /** Status is never colour alone: every pill has an icon and a word. Status hues only, never the accent. */
-export function StatusPill(props: { notice: PillStatus } | { line: LineState }) {
-  const look = 'line' in props ? LINE[props.line] : noticeLook(props.notice);
+export function StatusPill(props: { notice: PillStatus } | { line: LineState } | { match: boolean }) {
+  const look =
+    'line' in props
+      ? LINE[props.line]
+      : 'match' in props
+        ? props.match
+          ? { icon: '✓', word: 'Match', cls: CALM }
+          : { icon: '!', word: 'Mismatch', cls: HAUNT }
+        : noticeLook(props.notice);
   return (
     <span className={`inline-flex h-6 shrink-0 items-center gap-1 rounded-full px-2.5 text-[12px] leading-4 font-semibold whitespace-nowrap ${look.cls}`}>
       <span aria-hidden="true">{look.icon}</span>

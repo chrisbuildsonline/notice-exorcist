@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { AssessedLine } from '../lib/assess';
 import { explainLine } from '../lib/explain';
 import type { HtsCandidate, RulingRef } from '../lib/tariff';
+import { CalcDrawer, type HtsRef } from './CalcDrawer';
 import { ConfirmForm } from './ConfirmForm';
 import { Figure } from './Figure';
 import { StatusPill } from './StatusPill';
@@ -10,6 +11,13 @@ const Label = ({ children }: { children: string }) => <p className="text-label u
 
 /** "Line 1 · Cotton towels" -> "Line 1" for the heading; the description goes underneath. */
 const heading = (l: AssessedLine) => l.label.split(' · ')[0] ?? l.label;
+
+/** The printed code's HTS line, for the edition the drawer cites. */
+function htsRef(l: AssessedLine, tariff: { candidates: HtsCandidate[] } | null): HtsRef | 'not-built' | 'not-found' {
+  if (!tariff) return 'not-built';
+  const c = tariff.candidates.find((x) => x.printed);
+  return c ? { code: c.code, rate: c.rate, edition: c.edition } : 'not-found';
+}
 
 /** The selected line: what it means, its figures, the confirm form, HTS candidates and CROSS rulings with citations. */
 export function LinePanel(props: {
@@ -62,6 +70,17 @@ export function LinePanel(props: {
             </div>
           ) : null}
         </dl>
+        {l.calc ? (
+          <CalcDrawer
+            className="mt-3"
+            title={l.label.startsWith('Line ') ? `How ${heading(l).toLowerCase()} was computed` : `How the ${l.label} was computed`}
+            subtitle={l.description}
+            calc={l.calc}
+            stated={l.stated}
+            difference={l.difference}
+            hts={l.calc.formulaId.startsWith('line.') ? htsRef(l, tariff) : undefined}
+          />
+        ) : null}
       </section>
 
       {l.confirm.length ? (

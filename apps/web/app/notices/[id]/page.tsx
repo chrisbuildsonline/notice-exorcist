@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { CalcDrawer } from '../../../components/CalcDrawer';
 import { ConfirmForm } from '../../../components/ConfirmForm';
 import { Figure } from '../../../components/Figure';
 import { GhostGlyph } from '../../../components/GhostGlyph';
@@ -22,11 +23,12 @@ const PILL = 'items-center justify-center gap-2 rounded-full px-6 text-body font
 const date = (iso: string | null) =>
   iso ? new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : null;
 
-function Tile(props: { id: string; label: string; fig: FigureJson | null; empty: ReactNode }) {
+function Tile(props: { id: string; label: string; fig: FigureJson | null; empty: ReactNode; extra?: ReactNode }) {
   return (
     <div data-testid={props.id} className="min-w-0 py-4 first:pt-0 last:pb-0 md:px-6 md:py-0 md:first:pl-0 md:last:pr-0">
       <p className="text-label uppercase text-text-muted">{props.label}</p>
       <div className="mt-2 min-h-10">{props.fig ? <Figure {...props.fig} size="lg" /> : props.empty}</div>
+      {props.extra}
     </div>
   );
 }
@@ -141,6 +143,11 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
                 id="recomputed"
                 label="Recomputed"
                 fig={t?.computedTotal ?? null}
+                extra={
+                  t?.calc ? (
+                    <CalcDrawer title="How the total was recomputed" subtitle={t.name} calc={t.calc} stated={t.statedTotal} difference={t.difference} className="mt-1" />
+                  ) : null
+                }
                 empty={
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="text-number-lg num text-text-muted">—</span>
