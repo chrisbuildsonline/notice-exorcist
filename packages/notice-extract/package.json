@@ -8,6 +8,7 @@
     "test": "vitest run --root ../.. packages/notice-extract --exclude 'packages/notice-extract/src/live/**'",
     "ollama:start": "systemctl --user start ollama",
     "eval:fixture": "EXTRACT_MODE=fixture bun run eval/run-eval.ts --mode fixture",
+    "eval:results": "EXTRACT_MODE=fixture bun run eval/run-eval.ts --mode fixture --write",
     "eval:live": "bun run ollama:start && bun run src/live/wait.ts && EXTRACT_LIVE=require EXTRACT_MODE=record EXTRACT_TIMEOUT_MS=900000 bun run eval/run-eval.ts --mode live",
     "test:live": "bun run ollama:start && bun run src/live/wait.ts && EXTRACT_LIVE=require EXTRACT_TIMEOUT_MS=900000 vitest run src/live"
   },

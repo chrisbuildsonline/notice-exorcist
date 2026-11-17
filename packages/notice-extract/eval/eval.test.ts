@@ -19,7 +19,7 @@ function stubExtract(name: string): ExtractResult {
   n.lines[0].hts.confidence = 0.5;
   n.entryNumber.value = 'ZZ9-0423518-1';
   const notice = markNeedsConfirmation(n as Notice);
-  return { ok: true, notice, needsConfirmation: [], meta: { kind: 'cbp_form_29', hash: 'a'.repeat(64), provider: 'ollama', model: 'm' } };
+  return { ok: true, notice, needsConfirmation: [], honesty: [], meta: { kind: 'cbp_form_29', hash: 'a'.repeat(64), provider: 'ollama', model: 'm' } };
 }
 
 const inputs = [

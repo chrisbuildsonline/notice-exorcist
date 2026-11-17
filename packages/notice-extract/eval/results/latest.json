@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T07:54:54.486Z",
+  "generatedAt": "2026-11-17T08:35:30.201Z",
   "model": "qwen2.5vl:7b",
   "threshold": 0.8,
   "inputs": [
@@ -10,26 +10,11 @@
       "ok": true,
       "schemaValid": true,
       "kind": "cbp_form_28",
-      "matched": 38,
+      "matched": 40,
       "total": 40,
-      "rate": 95,
+      "rate": 100,
       "needsConfirmation": 1,
-      "wrong": [
-        {
-          "path": "lines[1].dutyStated",
-          "expected": null,
-          "actual": "210.60",
-          "confidence": 0.95,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].dutyStated",
-          "expected": null,
-          "actual": "171.75",
-          "confidence": 0.95,
-          "flagged": false
-        }
-      ]
+      "wrong": []
     },
     {
       "file": "specimen-2-form29.pdf",
@@ -41,19 +26,19 @@
       "matched": 50,
       "total": 52,
       "rate": 96.2,
-      "needsConfirmation": 0,
+      "needsConfirmation": 2,
       "wrong": [
         {
           "path": "statedTotals[2].name",
           "actual": "Merchandise Processing Fee",
           "confidence": 0.95,
-          "flagged": false
+          "flagged": true
         },
         {
           "path": "statedTotals[2].stated",
           "actual": "44.50",
           "confidence": 0.95,
-          "flagged": false
+          "flagged": true
         }
       ]
     },
@@ -67,21 +52,21 @@
       "matched": 44,
       "total": 47,
       "rate": 93.6,
-      "needsConfirmation": 2,
+      "needsConfirmation": 4,
       "wrong": [
         {
           "path": "importer.address",
           "expected": "9 Wrenfield Court, Portland, OR 97214",
           "actual": "Customs brokerage desk",
           "confidence": 0.95,
-          "flagged": false
+          "flagged": true
         },
         {
           "path": "importer.name",
           "expected": "Marigold Thimble Studio",
           "actual": "Tumbleweed Air Parcel",
           "confidence": 0.95,
-          "flagged": false
+          "flagged": true
         },
         {
           "path": "noticeType",
@@ -102,19 +87,19 @@
       "matched": 50,
       "total": 52,
       "rate": 96.2,
-      "needsConfirmation": 0,
+      "needsConfirmation": 2,
       "wrong": [
         {
           "path": "statedTotals[2].name",
           "actual": "Merchandise Processing Fee",
           "confidence": 0.95,
-          "flagged": false
+          "flagged": true
         },
         {
           "path": "statedTotals[2].stated",
           "actual": "44.50",
           "confidence": 0.95,
-          "flagged": false
+          "flagged": true
         }
       ]
     },
@@ -128,27 +113,27 @@
       "matched": 50,
       "total": 52,
       "rate": 96.2,
-      "needsConfirmation": 0,
+      "needsConfirmation": 2,
       "wrong": [
         {
           "path": "statedTotals[2].name",
           "actual": "Merchandise Processing Fee",
           "confidence": 0.95,
-          "flagged": false
+          "flagged": true
         },
         {
           "path": "statedTotals[2].stated",
           "actual": "44.50",
           "confidence": 0.95,
-          "flagged": false
+          "flagged": true
         }
       ]
     }
   ],
   "overall": {
-    "matched": 232,
+    "matched": 234,
     "total": 243,
-    "rate": 95.5
+    "rate": 96.3
   },
   "perField": {
     "actionType": {
@@ -237,9 +222,9 @@
       "rate": 100
     },
     "lines[].dutyStated": {
-      "matched": 16,
+      "matched": 18,
       "total": 18,
-      "rate": 88.9
+      "rate": 100
     },
     "lines[].hts": {
       "matched": 18,
@@ -293,8 +278,8 @@
     }
   },
   "flaggedWrong": {
-    "flagged": 1,
-    "wrong": 11,
-    "rate": 9.1
+    "flagged": 9,
+    "wrong": 9,
+    "rate": 100
   }
 }

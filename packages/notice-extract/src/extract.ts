@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import { DEFAULT_THRESHOLD, fieldsNeedingConfirmation, markNeedsConfirmation } from './confidence';
 import { type Config, readConfig } from './config';
+import { applyHonesty, type GuardRecord, type GuardRule } from './honesty';
 import type { RasterResult } from './input/rasterize';
 import { type InputType, sniff } from './input/sniff';
 import { logEvent } from './logger';
@@ -30,6 +31,8 @@ export type ExtractOk = {
   notice: Notice;
   /** Paths the user must confirm or correct before any value is used in a calculation. */
   needsConfirmation: string[];
+  /** What the honesty guard cleared or flagged. `modelValue` is for the UI and the eval only, never logged. */
+  honesty: GuardRecord[];
   meta: ExtractMeta;
 };
 
@@ -125,11 +128,17 @@ export async function extractNotice(input: { bytes: Uint8Array }, deps: ExtractD
       code: r.ok ? 'ok' : r.reason,
       hash: r.ok ? r.meta.hash : r.hash,
       durationMs: Date.now() - t0,
-      ...(r.ok ? { kind: r.meta.kind, provider: r.meta.provider } : {}),
+      ...(r.ok ? { kind: r.meta.kind, provider: r.meta.provider, guards: countByRule(r.honesty) } : {}),
     });
   }
   return r;
 }
+
+const countByRule = (records: GuardRecord[]) => {
+  const out: Partial<Record<GuardRule, number>> = {};
+  for (const r of records) out[r.rule] = (out[r.rule] ?? 0) + 1;
+  return out;
+};
 
 async function extractInner(input: { bytes: Uint8Array }, deps: ExtractDeps): Promise<ExtractResult> {
   const hash = sha256(input.bytes);
@@ -169,11 +178,12 @@ async function extractInner(input: { bytes: Uint8Array }, deps: ExtractDeps): Pr
     }
     if (!v.ok) return fail(v.reason, { raw, ...(v.issues ? { issues: v.issues } : {}) });
 
-    const notice = markNeedsConfirmation(v.notice, deps.threshold ?? DEFAULT_THRESHOLD);
+    const { notice, records } = applyHonesty(markNeedsConfirmation(v.notice, deps.threshold ?? DEFAULT_THRESHOLD));
     return {
       ok: true,
       notice,
       needsConfirmation: fieldsNeedingConfirmation(notice),
+      honesty: records,
       meta: { kind: notice.kind, hash, provider: source.name, model: source.model },
     };
   } catch (e) {

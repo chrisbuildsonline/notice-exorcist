@@ -4,6 +4,7 @@ import { readConfig } from './config';
 import { extractNotice } from './extract';
 import { Notice } from './schema/notice';
 import { form29ModelReply, specimenBytes, stubProvider } from './test/stub-provider';
+import { loadTruth, wrapTruthAsModel } from './test/wrap';
 
 const png = specimenBytes('specimen-2-form29.png');
 const config = readConfig({});
@@ -102,6 +103,57 @@ describe('extractNotice', () => {
     if (!r.ok) return;
     expect(r.notice.lines[0]?.dutyStated.needs_confirmation).toBe(true);
     expect(r.needsConfirmation).toEqual(['lines[0].dutyStated']);
+  });
+
+  describe('honesty guard', () => {
+    const stated = (value: string) => ({ value, confidence: 0.95, page: 1 });
+    const reply = (id: string) => wrapTruthAsModel(loadTruth(id)) as Record<string, any>;
+    const runOk = async (r: Record<string, any>) => {
+      const res = await run([JSON.stringify(r)]).result;
+      if (!res.ok) throw new Error(`expected ok, got ${res.reason}`);
+      return res;
+    };
+
+    it('a clean reply of each kind carries an empty honesty list', async () => {
+      for (const id of ['specimen-1-form28', 'specimen-2-form29', 'specimen-3-courier']) {
+        expect((await runOk(reply(id))).honesty).toEqual([]);
+      }
+    });
+
+    it('Form 28: a line duty is cleared and recorded, and the cleared path is not left for confirmation', async () => {
+      const r = reply('specimen-1-form28');
+      r.lines[1].dutyStated = stated('210.60');
+      const res = await runOk(r);
+      expect(res.notice.lines[1]?.dutyStated.value).toBeNull();
+      expect(res.honesty).toEqual([{ rule: 'form28_no_line_duty', path: 'lines[1].dutyStated', action: 'cleared', modelValue: '210.60' }]);
+    });
+
+    it('Form 29: a total repeating a fee is flagged and both paths are in needsConfirmation', async () => {
+      const r = reply('specimen-2-form29');
+      r.statedTotals.push({ name: stated('Merchandise Processing Fee'), stated: stated('44.50') });
+      const res = await runOk(r);
+      expect(res.honesty.map((h) => h.path)).toEqual(['statedTotals[2].name', 'statedTotals[2].stated']);
+      expect(res.needsConfirmation).toEqual(['statedTotals[2].name', 'statedTotals[2].stated']);
+    });
+
+    it('courier: the courier read as importer is flagged and both paths are in needsConfirmation', async () => {
+      const r = reply('specimen-3-courier');
+      r.importer.name = stated('Tumbleweed Air Parcel');
+      const res = await runOk(r);
+      expect(res.honesty.map((h) => [h.rule, h.path, h.action])).toEqual([
+        ['courier_importer_is_courier', 'importer.name', 'flagged'],
+        ['courier_importer_is_courier', 'importer.address', 'flagged'],
+      ]);
+      for (const h of res.honesty) expect(res.needsConfirmation).toContain(h.path);
+    });
+
+    it('runs in fixture mode too: a recorded Form 28 comes back with no line duty', async () => {
+      const res = await extractNotice({ bytes: specimenBytes('specimen-1-form28.pdf') }, { config: { ...config, mode: 'fixture' } });
+      expect(res.ok).toBe(true);
+      if (!res.ok) return;
+      expect(res.notice.lines.map((l) => l.dutyStated.value)).toEqual([null, null, null]);
+      expect(res.honesty.filter((h) => h.action === 'cleared').length).toBeGreaterThan(0);
+    });
   });
 
   it('unsupported input never reaches the provider', async () => {

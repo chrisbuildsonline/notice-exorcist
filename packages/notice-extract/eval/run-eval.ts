@@ -188,8 +188,8 @@ export async function evalAcceptance(mode: 'live' | 'fixture', log: (s: string) 
 if ((import.meta as { main?: boolean }).main) {
   const mode = process.argv.includes('fixture') ? 'fixture' : 'live';
   const r = await evalAcceptance(mode, (s) => process.stdout.write(`${s}\n`));
-  // Only the live run writes the committed results; the offline replay goes to a temp dir for comparison.
-  const out = mode === 'live' ? RESULTS_DIR : mkdtempSync(join(tmpdir(), 'notice-eval-fixture-'));
+  // The live run, or a replay with --write (eval:results), writes the committed results; a plain replay goes to a temp dir.
+  const out = mode === 'live' || process.argv.includes('--write') ? RESULTS_DIR : mkdtempSync(join(tmpdir(), 'notice-eval-fixture-'));
   writeResults(out, r);
   process.stdout.write(`wrote ${out}\n`);
   process.stdout.write(`overall ${r.overall.rate}% (${r.overall.matched}/${r.overall.total}), flagged wrong ${r.flaggedWrong.rate}%\n`);

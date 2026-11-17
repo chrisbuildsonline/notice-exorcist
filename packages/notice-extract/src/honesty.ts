@@ -1,6 +1,7 @@
 import type { Notice } from './schema/notice';
 
-export type GuardRule = 'form28_no_line_duty' | 'courier_importer_is_courier' | 'form29_total_repeats_fee';
+export const GUARD_RULES = ['form28_no_line_duty', 'courier_importer_is_courier', 'form29_total_repeats_fee'] as const;
+export type GuardRule = (typeof GUARD_RULES)[number];
 export type GuardRecord = { rule: GuardRule; path: string; action: 'cleared' | 'flagged'; modelValue?: string | null };
 
 /** Trimmed, case-folded string equality. Used only to compare; nothing folded is written back. */

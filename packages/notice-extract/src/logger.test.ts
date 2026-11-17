@@ -37,6 +37,23 @@ describe('privacy-safe logging', () => {
     }
   });
 
+  it('a run with a cleared duty logs the guard rule and count, never the path or the model value', async () => {
+    const out = await captureOutput(() =>
+      extractNotice({ bytes: specimenBytes('specimen-1-form28.pdf') }, { config: { ...readConfig({ EXTRACT_LOG: '1' }), mode: 'fixture' } }),
+    );
+    expect(out).toContain('"guards":{"form28_no_line_duty":2}');
+    for (const secret of ['210.60', '171.75', 'lines[', 'dutyStated', 'modelValue', 'cleared']) expect(out).not.toContain(secret);
+  });
+
+  it('the logger keeps only guard counts under known rule names', async () => {
+    const out = await captureOutput(async () =>
+      logEvent('extract', { code: 'ok', guards: { form28_no_line_duty: 1, 'lines[0].dutyStated': 3, courier_importer_is_courier: '210.60' } } as never),
+    );
+    expect(out).toContain('"guards":{"form28_no_line_duty":1}');
+    expect(out).not.toContain('lines[0]');
+    expect(out).not.toContain('210.60');
+  });
+
   it('logs nothing unless EXTRACT_LOG=1', async () => {
     const out = await captureOutput(() =>
       extractNotice({ bytes: specimenBytes('specimen-2-form29.png') }, { config: readConfig({}), provider: stubProvider([JSON.stringify(form29ModelReply())]) }),

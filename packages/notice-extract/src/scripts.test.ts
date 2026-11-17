@@ -29,6 +29,10 @@ describe('package scripts', () => {
     expect(s['eval:fixture']).not.toContain('ollama');
   });
 
+  it('eval:results replays the fixtures offline and lets the eval script write the committed results', () => {
+    expect(s['eval:results']).toBe('EXTRACT_MODE=fixture bun run eval/run-eval.ts --mode fixture --write');
+  });
+
   it('the default test scripts leave src/live out and never start Ollama', () => {
     expect(s.test).not.toContain('ollama');
     const rootConfig = readFileSync(join(REPO_ROOT, 'vitest.config.ts'), 'utf8');

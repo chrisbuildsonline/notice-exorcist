@@ -4,6 +4,7 @@ import { readConfig } from './config';
 import { extractNotice } from './extract';
 import { isStatedLeaf } from './map/toSpecimen';
 import { form29ModelReply, stubProvider } from './test/stub-provider';
+import { loadTruth, wrapTruthAsModel } from './test/wrap';
 
 /** Fixed seed: a failure prints its seed and path, and the same run replays. */
 const SEED = 20261117;
@@ -16,15 +17,19 @@ const config = readConfig({});
 /** The stub returns the same text on the retry, so the result is about that text alone. */
 const extract = (text: string) => extractNotice({ bytes: png }, { config, provider: stubProvider([text]) });
 
-/** Every stated value in the result equals the value at the same path in the parsed reply. */
-function valuesUntouched(notice: unknown, parsed: unknown, path = ''): void {
+/**
+ * Every stated value in the result equals the value at the same path in the parsed reply, except a path
+ * the honesty guard lists as cleared, which must be null.
+ */
+function valuesUntouched(notice: unknown, parsed: unknown, cleared: Set<string>, path = ''): void {
   if (isStatedLeaf(notice)) {
-    expect((parsed as { value: unknown }).value, path).toStrictEqual(notice.value);
+    if (cleared.has(path)) expect(notice.value, path).toBeNull();
+    else expect((parsed as { value: unknown }).value, path).toStrictEqual(notice.value);
     return;
   }
-  if (Array.isArray(notice)) return notice.forEach((x, i) => valuesUntouched(x, (parsed as unknown[])[i], `${path}[${i}]`));
+  if (Array.isArray(notice)) return notice.forEach((x, i) => valuesUntouched(x, (parsed as unknown[])[i], cleared, `${path}[${i}]`));
   if (notice !== null && typeof notice === 'object') {
-    for (const [k, x] of Object.entries(notice)) valuesUntouched(x, (parsed as Record<string, unknown>)[k], `${path}.${k}`);
+    for (const [k, x] of Object.entries(notice)) valuesUntouched(x, (parsed as Record<string, unknown>)[k], cleared, path ? `${path}.${k}` : k);
     return;
   }
   expect(parsed, path).toStrictEqual(notice);
@@ -32,7 +37,7 @@ function valuesUntouched(notice: unknown, parsed: unknown, path = ''): void {
 
 async function checkText(text: string) {
   const r = await extract(text);
-  if (r.ok) valuesUntouched(r.notice, JSON.parse(text));
+  if (r.ok) valuesUntouched(r.notice, JSON.parse(text), new Set(r.honesty.filter((h) => h.action === 'cleared').map((h) => h.path)));
   return r;
 }
 
@@ -62,6 +67,19 @@ const NEAR_MISSES: Record<string, Mutation> = {
 describe('fuzz: no throw, no coercion', () => {
   it('the unmutated reply is ok (sanity)', async () => {
     expect((await checkText(JSON.stringify(form29ModelReply()))).ok).toBe(true);
+  });
+
+  it('a Form 28 reply with line duties differs from the reply only at the cleared paths', async () => {
+    const n = wrapTruthAsModel(loadTruth('specimen-1-form28')) as Record<string, any>;
+    await fc.assert(
+      fc.asyncProperty(fc.array(fc.option(fc.constantFrom('210.60', '171.75', '0.00')), { minLength: 3, maxLength: 3 }), async (duties) => {
+        const reply = structuredClone(n);
+        reply.lines.forEach((l: any, i: number) => (l.dutyStated.value = duties[i % duties.length]));
+        const r = await checkText(JSON.stringify(reply));
+        expect(r.ok && r.honesty.length).toBe(duties.slice(0, reply.lines.length).filter((d) => d !== null).length);
+      }),
+      { ...params, numRuns: 50 },
+    );
   });
 
   it.each(Object.entries(NEAR_MISSES))('near miss "%s" gives ok: false', async (_name, mutate) => {

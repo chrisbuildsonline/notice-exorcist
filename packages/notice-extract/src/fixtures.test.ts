@@ -38,3 +38,49 @@ describe('recorded fixtures', () => {
     expect(r.ok ? 'ok' : r.reason).toBe('ok');
   });
 });
+
+describe('recorded fixtures replayed through the honesty guard', () => {
+  const replay = async (file: string) => {
+    const input = inputs.find((i) => i.file === file)!;
+    const path = join(DEFAULT_FIXTURES_DIR, `${input.sha}.json`);
+    const before = readFileSync(path, 'utf8');
+    const r = await extractNotice({ bytes: input.bytes }, { config: { ...readConfig({}), mode: 'fixture' } });
+    const after = readFileSync(path, 'utf8');
+    expect(after).toBe(before);
+    const f = Fixture.parse(JSON.parse(after));
+    expect(f.responseSha256).toBe(sha256(f.raw));
+    if (!r.ok) throw new Error(`expected ok, got ${r.reason}`);
+    return { r, raw: JSON.parse(f.raw) as Record<string, any> };
+  };
+
+  it('Form 28: the recorded raw keeps the model duties, the replay clears every one and names each line', async () => {
+    const { r, raw } = await replay('specimen-1-form28.pdf');
+    const recorded = raw.lines.map((l: any) => l.dutyStated.value);
+    expect(recorded.filter((v: unknown) => v !== null).length).toBeGreaterThan(0);
+    if (r.notice.kind !== 'cbp_form_28') throw new Error(r.notice.kind);
+    expect(r.notice.lines.map((l) => l.dutyStated.value)).toEqual(recorded.map(() => null));
+    expect(r.honesty).toEqual(
+      recorded.flatMap((v: string | null, i: number) =>
+        v === null ? [] : [{ rule: 'form28_no_line_duty', path: `lines[${i}].dutyStated`, action: 'cleared', modelValue: v }],
+      ),
+    );
+  });
+
+  it.each(['specimen-2-form29.pdf', 'specimen-2-form29.png', 'specimen-2-form29.photo.jpg'])(
+    '%s: the repeated MPF total is kept as recorded and left for confirmation',
+    async (file) => {
+      const { r, raw } = await replay(file);
+      expect(raw.statedTotals[2].name.value).toBe('Merchandise Processing Fee');
+      expect(raw.statedTotals[2].stated.value).toBe('44.50');
+      expect(r.notice.statedTotals[2]?.stated.value).toBe('44.50');
+      expect(r.needsConfirmation).toEqual(expect.arrayContaining(['statedTotals[2].name', 'statedTotals[2].stated']));
+    },
+  );
+
+  it('courier: the importer read as the courier is kept as recorded and left for confirmation', async () => {
+    const { r, raw } = await replay('specimen-3-courier.pdf');
+    expect(raw.importer.name.value).toBe('Tumbleweed Air Parcel');
+    expect(r.notice.importer.name.value).toBe('Tumbleweed Air Parcel');
+    expect(r.needsConfirmation).toEqual(expect.arrayContaining(['importer.address', 'importer.name']));
+  });
+});
