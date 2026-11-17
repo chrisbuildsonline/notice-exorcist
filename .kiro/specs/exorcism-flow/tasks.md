@@ -30,7 +30,7 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: Playwright `notice-view.spec.ts` (disagreeing row shows stated and computed side by side, `Candidates, not a final classification` caption, low-confidence line must be confirmed before calculation). Covers R4.1, R4.7, R4.9, R4.10.
 - [x] 14. Add the explanation-text figure check.
   - Test: `explanation-guard.test.ts` keeps a sentence quoting a figure with provenance and drops one with an unknown number or an "approximately" value. Covers R4.11.
-- [ ] 15. Build `CalcDrawer` with focus trap, Esc, scrim close, focus return and the engine caption.
+- [x] 15. Build `CalcDrawer` with focus trap, Esc, scrim close, focus return and the engine caption.
   - Test: Playwright `drawer.spec.ts` checks the formula and sources show, Esc closes, focus returns to the trigger, and the caption is present. Covers R5.1, R5.2, R5.6, R5.7.
 - [ ] 16. Implement `hash.ts` (`canonicalDraft`, `draftHash`).
   - Test: `hash.test.ts` same content gives the same hash regardless of key order, any paragraph or citation change gives a different hash, a golden value is fixed. Covers R7.2.
