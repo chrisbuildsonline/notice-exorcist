@@ -60,6 +60,13 @@ CREATE TABLE IF NOT EXISTS inbox_tokens (
   token TEXT PRIMARY KEY,
   user_id TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS confirmations (
+  notice_id TEXT NOT NULL REFERENCES notices(id),
+  path TEXT NOT NULL,
+  value TEXT NOT NULL,
+  confirmed_at TEXT NOT NULL,
+  PRIMARY KEY (notice_id, path)
+);
 CREATE VIRTUAL TABLE IF NOT EXISTS rulings USING fts5(number, date, hts, text);
 `;
 

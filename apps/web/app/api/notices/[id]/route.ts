@@ -1,3 +1,4 @@
+import { confirmationsFor } from '../../../../lib/confirm';
 import { getNotice } from '../../../../lib/intake';
 import { noticeView } from '../../../../lib/notice-view';
 import { sourced } from '../../../../lib/provenance-guard';
@@ -8,5 +9,5 @@ export const dynamic = 'force-dynamic';
 export const GET = sourced(async (_req: Request, ctx: { params: Promise<{ id: string }> }) => {
   const row = getNotice((await ctx.params).id);
   if (!row) return Response.json({ error: 'not_found' }, { status: 404 });
-  return Response.json(noticeView(row));
+  return Response.json(noticeView(row, confirmationsFor(row.id)));
 });

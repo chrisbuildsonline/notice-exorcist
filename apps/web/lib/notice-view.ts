@@ -1,5 +1,6 @@
 import type { ExtractResult, FailureReason } from '@notice-exorcist/notice-extract';
 import { type Assessment, assess } from './assess';
+import { applyConfirmations, type Confirmation } from './confirm';
 import type { NoticeRow } from './intake';
 
 const FAILURES: Record<FailureReason, string> = {
@@ -28,6 +29,8 @@ export type NoticeView = {
   title: string;
   summary: string;
   failure?: { reason: FailureReason; message: string };
+  /** As printed on the notice (stated fields, not money). */
+  header?: { entryNumber: string | null; noticeDate: string | null; respondBy: string | null };
   assessment?: Assessment;
 };
 
@@ -42,11 +45,17 @@ function summary(r: Extract<ExtractResult, { ok: true }>): string {
   return `${n.courier.name.value ?? 'Courier'} · duty and fees, ${lines}`;
 }
 
-/** What the API and the inbox show for a stored notice. A failed reading carries a reason and no figures. */
-export function noticeView(row: NoticeRow): NoticeView {
+/**
+ * What the API and the inbox show for a stored notice. A failed reading carries a reason and no figures.
+ * Values the user confirmed are applied before the engine checks anything.
+ */
+export function noticeView(row: NoticeRow, confirmations: Confirmation[] = []): NoticeView {
   const base = { id: row.id, status: row.status, kind: row.kind, source: row.source, createdAt: row.created_at };
   if (row.status === 'reading' || !row.extracted_json) return { ...base, title: row.filename, summary: 'Reading the notice…' };
-  const r = JSON.parse(row.extracted_json) as ExtractResult;
-  if (!r.ok) return { ...base, title: row.filename, summary: FAILURES[r.reason], failure: { reason: r.reason, message: FAILURES[r.reason] } };
-  return { ...base, title: TITLES[r.notice.kind] ?? r.notice.kind, summary: summary(r), assessment: assess(r) };
+  const read = JSON.parse(row.extracted_json) as ExtractResult;
+  if (!read.ok) return { ...base, title: row.filename, summary: FAILURES[read.reason], failure: { reason: read.reason, message: FAILURES[read.reason] } };
+  const r = { ...read, notice: applyConfirmations(read.notice, confirmations) };
+  const n = r.notice;
+  const header = { entryNumber: n.entryNumber.value, noticeDate: n.dates.notice.value, respondBy: n.dates.responseDeadline.value };
+  return { ...base, title: TITLES[n.kind] ?? n.kind, summary: summary(r), header, assessment: assess(r) };
 }

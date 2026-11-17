@@ -4,6 +4,7 @@ import { Figure } from '../components/Figure';
 import { GhostGlyph } from '../components/GhostGlyph';
 import { InboxRow } from '../components/InboxRow';
 import { SpecimenCard } from '../components/SpecimenCard';
+import { confirmationsFor } from '../lib/confirm';
 import { inboxToken } from '../lib/db';
 import { inboxCaption, specimenPreview, totalAtStake } from '../lib/inbox';
 import { listNotices } from '../lib/intake';
@@ -35,7 +36,7 @@ function TrySpecimen({ className, children }: { className: string; children: str
 }
 
 export default async function InboxPage() {
-  const views = listNotices().map(noticeView);
+  const views = listNotices().map((row) => noticeView(row, confirmationsFor(row.id)));
   const empty = views.length === 0;
   const total = totalAtStake(views);
   const preview = empty ? await specimenPreview() : null;
