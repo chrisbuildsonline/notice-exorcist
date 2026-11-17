@@ -19,6 +19,8 @@
       "name": "@notice-exorcist/web",
       "version": "0.0.0",
       "dependencies": {
+        "@notice-exorcist/duty-engine": "workspace:*",
+        "@notice-exorcist/notice-extract": "workspace:*",
         "geist": "^1.9.2",
         "next": "^16.4.6",
         "react": "^19.3.1",
@@ -74,7 +76,7 @@
       "name": "@notice-exorcist/tariff-mcp",
       "version": "0.0.0",
       "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.32.2",
+        "@modelcontextprotocol/sdk": "1.32.2",
         "@notice-exorcist/duty-engine": "workspace:*",
         "@notice-exorcist/tariff-data": "workspace:*",
         "zod": "^4.6.7",
