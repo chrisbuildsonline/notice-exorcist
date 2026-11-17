@@ -39,17 +39,28 @@ export function Figure({ value, prov, source, size = 'number' }: FigureProps) {
       </span>
     );
   }
+  // Hover (pointer devices) or keyboard focus shows the source in a tooltip; a tap or click opens the popover.
   return (
-    <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+    <span className="group/fig inline-flex items-baseline gap-1.5 whitespace-nowrap">
       <span className={`${SIZE[size]} num`}>{money(value)}</span>
-      <button
-        type="button"
-        popoverTarget={id}
-        className="relative rounded-xs bg-surface-muted px-1.5 text-[11px] leading-4 font-semibold text-text-secondary before:absolute before:-inset-3 before:content-['']"
-        aria-label={`${prov}: ${source}`}
-      >
-        {prov}
-      </button>
+      <span className="relative inline-flex">
+        <button
+          type="button"
+          popoverTarget={id}
+          className="relative rounded-xs bg-surface-muted px-1.5 text-[11px] leading-4 font-semibold text-text-secondary before:absolute before:-inset-3 before:content-['']"
+          aria-label={`${prov}: ${source}`}
+          aria-describedby={`${id}-tip`}
+        >
+          {prov}
+        </button>
+        <span
+          role="tooltip"
+          id={`${id}-tip`}
+          className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 hidden w-max max-w-64 -translate-x-1/2 rounded-sm bg-surface px-3 py-2 text-left text-caption whitespace-normal text-text-secondary shadow-overlay group-hover/fig:block group-has-[:focus-visible]/fig:block"
+        >
+          {prov} · {source}
+        </span>
+      </span>
       <span id={id} popover="auto" className="m-auto max-w-xs rounded-md bg-surface p-4 text-caption text-text-secondary shadow-overlay">
         <span className="text-label uppercase text-text-muted">Source</span>
         <br />
