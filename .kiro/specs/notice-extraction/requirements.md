@@ -114,3 +114,52 @@ Package: `packages/notice-extract`. Reads a scan, photo, PNG, JPG or PDF of a CB
 3. IF the result is `ok: true`, THEN every stated `value` in the result SHALL be deeply equal to the corresponding value in the parsed model response. No value may be coerced, defaulted, trimmed or reformatted.
 4. IF the response breaks the schema, THEN THE result SHALL be `ok: false`.
 5. THE test SHALL run with a fixed seed recorded in the test, plus a failing-seed log from fast-check.
+
+### R15. Extraction honesty (follow-up from the live eval)
+Source: `packages/notice-extract/eval/results/RESULTS.md` (generated 2026-11-17, qwen2.5vl:7b, 232 of 243 fields exact, 1 of 11 wrong fields flagged). Of the 11 wrong fields, 10 were read with confidence 0.95 and not flagged, and all 10 break a rule that the document kind itself fixes:
+- `specimen-1-form28.pdf`: `lines[1].dutyStated` read as `"210.60"` and `lines[2].dutyStated` as `"171.75"`. A Form 28 prints no line duties, so the truth is `null`.
+- `specimen-3-courier.pdf`: `importer.name` read as `"Tumbleweed Air Parcel"` (the courier's name) and `importer.address` as `"Customs brokerage desk"`.
+- `specimen-2-form29.pdf`, `.png` and `.photo.jpg`: an extra `statedTotals[2]` row, `"Merchandise Processing Fee"` / `"44.50"`, which repeats the MPF line already in `fees`.
+
+The package SHALL catch these cases by a document-kind guard that runs after schema validation. The guard is a rule check on strings and nothing else. It does no arithmetic and never asks the model again.
+
+#### Terms
+- **Honesty guard**: the post-validation step in `src/honesty.ts` that applies the rules below. It is separate from `markNeedsConfirmation` (R2.3, confidence) and from the grep test in `stated-only.test.ts` (R2.5, no `computed` provenance). It has no file named `stated-only.ts`; no such source file exists.
+- **Guard record**: `{ rule, path, action, modelValue? }` with `rule` one of `form28_no_line_duty`, `courier_importer_is_courier`, `form29_total_repeats_fee`, and `action` one of `cleared`, `flagged`. `modelValue` is the value the model returned, kept in memory only for the UI and the eval.
+
+#### Acceptance criteria
+1. Form 28 line duties.
+   1. WHEN the notice kind is `cbp_form_28` AND any `lines[].dutyStated.value` is not `null`, THE honesty guard SHALL set that `value` to `null` and SHALL add a guard record with `rule: 'form28_no_line_duty'`, `action: 'cleared'`, the field path (for example `lines[1].dutyStated`) and the model's value as `modelValue`.
+   2. THE guard SHALL NOT clear or alter any other field of a Form 28, and SHALL NOT change `confidence`, `page` or `box` of the cleared field.
+   3. THE guard SHALL NOT apply this rule to `cbp_form_29` or `courier_duty_invoice`, where `dutyStated` is printed.
+   4. THE cleared value SHALL NOT be accepted silently: every clear SHALL appear in `honesty` on the `ok: true` result (R15.5).
+2. Courier importer versus courier.
+   1. WHEN the notice kind is `courier_duty_invoice` AND `importer.name.value` equals `courier.name.value` after trimming and case-folding, THE guard SHALL set `needs_confirmation: true` on `importer.name` and `importer.address` and add a guard record per field with `rule: 'courier_importer_is_courier'`, `action: 'flagged'`.
+   2. THE courier schema has no courier address field (`courier` has `name`, `invoiceNumber`, `waybill`), and R1.5 forbids adding one. THE address rule SHALL therefore be limited to this: `importer.address` is flagged together with `importer.name`, and it is also flagged WHEN its value equals `courier.name.value` by the same comparison.
+   3. THE guard SHALL NOT change the values of the importer fields. Normalisation applies to the comparison only.
+   4. WHEN the importer name differs from the courier name, THE guard SHALL NOT flag the importer fields because of this rule.
+3. Form 29 repeated fee total.
+   1. WHEN the notice kind is `cbp_form_29` AND a `statedTotals[]` row has `stated.value` equal (string equality) to the `stated.value` of a `fees[]` row, AND the row's `name.value` equals that fee's `name.value` after trimming and case-folding, THE guard SHALL set `needs_confirmation: true` on that row's `name` and `stated` and add a guard record with `rule: 'form29_total_repeats_fee'`, `action: 'flagged'`.
+   2. THE guard SHALL NOT drop the row. Flagging keeps the row visible so the user can confirm or discard it, and it keeps `compareToSpecimen` counting it as an extra row (R10.3).
+   3. THE guard SHALL NOT flag a total whose `stated` value merely differs from every fee, and SHALL NOT sum fees to decide anything (R3.3). The rule compares strings only.
+   4. THE row SHALL NOT be presented as a separate total until the user confirms it (R2.4).
+4. Guard properties.
+   1. THE guard SHALL be a pure function of the validated and confidence-marked notice. It SHALL NOT call the model, the network or the clock, and SHALL NOT log notice values (R8.1). Its log event MAY carry the rule names and counts.
+   2. THE guard SHALL NOT create `computed` provenance and SHALL NOT convert or round any figure (R2.5, R3.3).
+   3. THE guard runs in `extractNotice` for every provider and mode, including fixture mode, so a replay of an old recording gets the same treatment as a live run. Fixtures are not edited (R6.5).
+   4. THE guard is the one allowed exception to R14.3. For an `ok: true` result, every stated `value` SHALL equal the parsed model response except at paths named in `honesty` with `action: 'cleared'`. Flagging changes no value.
+   5. `fieldsNeedingConfirmation` (R2.4) SHALL include every path the guard flagged.
+5. Visibility.
+   1. THE `ok: true` result SHALL carry `honesty: GuardRecord[]`, empty when no rule fired.
+   2. THE eval SHALL report, per input, the guard records by rule and count, and SHALL compare the guarded notice (what the app would show) with the ground truth. It SHALL NOT report accuracy on unguarded model output as the headline figure.
+6. Replay and reporting consistency.
+   1. WHEN the five recorded fixtures are replayed in fixture mode, THE result for every `cbp_form_28` input SHALL have `value: null` in every `lines[].dutyStated`, and `honesty` SHALL name each line that was cleared.
+   2. WHEN the recorded Form 28 fixture contains a non-null `dutyStated` in its `raw` text, THE replay SHALL still return `null` for it and list a guard record. A test SHALL assert both sides: `raw` unchanged, result cleared.
+   3. THE committed `eval/results/latest.json` and `RESULTS.md` SHALL be regenerated after the guard exists, SHALL contain the guard records, and SHALL equal the fixture-mode eval numbers (R9.6).
+   4. THE README "Measured accuracy" sentence SHALL be copied again from the new `RESULTS.md` and SHALL pass `readme.test.ts` (R9.4). No figure in it is estimated in advance.
+   5. THE spec sets no accuracy target (R9.5). The re-measured rate is reported as is, including any wrong field the guard did not catch.
+
+#### Out of scope
+- Re-prompting the model or adding a prompt rule to fix these cases. The prompt change, if wanted, needs its own decision and a re-recorded live run.
+- Fixing `noticeType` read as `null` (flagged already) and any other wrong field not listed above.
+- Dropping rows or rewriting values other than the Form 28 `dutyStated` clear.

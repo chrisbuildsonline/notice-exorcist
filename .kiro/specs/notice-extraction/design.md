@@ -151,3 +151,49 @@ Fixture mode reads the committed fixtures, so it needs no model, and its output 
 - Bedrock test with an injected mock loader.
 - Live integration test on the five acceptance inputs (needs Ollama, visible skip otherwise).
 - Eval tested on a tiny labelled set, and the committed results checked against the fixtures offline.
+
+## Extraction honesty (R15)
+Follow-up to the first live eval. The 7b model reads some fields with confidence 0.95 that the document kind rules out, so a confidence threshold cannot catch them. A small rule check on the validated notice does.
+
+### Placement
+New file `packages/notice-extract/src/honesty.ts` (`stated-only.ts` does not exist; `stated-only.test.ts` is the grep test for R2.5 and stays as it is). `extractInner` calls it right after `markNeedsConfirmation` and before `fieldsNeedingConfirmation`, in every mode:
+
+```
+validateResponse -> markNeedsConfirmation -> applyHonesty -> fieldsNeedingConfirmation -> ExtractOk
+```
+
+```ts
+export type GuardRule = 'form28_no_line_duty' | 'courier_importer_is_courier' | 'form29_total_repeats_fee';
+export type GuardRecord = { rule: GuardRule; path: string; action: 'cleared' | 'flagged'; modelValue?: string | null };
+export function applyHonesty(notice: Notice): { notice: Notice; records: GuardRecord[] };
+```
+`ExtractOk` gains `honesty: GuardRecord[]`. `ExtractMeta` is unchanged. `applyHonesty` returns a copy, is pure, and has no I/O. The `computed` grep test still passes because no string `'computed'` appears.
+
+### Rules
+| Rule | Applies to | Condition | Action |
+|---|---|---|---|
+| `form28_no_line_duty` | `cbp_form_28` | `lines[i].dutyStated.value !== null` | set `value` to `null`, keep confidence, page, box. Record `cleared` with `modelValue` |
+| `courier_importer_is_courier` | `courier_duty_invoice` | `fold(importer.name.value) === fold(courier.name.value)`, or `fold(importer.address.value) === fold(courier.name.value)` | `needs_confirmation: true` on `importer.name` and `importer.address`. Record `flagged` per field |
+| `form29_total_repeats_fee` | `cbp_form_29` | a `statedTotals[j]` with the same `stated.value` string and `fold(name)` as some `fees[k]` | `needs_confirmation: true` on `statedTotals[j].name` and `.stated`. Record `flagged`. Row is kept |
+
+`fold(s)` is trim plus lower case, used only inside the comparison. Nothing is written back. All comparisons are string equality, with no parsing of money (R3.3, R10.5 spirit).
+
+### Decisions
+- **Clear, not flag, for Form 28.** A Form 28 has no printed line duty, so a value there is wrong by construction. Keeping it and flagging would let a figure with a `stated` label reach the calculator that was never on the document. The record keeps `modelValue` so the clear is visible. A cleared field keeps its confidence: a confident `null` is the correct reading of an empty column.
+- **Flag, not drop, for the Form 29 total and the courier importer.** These might be right on an unusual layout, so the user decides. Flagging also leaves the row in place for `compareToSpecimen`, which counts it as an extra row, so the eval stays honest about what the model read.
+- **Courier address.** The courier schema has no address (parity test, R1.5), so the importer name is compared with the courier name, and the importer address is flagged together with it, and also when it equals the courier name. Adding a courier address field would need a specimen schema change and is out of scope. In the recorded courier fixture the importer address (`Customs brokerage desk`) is not equal to anything on the courier block, so it is caught only through the name match.
+- **Exception to "values equal the model's".** The fuzz property (R14.3) now reads: equal to the parsed response except at paths with a `cleared` record. The fuzz test derives that set from `honesty`, so an unrecorded change still fails.
+- **Fixtures untouched.** Recorded `raw` text keeps the wrong values. The guard runs on replay, which is how the five fixtures show the fix without a re-recording. A `fixtures.test.ts` check keeps `raw` hash-bound.
+- **Logging.** `logEvent('extract', ...)` may add `guards: { rule: count }`. It never logs `path` values or `modelValue`.
+
+### Eval and reporting
+`run-eval.ts` calls `toSpecimen` on the guarded notice, so the headline numbers describe what the app shows. Each input in `latest.json` gets `guards: GuardRecord[]` without `modelValue` (the committed file holds synthetic data, but the file keeps to path and rule only), and `RESULTS.md` gets a "Guard records" table. The wrong-field table still lists what remains wrong, with the flagged column now reflecting guard flags. `results.test.ts` keeps requiring that fixture mode reproduces `latest.json`.
+
+Because the eval compares the guarded notice, the committed numbers change once the guard lands. They are regenerated, not edited (R15.6.3), and the README sentence is copied from the new `RESULTS.md` (R15.6.4). A live re-run re-records fixtures from the live model, so the new numbers may differ from 232 of 243 for reasons unrelated to the guard. If `eval:live` is not run, the fixture-mode eval is the only source for the numbers and must be written by the eval script's own output path, not by hand. Task 41 chooses the route and records why.
+
+### Testing
+- Unit tests per rule on small notices built from the recorded fixtures with one change each: fires, does not fire on the neighbouring kind, does not fire on a non-matching value.
+- Property test (fast-check): `applyHonesty` is idempotent, never changes a `value` except at `cleared` paths, and never lowers `needs_confirmation`.
+- Replay test over the five fixtures: no Form 28 `dutyStated` value, `raw` unchanged, records present.
+- `fuzz.test.ts` update for the R14.3 exception.
+- `eval.test.ts`, `results.test.ts`, `readme.test.ts` stay the consistency check between code, results and README.
