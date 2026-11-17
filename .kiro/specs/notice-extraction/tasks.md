@@ -50,7 +50,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `live.test.ts` itself. Each input must give `ok: true`, `Notice` schema-valid, and `kind` equal to its `.fields.json` `kind`. With Ollama stopped (`systemctl --user stop ollama`), `bun run vitest run src/live` prints `LIVE SKIPPED: ...` with the reason and lists the suite as skipped. Under `EXTRACT_LIVE=require` the same run fails. Covers R11.5, R12.1 to R12.4.
 - [ ] 24. Run the live eval and commit its output: `bun run --cwd packages/notice-extract eval:live`. This records `fixtures/<inputSha256>.json` for the five inputs and writes `eval/results/latest.json` and `RESULTS.md`. Do not edit any generated file. If an input fails, commit the failure and the result, then fix the cause in a separate task and re-run.
   - Test: `bun run --cwd packages/notice-extract test:live` passes with Ollama up. Evidence is the command output and the committed files. Covers R6.5, R9.3, R11.5, R11.6.
-- [ ] 25. Check the recorded fixtures offline.
+- [x] 25. Check the recorded fixtures offline.
   - Test: `fixtures.test.ts` (always runs, no Ollama, no Chromium): one fixture per acceptance input, file name equals the sha256 of the input file, `responseSha256` matches `raw`, `provider` is `ollama`, `model` is `qwen2.5vl:7b`, `recordedFrom` is `live`, `raw` parses with `Notice`, and fixture-mode `extractNotice` returns `ok: true` for all five. Covers R6.5, R6.6, R6.7, R8.3, R11.5.
 - [ ] 26. Check that the committed result matches the fixtures.
   - Test: `results.test.ts` runs the eval in fixture mode and requires the numbers to equal `eval/results/latest.json` (ignoring `generatedAt`), and `RESULTS.md` to contain the overall figure from `latest.json`. Covers R9.2, R9.6.
