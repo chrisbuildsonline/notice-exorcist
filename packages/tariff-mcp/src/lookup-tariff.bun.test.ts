@@ -44,6 +44,36 @@ describe('lookup_tariff: a line with its own rate', () => {
   });
 });
 
+describe('lookup_tariff: 10-digit statistical lines', () => {
+  test('6109.10.00.12 has an empty General column, so the rate comes from its 8-digit parent', async () => {
+    expect(raw('61', '6109.10.00.12').general).toBe('');
+    const r = await call(client, 'lookup_tariff', { htsCode: '6109.10.00.12' });
+    expect(r.isError).toBeFalsy();
+    const s = r.structuredContent!;
+    expect(s).toMatchObject({ requestedCode: '6109.10.00.12', rateSourceCode: '6109.10.00', walkedUp: true, general: '16.5%' });
+    expect(s.general).toBe(raw('61', '6109.10.00').general);
+    expect(s.prov).toEqual({ kind: 'tariff', source: `data/hts/ch61.json; ${edition}`, hts: '6109.10.00', edition });
+    // description, ancestors and units stay those of the requested line
+    expect(s.ancestors).toContain('Of cotton');
+    expect(s.units).toBe(JSON.stringify(['doz.', 'kg']));
+  });
+
+  test('a made-up statistical suffix of a real 8-digit line is not_found, never a guessed rate', async () => {
+    expect(raw('61', '6109.10.00.99')).toBeUndefined();
+    const r = await call(client, 'lookup_tariff', { htsCode: '6109.10.00.99' });
+    expect(r.isError).toBe(true);
+    expect(r.structuredContent).toEqual({ status: 'not_found', code: '6109.10.00.99' });
+  });
+
+  test('a 10-digit line with its own rate keeps it and does not walk up', async () => {
+    const own = raw('42', '4202.32.10.00').general;
+    expect(own).not.toBe('');
+    const r = await call(client, 'lookup_tariff', { htsCode: '4202.32.10.00' });
+    expect(r.structuredContent).toMatchObject({ requestedCode: '4202.32.10.00', rateSourceCode: '4202.32.10.00', walkedUp: false, general: own });
+    expect((r.structuredContent!.prov as { hts: string }).hts).toBe('4202.32.10.00');
+  });
+});
+
 describe('lookup_tariff: bad codes are tool errors with a status', () => {
   test.each([
     ['6109.20.00', 'not_found', '6109.20.00'],

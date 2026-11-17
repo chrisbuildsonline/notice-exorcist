@@ -11,10 +11,19 @@ type Failed = Exclude<HtsLookup, { status: 'ok' }>;
 /** The requested line, plus the General rate text and provenance the duty uses. */
 export type ResolvedRate = { status: 'ok'; line: Line; general: string; prov: TariffProv; rateSourceCode: string; walkedUp: boolean };
 
-/** Look up a code and the rate text that applies to it. Never parses or infers a rate. */
+/**
+ * Look up a code and the General rate text that applies to it. A real 10-digit line with an empty General column takes
+ * the text and provenance of its 8-digit parent, when that parent is a line. Never parses or infers a rate.
+ */
 export function resolveRate(htsCode: string): ResolvedRate | Failed {
-  const line = lookupHts(getDb(), htsCode);
+  const db = getDb();
+  const line = lookupHts(db, htsCode);
   if (line.status !== 'ok') return line;
+  // '6109.10.00.12'.slice(0, 10) is the 8-digit parent '6109.10.00'
+  if (line.code.length === 13 && line.general === '') {
+    const parent = lookupHts(db, line.code.slice(0, 10));
+    if (parent.status === 'ok') return { status: 'ok', line, general: parent.general, prov: parent.prov, rateSourceCode: parent.code, walkedUp: true };
+  }
   return { status: 'ok', line, general: line.general, prov: line.prov, rateSourceCode: line.code, walkedUp: false };
 }
 
