@@ -93,5 +93,5 @@ Tests first (33 to 37), then implementation (38 to 40), then re-run of fixture a
   - Test: `readme.test.ts` passes: every percentage in the sentence equals a value in `latest.json`, and no placeholder remains. Covers R15.6.4, R9.4.
 - [ ] 43. Re-run the live acceptance test if Ollama is available: `bun run --cwd packages/notice-extract test:live`.
   - Test: the five inputs give `ok: true` with schema-valid JSON and the expected `kind`. With Ollama down, the run prints `LIVE SKIPPED: ...` and the task records that the check did not run, rather than passing it. Covers R11.5, R12.2.
-- [ ] 44. Run the full checks from the repo root and confirm the Form 28 invariant against the committed files.
+- [x] 44. Run the full checks from the repo root and confirm the Form 28 invariant against the committed files.
   - Test: `bun run test` and `bun run typecheck` pass. A grep of `eval/results/latest.json` and `RESULTS.md` shows no Form 28 `lines[n].dutyStated` in the wrong-field list, and the README accuracy numbers match `RESULTS.md`. `bun run e2e` runs only if a UI file changed in tasks 38 to 40. Covers R15.6.1 to R15.6.4.
