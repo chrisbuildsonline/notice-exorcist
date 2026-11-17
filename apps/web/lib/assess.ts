@@ -84,6 +84,7 @@ function labelOf(path: string, r: ExtractOk): string {
   const n = r.notice;
   const total = /^statedTotals\[(\d+)\]\.stated$/.exec(path);
   if (total && n.kind !== 'cbp_form_28') return n.statedTotals[Number(total[1])]?.name.value ?? 'Total';
+  if (/^statedTotals\[\d+\]\.name$/.test(path)) return 'Name of printed total';
   const fee = /^fees\[(\d+)\]\.stated$/.exec(path);
   if (fee && n.kind !== 'cbp_form_28') return n.fees[Number(fee[1])]?.name.value ?? 'Fee';
   const party = /^(importer|courier)\.(\w+)$/.exec(path);

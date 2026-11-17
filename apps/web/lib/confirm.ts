@@ -34,24 +34,36 @@ export function applyConfirmations(notice: Notice, cs: Confirmation[]): Notice {
 export const confirmationsFor = (noticeId: string) =>
   getDb().prepare('SELECT path, value FROM confirmations WHERE notice_id = ? ORDER BY confirmed_at, rowid').all(noticeId) as Confirmation[];
 
-export type ConfirmResult = { ok: true } | { ok: false; status: 400 | 404 | 409; error: string };
+export type ConfirmResult = { ok: true } | { ok: false; status: 400 | 404 | 409; error: string; path?: string };
 
 /**
- * Records the user's value for a flagged field. Only a field that is still flagged can be confirmed,
+ * Records the user's values for flagged fields, all or none. Only a field that is still flagged can be confirmed,
  * and the patched notice must still validate (a duty must look like 12.34, a date like 2026-10-08).
  */
-export function confirmField(noticeId: string, path: string, value: string): ConfirmResult {
+export function confirmFields(noticeId: string, values: Confirmation[]): ConfirmResult {
   const row = getNotice(noticeId);
   const r = row?.extracted_json ? (JSON.parse(row.extracted_json) as ExtractResult) : null;
   if (!r?.ok) return { ok: false, status: 404, error: 'not_found' };
   const current = applyConfirmations(r.notice, confirmationsFor(noticeId));
-  if (leafAt(current, path)?.needs_confirmation !== true) return { ok: false, status: 409, error: 'not_flagged' };
-  const v = value.trim();
-  if (!v || v.length > 200 || !Notice.safeParse(applyConfirmations(current, [{ path, value: v }])).success) {
-    return { ok: false, status: 400, error: 'That does not look right for this field. Check the format on the notice.' };
+  const clean = values.map((c) => ({ path: c.path, value: c.value.trim() }));
+  for (const c of clean) {
+    if (leafAt(current, c.path)?.needs_confirmation !== true) return { ok: false, status: 409, error: 'not_flagged', path: c.path };
+    if (!c.value || c.value.length > 200 || !Notice.safeParse(applyConfirmations(current, [c])).success) {
+      return { ok: false, status: 400, error: 'That does not look right for this field. Check the format on the notice.', path: c.path };
+    }
   }
-  getDb()
-    .prepare('INSERT OR REPLACE INTO confirmations (notice_id, path, value, confirmed_at) VALUES (?, ?, ?, ?)')
-    .run(noticeId, path, v, new Date().toISOString());
+  const db = getDb();
+  const insert = db.prepare('INSERT OR REPLACE INTO confirmations (notice_id, path, value, confirmed_at) VALUES (?, ?, ?, ?)');
+  const now = new Date().toISOString();
+  db.exec('BEGIN');
+  try {
+    for (const c of clean) insert.run(noticeId, c.path, c.value, now);
+    db.exec('COMMIT');
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
   return { ok: true };
 }
+
+export const confirmField = (noticeId: string, path: string, value: string) => confirmFields(noticeId, [{ path, value }]);

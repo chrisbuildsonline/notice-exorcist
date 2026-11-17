@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { POST } from '../app/api/notices/[id]/confirm/route';
-import { confirmationsFor, confirmField } from './confirm';
+import { confirmationsFor, confirmField, confirmFields } from './confirm';
 import { getDb } from './db';
 import { fileNotice, getNotice } from './intake';
 import { noticeView } from './notice-view';
@@ -68,6 +68,18 @@ describe('confirm flow (R4.9)', () => {
     expect(confirmationsFor(id)).toEqual([]);
   });
 
+  it('confirms several fields all or none: one bad value saves nothing and names the field', async () => {
+    const id = await filed('specimen-2-form29.pdf', ['lines[0].rateText', 'lines[0].dutyStated']);
+    expect(confirmFields(id, [{ path: 'lines[0].rateText', value: '9.2%' }, { path: 'lines[0].dutyStated', value: 'x' }])).toMatchObject({
+      ok: false,
+      status: 400,
+      path: 'lines[0].dutyStated',
+    });
+    expect(confirmationsFor(id)).toEqual([]);
+    expect(confirmFields(id, [{ path: 'lines[0].rateText', value: '9.2%' }, { path: 'lines[0].dutyStated', value: '385.02' }])).toEqual({ ok: true });
+    expect(view(id).assessment!.lines[0]!.state).toBe('disagrees');
+  });
+
   it('never presents a flagged printed total as the notice total; it is listed as a flagged field', async () => {
     const id = await filed('specimen-2-form29.pdf', ['statedTotals[1].stated']);
     const a = view(id).assessment!;
@@ -85,6 +97,16 @@ describe('confirm flow (R4.9)', () => {
       difference: { value: '27.03', prov: 'computed' },
     });
     expect(a.flags.map((f) => f.path)).toEqual(expect.arrayContaining(['importer.name', 'importer.address']));
+  });
+
+  it('CONFIRM_BELOW raises the confidence a reading needs; below it every line waits for the user', async () => {
+    process.env.CONFIRM_BELOW = '0.96';
+    try {
+      const id = await filed('specimen-2-form29.pdf');
+      expect(view(id).assessment!.lines.map((l) => l.state)).toEqual(Array(5).fill('confirm'));
+    } finally {
+      delete process.env.CONFIRM_BELOW;
+    }
   });
 
   it('POST /api/notices/[id]/confirm confirms and returns the recalculated notice, sourced', async () => {

@@ -54,10 +54,16 @@ export function extractConfig(source: Source): Config {
   return { ...c, mode: source === 'specimen' || !process.env.EXTRACT_MODE ? 'fixture' : c.mode };
 }
 
+/** CONFIRM_BELOW: fields read with less confidence than this must be confirmed (default: notice-extract's 0.8). */
+export function confirmBelow(): number | undefined {
+  const v = Number(process.env.CONFIRM_BELOW);
+  return process.env.CONFIRM_BELOW && v > 0 && v <= 1 ? v : undefined;
+}
+
 async function read(db: Db, id: string, bytes: Uint8Array, source: Source): Promise<void> {
   let result: ExtractResult;
   try {
-    result = await extractNotice({ bytes }, { config: extractConfig(source), fixturesDir: fixturesDir() });
+    result = await extractNotice({ bytes }, { config: extractConfig(source), fixturesDir: fixturesDir(), threshold: confirmBelow() });
   } catch {
     result = { ok: false, reason: 'model_unreachable', hash: '' };
   }
