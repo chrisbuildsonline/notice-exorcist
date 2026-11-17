@@ -18,7 +18,11 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}`,
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  // inbox.spec.ts checks the empty store, so it runs before every spec that files notices.
+  projects: [
+    { name: 'empty-inbox', testMatch: 'inbox.spec.ts', use: { ...devices['Desktop Chrome'] } },
+    { name: 'chromium', testIgnore: 'inbox.spec.ts', dependencies: ['empty-inbox'], use: { ...devices['Desktop Chrome'] } },
+  ],
   webServer: {
     command: `rm -rf "${DATA_DIR}" "${DATA_DIR}-strict" && bun run build && (${STRICT} & bun run --cwd apps/web start --port ${PORT})`,
     url: `http://localhost:${PORT}`,
