@@ -9,7 +9,10 @@ const MIME = { pdf: 'application/pdf', png: 'image/png', jpeg: 'image/jpeg' } as
 
 export type Source = 'upload' | 'email' | 'specimen';
 
-export const TOO_BIG = 'That file is over 10 MB.';
+/** Recorded model replies, keyed by the sha256 of the input file. */
+export const fixturesDir = () => join(repoRoot(), 'packages', 'notice-extract', 'fixtures');
+
+export const TOO_BIG ='That file is over 10 MB.';
 
 /**
  * Buffers the request body, stopping as soon as it passes the cap for `files` files (plus room for base64 and
@@ -46,7 +49,7 @@ export function checkFile(bytes: Uint8Array): Checked {
  * Reading config: the EXTRACT_* env, but recorded fixtures unless EXTRACT_MODE says otherwise,
  * so the app runs with no model and no key. Specimens always replay their recording.
  */
-function extractConfig(source: Source): Config {
+export function extractConfig(source: Source): Config {
   const c = readConfig();
   return { ...c, mode: source === 'specimen' || !process.env.EXTRACT_MODE ? 'fixture' : c.mode };
 }
@@ -54,7 +57,7 @@ function extractConfig(source: Source): Config {
 async function read(db: Db, id: string, bytes: Uint8Array, source: Source): Promise<void> {
   let result: ExtractResult;
   try {
-    result = await extractNotice({ bytes }, { config: extractConfig(source), fixturesDir: join(repoRoot(), 'packages', 'notice-extract', 'fixtures') });
+    result = await extractNotice({ bytes }, { config: extractConfig(source), fixturesDir: fixturesDir() });
   } catch {
     result = { ok: false, reason: 'model_unreachable', hash: '' };
   }
