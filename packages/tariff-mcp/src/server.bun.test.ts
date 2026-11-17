@@ -25,4 +25,12 @@ describe('tariff-mcp server over stdio', () => {
       expect(Object.keys(t.inputSchema.properties ?? {}).length).toBeGreaterThan(0);
     }
   });
+
+  test('every tool description tells the model to quote figures and never recompute them', async () => {
+    const { tools } = await client.listTools();
+    for (const t of tools) {
+      expect(t.description).toContain('Quote every figure exactly as returned');
+      expect(t.description).toContain('Never recompute');
+    }
+  });
 });
