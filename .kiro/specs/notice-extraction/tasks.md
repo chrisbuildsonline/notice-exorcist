@@ -4,15 +4,15 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
 
 - [x] 1. Scaffold `packages/notice-extract` (workspace member, strict TS, Vitest, zod, fast-check as dev dependency). Add `field.ts` with the `Stated` wrapper and `common.ts` types (`Money`, `Dec`, `Iso`, `HtsCode` using the same patterns as the specimen schema).
   - Test: `field.test.ts` accepts a valid stated field and rejects confidence outside 0 to 1, a numeric money value, `3240` and `3,240.00` as money, and a missing page. Covers R1.4, R2.1, R2.2.
-- [ ] 2. Add `base.ts` with the header, line, fee and stated-total schemas, with the specimen key names, and the oracle keys left out.
+- [x] 2. Add `base.ts` with the header, line, fee and stated-total schemas, with the specimen key names, and the oracle keys left out.
   - Test: `schema-parity.test.ts` imports `scripts/specimens/schema.ts` and fails when the key tree differs from the specimen schema minus the oracle keys, or when the `kind`, `actionType` or fee `kind` enums or any regex source differ. Covers R1.2, R1.5.
-- [ ] 3. Define `form29.ts` (`actionType` as a stated enum, lines with `dutyStated`, fees, stated totals).
+- [x] 3. Define `form29.ts` (`actionType` as a stated enum, lines with `dutyStated`, fees, stated totals).
   - Test: `form29.test.ts` parses a valid sample, rejects `actionType` outside the enum, rejects a null `actionType` value on Form 29 unless confidence is 0, and rejects a missing entry number unless it is `null` with confidence 0. Covers R1.1, R1.3, R1.6.
-- [ ] 4. Define `form28.ts` (`informationRequested` list, response deadline, `actionType` null).
+- [x] 4. Define `form28.ts` (`informationRequested` list, response deadline, `actionType` null).
   - Test: `form28.test.ts` valid and invalid samples, including an empty `informationRequested`. Covers R1.1, R1.3.
-- [ ] 5. Define `courier.ts` (`courier` object, `courier_fee` and `mpf` fees, stated totals).
+- [x] 5. Define `courier.ts` (`courier` object, `courier_fee` and `mpf` fees, stated totals).
   - Test: `courier.test.ts` valid sample, and a key-list snapshot showing no field that is not printed on the document, such as a recomputed total. Covers R1.3, R3.2, R3.4.
-- [ ] 6. Add `notice.ts`, the union on `kind` with the three `cbp_*` and `courier_duty_invoice` literals.
+- [x] 6. Add `notice.ts`, the union on `kind` with the three `cbp_*` and `courier_duty_invoice` literals.
   - Test: `notice.test.ts` wraps each `fixtures/specimens/*.fields.json` in stated fields with a test helper and parses it with `Notice`. Also rejects `kind: 'unknown'` and an old kind name such as `form28`. Covers R1.1, R1.2.
 - [ ] 7. Add `map/toSpecimen.ts`.
   - Test: `toSpecimen.test.ts` wraps each ground truth, unwraps it, and expects equality with the truth minus the oracle keys. The output also parses with the specimen `Fields` schema once `specimenId` is added. Covers R10.1.
