@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "pdfjs-dist": "^6.5.438",
+    "undici": "^8.12.4",
     "zod": "^4.6.7"
   },
   "devDependencies": {
