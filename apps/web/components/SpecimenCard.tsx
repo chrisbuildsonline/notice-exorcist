@@ -1,5 +1,5 @@
 import type { Assessment } from '../lib/assess';
-import { Figure } from './Figure';
+import { HauntedLine } from './HauntedLine';
 import { StatusPill } from './StatusPill';
 
 /** The empty-state visual: the real Form 29 specimen as checked by the engine, drawn as paper tilted 2°. */
@@ -13,18 +13,11 @@ export function SpecimenCard({ a }: { a: Assessment }) {
         </div>
         <StatusPill notice={a.status} />
       </div>
-      <div className="mt-4 space-y-1.5">
+      <ul className="mt-4 space-y-1.5">
         {a.lines.slice(0, 4).map((l, i) => (
-          <div key={i} data-state={l.state} className="line flex min-h-14 flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-sm py-3 pr-3 pl-4">
-            <span className="min-w-0 basis-full truncate text-caption text-text-secondary">{l.label}</span>
-            <span className="ml-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
-              {l.stated ? <Figure {...l.stated} /> : null}
-              {l.state === 'disagrees' && l.computed ? <Figure {...l.computed} /> : null}
-              <StatusPill line={l.state} />
-            </span>
-          </div>
+          <HauntedLine key={i} index={i} state={l.state} label={l.label} stated={l.stated} computed={l.computed} />
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

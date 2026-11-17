@@ -12,7 +12,7 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: `provenance-guard.test.ts` rejects a payload with a money field lacking `prov`, accepts a sourced one, and a route test confirms the wrapper returns 500 in test mode. Covers R5.8.
 - [x] 5. Implement `states.ts` (`lineState`, `noticeStatus`, `fogOpacity`).
   - Test: `states.test.ts` covers state precedence, fog `0.15 + 0.85 × share`, fog 0 when all verified, and `At peace`. Covers R4.2, R4.5, R4.6.
-- [ ] 6. Build `StatusPill`, `HauntedLine`, `Paper` and `Fog` with the glow rules and reduced-motion CSS.
+- [x] 6. Build `StatusPill`, `HauntedLine`, `Paper` and `Fog` with the glow rules and reduced-motion CSS.
   - Test: `HauntedLine.test.tsx` checks each state has a word and an icon, only `disagrees` and `unverified` get a glow class, no glow class uses `accent`. `reduced-motion.test.ts` checks the media query sets `animation: none` and keeps a static box-shadow. Covers R4.3, R4.4, R4.8.
 - [x] 7. Set up SQLite (`bun:sqlite`) with tables and the FTS5 rulings index. Add a specimen seed.
   - Test: `db.test.ts` creates the schema in memory, inserts a ruling, and finds it with an FTS5 query. Covers R10.3.

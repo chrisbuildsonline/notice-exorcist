@@ -54,10 +54,13 @@
 /* The haunted document, DESIGN.md 3. Glows use status hues only, never the accent. */
 .line            { position:relative; transition:background-color 300ms var(--ease-out), box-shadow 400ms var(--ease-out); }
 .line::before    { content:""; position:absolute; inset:8px auto 8px 0; width:3px; border-radius:3px; background:transparent; }
-.line[data-state=unverified] { background:var(--color-unverified-bg); animation:pulse-u 3.6s var(--ease-in-out) infinite alternate; }
+.line[data-state=unverified] { background:var(--color-unverified-bg); }
 .line[data-state=unverified]::before { background:var(--color-unverified-edge); }
-.line[data-state=disagrees]  { background:var(--color-haunt-bg); animation:pulse-h 2.4s var(--ease-in-out) infinite alternate; }
+.line[data-state=disagrees]  { background:var(--color-haunt-bg); }
 .line[data-state=disagrees]::before  { background:var(--color-haunt-edge); }
+/* Only these two glow (HauntedLine.GLOW). Confirm and unsupported never do. */
+.glow-unverified { animation:pulse-u 3.6s var(--ease-in-out) infinite alternate; }
+.glow-haunt      { animation:pulse-h 2.4s var(--ease-in-out) infinite alternate; }
 .line[data-state=confirm]    { background:var(--color-confirm-bg); }
 .line[data-state=confirm]::before    { background:var(--color-confirm-edge); }
 .line[data-state=unsupported]::before { background:repeating-linear-gradient(to bottom, var(--color-unsupported-edge) 0 4px, transparent 4px 7px); }
@@ -67,9 +70,19 @@
                      to   { box-shadow:0 0 0 2px rgba(232,89,12,.45), 0 0 28px 6px var(--glow-haunt); } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation:none !important; transition-duration:0ms !important; }
-  .line[data-state=unverified] { box-shadow:0 0 0 1px var(--color-unverified-edge), 0 0 12px var(--glow-unverified); }
-  .line[data-state=disagrees]  { box-shadow:0 0 0 2px var(--color-haunt-edge), 0 0 20px var(--glow-haunt); }
+  .glow-unverified { box-shadow:0 0 0 1px var(--color-unverified-edge), 0 0 12px var(--glow-unverified); }
+  .glow-haunt      { box-shadow:0 0 0 2px var(--color-haunt-edge), 0 0 20px var(--glow-haunt); }
 }
+
+/* Fog over the paper, behind the rows: neutral grey, never the accent. Opacity comes from fogOpacity(). */
+.fog {
+  pointer-events:none;
+  background:radial-gradient(70% 50% at 20% 0%, rgba(138,144,160,.16), transparent 70%), radial-gradient(60% 40% at 90% 100%, rgba(138,144,160,.12), transparent 70%);
+  background-size:103% 103%;
+  transition:opacity 900ms var(--ease-out);
+  animation:fog-drift 40s linear infinite alternate;
+}
+@keyframes fog-drift { from { background-position:0% 0%; } to { background-position:100% 100%; } }
 
 body { background:var(--color-canvas); color:var(--color-ink); font-family:var(--font-sans); }
 .num { font-variant-numeric:tabular-nums; }
