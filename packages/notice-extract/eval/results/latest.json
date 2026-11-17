@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T03:41:47.218Z",
+  "generatedAt": "2026-11-17T07:54:54.486Z",
   "model": "qwen2.5vl:7b",
   "threshold": 0.8,
   "inputs": [
@@ -7,252 +7,26 @@
       "file": "specimen-1-form28.pdf",
       "specimenId": "specimen-1-form28",
       "sha256": "81d5c5e7e4fe1a903b789bda0bee7a488624b69c429738d116aaad274764721e",
-      "ok": false,
-      "reason": "schema_invalid",
-      "schemaValid": false,
-      "matched": 0,
+      "ok": true,
+      "schemaValid": true,
+      "kind": "cbp_form_28",
+      "matched": 38,
       "total": 40,
-      "rate": 0,
-      "needsConfirmation": 0,
+      "rate": 95,
+      "needsConfirmation": 1,
       "wrong": [
-        {
-          "path": "actionType",
-          "expected": null,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "courier",
-          "expected": null,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.entry",
-          "expected": "2026-10-05",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.notice",
-          "expected": "2026-10-21",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.responseDeadline",
-          "expected": "2026-11-20",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "entryNumber",
-          "expected": "ZZ9-0417726-3",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "importer.address",
-          "expected": "418 Larch Hollow Road, Asheville, NC 28801",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "importer.name",
-          "expected": "Hollowmere Home Goods LLC",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "informationRequested[0]",
-          "expected": "Commercial invoice and packing list for every line on this entry",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "informationRequested[1]",
-          "expected": "Specification sheet giving the material and construction of each item",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "informationRequested[2]",
-          "expected": "Photographs of the kitchen towels showing the weave of the fabric",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "informationRequested[3]",
-          "expected": "Statement of whether the plates are sold for household or commercial use",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "informationRequested[4]",
-          "expected": "Proof of payment to the seller for the goods on this entry",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "kind",
-          "expected": "cbp_form_28",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].description",
-          "expected": "Melamine dinner plates and bowls",
-          "confidence": null,
-          "flagged": false
-        },
         {
           "path": "lines[1].dutyStated",
           "expected": null,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].hts",
-          "expected": "3924.10.20.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].n",
-          "expected": 1,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].quantity",
-          "expected": "410",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].rateText",
-          "expected": "6.5%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].unit",
-          "expected": "kg",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].value",
-          "expected": "3240.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].description",
-          "expected": "Cotton terry kitchen towels",
-          "confidence": null,
+          "actual": "210.60",
+          "confidence": 0.95,
           "flagged": false
         },
         {
           "path": "lines[2].dutyStated",
           "expected": null,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].hts",
-          "expected": "6302.60.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].n",
-          "expected": 2,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].quantity",
-          "expected": "150",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].rateText",
-          "expected": "9.1%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].unit",
-          "expected": "doz.",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].value",
-          "expected": "1875.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].description",
-          "expected": "Acacia wood kitchen carts",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].dutyStated",
-          "expected": null,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].hts",
-          "expected": "9403.60.80",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].n",
-          "expected": 3,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].quantity",
-          "expected": "24",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].rateText",
-          "expected": "Free",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].unit",
-          "expected": "No.",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].value",
-          "expected": "2160.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "noticeType",
-          "expected": "Request for Information",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "port",
-          "expected": "Savannah, GA",
-          "confidence": null,
+          "actual": "171.75",
+          "confidence": 0.95,
           "flagged": false
         }
       ]
@@ -261,312 +35,24 @@
       "file": "specimen-2-form29.pdf",
       "specimenId": "specimen-2-form29",
       "sha256": "3d5aa0f43c3cfbb5bef906e06d7fd27d9652de1bc7f997022de0ba712f05a619",
-      "ok": false,
-      "reason": "schema_invalid",
-      "schemaValid": false,
-      "matched": 0,
-      "total": 50,
-      "rate": 0,
+      "ok": true,
+      "schemaValid": true,
+      "kind": "cbp_form_29",
+      "matched": 50,
+      "total": 52,
+      "rate": 96.2,
       "needsConfirmation": 0,
       "wrong": [
         {
-          "path": "actionType",
-          "expected": "rate_advance",
-          "confidence": null,
+          "path": "statedTotals[2].name",
+          "actual": "Merchandise Processing Fee",
+          "confidence": 0.95,
           "flagged": false
         },
         {
-          "path": "courier",
-          "expected": null,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.entry",
-          "expected": "2026-10-08",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.notice",
-          "expected": "2026-10-27",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.responseDeadline",
-          "expected": "2026-11-16",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "entryNumber",
-          "expected": "ZZ9-0423518-7",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].kind",
-          "expected": "mpf",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].name",
-          "expected": "Merchandise Processing Fee",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].stated",
-          "expected": "44.50",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "importer.address",
-          "expected": "2210 Quarry Mill Drive, Boise, ID 83702",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "importer.name",
-          "expected": "Fernhollow Supply LLC",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "kind",
-          "expected": "cbp_form_29",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].description",
-          "expected": "Cotton waffle-weave kitchen towels",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].dutyStated",
-          "expected": "385.02",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].hts",
-          "expected": "6302.91.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].n",
-          "expected": 1,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].quantity",
-          "expected": "320",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].rateText",
-          "expected": "9.2%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].unit",
-          "expected": "doz.",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].value",
-          "expected": "4815.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].description",
-          "expected": "Card wallets, outer surface of laminated plastic sheeting",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].dutyStated",
-          "expected": "136.59",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].hts",
-          "expected": "4202.32.10.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].n",
-          "expected": 2,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].quantity",
-          "expected": "186",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].rateText",
-          "expected": "12.1¢/kg + 4.6%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].unit",
-          "expected": "kg",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].value",
-          "expected": "2480.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].description",
-          "expected": "Acacia wood side tables",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].dutyStated",
-          "expected": "0.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].hts",
-          "expected": "9403.60.80",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].n",
-          "expected": 3,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].quantity",
-          "expected": "40",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].rateText",
-          "expected": "Free",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].unit",
-          "expected": "No.",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].value",
-          "expected": "3600.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].description",
-          "expected": "Melamine dinner plates",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].dutyStated",
-          "expected": "126.75",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].hts",
-          "expected": "3924.10.20.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].n",
-          "expected": 4,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].quantity",
-          "expected": "260",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].rateText",
-          "expected": "6.5%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].unit",
-          "expected": "kg",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].value",
-          "expected": "1950.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "noticeType",
-          "expected": "Notice of Action",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "port",
-          "expected": "Long Beach, CA",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[0].name",
-          "expected": "Total entered value",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[0].stated",
-          "expected": "12845.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[1].name",
-          "expected": "Total duty",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[1].stated",
-          "expected": "648.36",
-          "confidence": null,
+          "path": "statedTotals[2].stated",
+          "actual": "44.50",
+          "confidence": 0.95,
           "flagged": false
         }
       ]
@@ -575,295 +61,34 @@
       "file": "specimen-3-courier.pdf",
       "specimenId": "specimen-3-courier",
       "sha256": "09d06b5e4fe98aae09aa5db2c5d7ceab5d7d145bc905c366fbe5d8bb672270b1",
-      "ok": false,
-      "reason": "schema_invalid",
-      "schemaValid": false,
-      "matched": 0,
+      "ok": true,
+      "schemaValid": true,
+      "kind": "courier_duty_invoice",
+      "matched": 44,
       "total": 47,
-      "rate": 0,
-      "needsConfirmation": 0,
+      "rate": 93.6,
+      "needsConfirmation": 2,
       "wrong": [
-        {
-          "path": "actionType",
-          "expected": null,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "courier.invoiceNumber",
-          "expected": "TAP-448120",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "courier.name",
-          "expected": "Tumbleweed Air Parcel",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "courier.waybill",
-          "expected": "7731 0492 5586",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.entry",
-          "expected": "2026-10-14",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.notice",
-          "expected": "2026-10-19",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.responseDeadline",
-          "expected": "2026-11-02",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "entryNumber",
-          "expected": "ZZ9-0431962-4",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].kind",
-          "expected": "mpf",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].name",
-          "expected": "Merchandise Processing Fee",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].stated",
-          "expected": "7.55",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[1].kind",
-          "expected": "courier_fee",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[1].name",
-          "expected": "Duty disbursement fee",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[1].stated",
-          "expected": "18.00",
-          "confidence": null,
-          "flagged": false
-        },
         {
           "path": "importer.address",
           "expected": "9 Wrenfield Court, Portland, OR 97214",
-          "confidence": null,
+          "actual": "Customs brokerage desk",
+          "confidence": 0.95,
           "flagged": false
         },
         {
           "path": "importer.name",
           "expected": "Marigold Thimble Studio",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "kind",
-          "expected": "courier_duty_invoice",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].description",
-          "expected": "Base metal fashion earrings",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].dutyStated",
-          "expected": "94.60",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].hts",
-          "expected": "7117.19.90.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].n",
-          "expected": 1,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].quantity",
-          "expected": "6",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].rateText",
-          "expected": "11%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].unit",
-          "expected": "kg",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].value",
-          "expected": "860.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].description",
-          "expected": "Microfiber cleaning cloths",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].dutyStated",
-          "expected": "28.62",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].hts",
-          "expected": "6307.10.20",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].n",
-          "expected": 2,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].quantity",
-          "expected": "40",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].rateText",
-          "expected": "5.3%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].unit",
-          "expected": "doz.",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].value",
-          "expected": "540.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].description",
-          "expected": "Plastic kitchen utensils",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].dutyStated",
-          "expected": "26.52",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].hts",
-          "expected": "3924.10.40.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].n",
-          "expected": 3,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].quantity",
-          "expected": "120",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].rateText",
-          "expected": "3.4%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].unit",
-          "expected": "No.",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].value",
-          "expected": "780.00",
-          "confidence": null,
+          "actual": "Tumbleweed Air Parcel",
+          "confidence": 0.95,
           "flagged": false
         },
         {
           "path": "noticeType",
           "expected": "Duty and Tax Invoice",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "port",
-          "expected": null,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[0].name",
-          "expected": "Total entered value",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[0].stated",
-          "expected": "2180.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[1].name",
-          "expected": "Total payable",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[1].stated",
-          "expected": "175.29",
-          "confidence": null,
-          "flagged": false
+          "actual": null,
+          "confidence": 0,
+          "flagged": true
         }
       ]
     },
@@ -871,312 +96,24 @@
       "file": "specimen-2-form29.png",
       "specimenId": "specimen-2-form29",
       "sha256": "765288d1a9e4305751897e46ed6f86f180ad376b770e7c9a8ab04776065b8e16",
-      "ok": false,
-      "reason": "schema_invalid",
-      "schemaValid": false,
-      "matched": 0,
-      "total": 50,
-      "rate": 0,
+      "ok": true,
+      "schemaValid": true,
+      "kind": "cbp_form_29",
+      "matched": 50,
+      "total": 52,
+      "rate": 96.2,
       "needsConfirmation": 0,
       "wrong": [
         {
-          "path": "actionType",
-          "expected": "rate_advance",
-          "confidence": null,
+          "path": "statedTotals[2].name",
+          "actual": "Merchandise Processing Fee",
+          "confidence": 0.95,
           "flagged": false
         },
         {
-          "path": "courier",
-          "expected": null,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.entry",
-          "expected": "2026-10-08",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.notice",
-          "expected": "2026-10-27",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.responseDeadline",
-          "expected": "2026-11-16",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "entryNumber",
-          "expected": "ZZ9-0423518-7",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].kind",
-          "expected": "mpf",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].name",
-          "expected": "Merchandise Processing Fee",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].stated",
-          "expected": "44.50",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "importer.address",
-          "expected": "2210 Quarry Mill Drive, Boise, ID 83702",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "importer.name",
-          "expected": "Fernhollow Supply LLC",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "kind",
-          "expected": "cbp_form_29",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].description",
-          "expected": "Cotton waffle-weave kitchen towels",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].dutyStated",
-          "expected": "385.02",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].hts",
-          "expected": "6302.91.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].n",
-          "expected": 1,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].quantity",
-          "expected": "320",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].rateText",
-          "expected": "9.2%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].unit",
-          "expected": "doz.",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].value",
-          "expected": "4815.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].description",
-          "expected": "Card wallets, outer surface of laminated plastic sheeting",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].dutyStated",
-          "expected": "136.59",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].hts",
-          "expected": "4202.32.10.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].n",
-          "expected": 2,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].quantity",
-          "expected": "186",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].rateText",
-          "expected": "12.1¢/kg + 4.6%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].unit",
-          "expected": "kg",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].value",
-          "expected": "2480.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].description",
-          "expected": "Acacia wood side tables",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].dutyStated",
-          "expected": "0.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].hts",
-          "expected": "9403.60.80",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].n",
-          "expected": 3,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].quantity",
-          "expected": "40",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].rateText",
-          "expected": "Free",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].unit",
-          "expected": "No.",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].value",
-          "expected": "3600.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].description",
-          "expected": "Melamine dinner plates",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].dutyStated",
-          "expected": "126.75",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].hts",
-          "expected": "3924.10.20.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].n",
-          "expected": 4,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].quantity",
-          "expected": "260",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].rateText",
-          "expected": "6.5%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].unit",
-          "expected": "kg",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].value",
-          "expected": "1950.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "noticeType",
-          "expected": "Notice of Action",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "port",
-          "expected": "Long Beach, CA",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[0].name",
-          "expected": "Total entered value",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[0].stated",
-          "expected": "12845.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[1].name",
-          "expected": "Total duty",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[1].stated",
-          "expected": "648.36",
-          "confidence": null,
+          "path": "statedTotals[2].stated",
+          "actual": "44.50",
+          "confidence": 0.95,
           "flagged": false
         }
       ]
@@ -1185,467 +122,179 @@
       "file": "specimen-2-form29.photo.jpg",
       "specimenId": "specimen-2-form29",
       "sha256": "ad6f2cfef2cf41f442e623f69bbf5db5322db035f356aeda2ce10826b47e3998",
-      "ok": false,
-      "reason": "schema_invalid",
-      "schemaValid": false,
-      "matched": 0,
-      "total": 50,
-      "rate": 0,
+      "ok": true,
+      "schemaValid": true,
+      "kind": "cbp_form_29",
+      "matched": 50,
+      "total": 52,
+      "rate": 96.2,
       "needsConfirmation": 0,
       "wrong": [
         {
-          "path": "actionType",
-          "expected": "rate_advance",
-          "confidence": null,
+          "path": "statedTotals[2].name",
+          "actual": "Merchandise Processing Fee",
+          "confidence": 0.95,
           "flagged": false
         },
         {
-          "path": "courier",
-          "expected": null,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.entry",
-          "expected": "2026-10-08",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.notice",
-          "expected": "2026-10-27",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "dates.responseDeadline",
-          "expected": "2026-11-16",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "entryNumber",
-          "expected": "ZZ9-0423518-7",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].kind",
-          "expected": "mpf",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].name",
-          "expected": "Merchandise Processing Fee",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "fees[0].stated",
-          "expected": "44.50",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "importer.address",
-          "expected": "2210 Quarry Mill Drive, Boise, ID 83702",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "importer.name",
-          "expected": "Fernhollow Supply LLC",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "kind",
-          "expected": "cbp_form_29",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].description",
-          "expected": "Cotton waffle-weave kitchen towels",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].dutyStated",
-          "expected": "385.02",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].hts",
-          "expected": "6302.91.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].n",
-          "expected": 1,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].quantity",
-          "expected": "320",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].rateText",
-          "expected": "9.2%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].unit",
-          "expected": "doz.",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[1].value",
-          "expected": "4815.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].description",
-          "expected": "Card wallets, outer surface of laminated plastic sheeting",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].dutyStated",
-          "expected": "136.59",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].hts",
-          "expected": "4202.32.10.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].n",
-          "expected": 2,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].quantity",
-          "expected": "186",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].rateText",
-          "expected": "12.1¢/kg + 4.6%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].unit",
-          "expected": "kg",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[2].value",
-          "expected": "2480.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].description",
-          "expected": "Acacia wood side tables",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].dutyStated",
-          "expected": "0.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].hts",
-          "expected": "9403.60.80",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].n",
-          "expected": 3,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].quantity",
-          "expected": "40",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].rateText",
-          "expected": "Free",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].unit",
-          "expected": "No.",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[3].value",
-          "expected": "3600.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].description",
-          "expected": "Melamine dinner plates",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].dutyStated",
-          "expected": "126.75",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].hts",
-          "expected": "3924.10.20.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].n",
-          "expected": 4,
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].quantity",
-          "expected": "260",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].rateText",
-          "expected": "6.5%",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].unit",
-          "expected": "kg",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "lines[4].value",
-          "expected": "1950.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "noticeType",
-          "expected": "Notice of Action",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "port",
-          "expected": "Long Beach, CA",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[0].name",
-          "expected": "Total entered value",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[0].stated",
-          "expected": "12845.00",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[1].name",
-          "expected": "Total duty",
-          "confidence": null,
-          "flagged": false
-        },
-        {
-          "path": "statedTotals[1].stated",
-          "expected": "648.36",
-          "confidence": null,
+          "path": "statedTotals[2].stated",
+          "actual": "44.50",
+          "confidence": 0.95,
           "flagged": false
         }
       ]
     }
   ],
   "overall": {
-    "matched": 0,
-    "total": 237,
-    "rate": 0
+    "matched": 232,
+    "total": 243,
+    "rate": 95.5
   },
   "perField": {
     "actionType": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "courier": {
-      "matched": 0,
+      "matched": 4,
       "total": 4,
-      "rate": 0
+      "rate": 100
     },
     "courier.invoiceNumber": {
-      "matched": 0,
+      "matched": 1,
       "total": 1,
-      "rate": 0
+      "rate": 100
     },
     "courier.name": {
-      "matched": 0,
+      "matched": 1,
       "total": 1,
-      "rate": 0
+      "rate": 100
     },
     "courier.waybill": {
-      "matched": 0,
+      "matched": 1,
       "total": 1,
-      "rate": 0
+      "rate": 100
     },
     "dates.entry": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "dates.notice": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "dates.responseDeadline": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "entryNumber": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "fees[].kind": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "fees[].name": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "fees[].stated": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "importer.address": {
-      "matched": 0,
+      "matched": 4,
       "total": 5,
-      "rate": 0
+      "rate": 80
     },
     "importer.name": {
-      "matched": 0,
+      "matched": 4,
       "total": 5,
-      "rate": 0
+      "rate": 80
     },
     "informationRequested[]": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "kind": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "lines[].description": {
-      "matched": 0,
+      "matched": 18,
       "total": 18,
-      "rate": 0
+      "rate": 100
     },
     "lines[].dutyStated": {
-      "matched": 0,
+      "matched": 16,
       "total": 18,
-      "rate": 0
+      "rate": 88.9
     },
     "lines[].hts": {
-      "matched": 0,
+      "matched": 18,
       "total": 18,
-      "rate": 0
+      "rate": 100
     },
     "lines[].n": {
-      "matched": 0,
+      "matched": 18,
       "total": 18,
-      "rate": 0
+      "rate": 100
     },
     "lines[].quantity": {
-      "matched": 0,
+      "matched": 18,
       "total": 18,
-      "rate": 0
+      "rate": 100
     },
     "lines[].rateText": {
-      "matched": 0,
+      "matched": 18,
       "total": 18,
-      "rate": 0
+      "rate": 100
     },
     "lines[].unit": {
-      "matched": 0,
+      "matched": 18,
       "total": 18,
-      "rate": 0
+      "rate": 100
     },
     "lines[].value": {
-      "matched": 0,
+      "matched": 18,
       "total": 18,
-      "rate": 0
+      "rate": 100
     },
     "noticeType": {
-      "matched": 0,
+      "matched": 4,
       "total": 5,
-      "rate": 0
+      "rate": 80
     },
     "port": {
-      "matched": 0,
+      "matched": 5,
       "total": 5,
-      "rate": 0
+      "rate": 100
     },
     "statedTotals[].name": {
-      "matched": 0,
-      "total": 8,
-      "rate": 0
+      "matched": 8,
+      "total": 11,
+      "rate": 72.7
     },
     "statedTotals[].stated": {
-      "matched": 0,
-      "total": 8,
-      "rate": 0
+      "matched": 8,
+      "total": 11,
+      "rate": 72.7
     }
   },
   "flaggedWrong": {
-    "flagged": 0,
-    "wrong": 237,
-    "rate": 0
+    "flagged": 1,
+    "wrong": 11,
+    "rate": 9.1
   }
 }
