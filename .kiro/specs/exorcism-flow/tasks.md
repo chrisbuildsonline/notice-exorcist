@@ -4,23 +4,23 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
 
 - [x] 1. Scaffold `apps/web` (Next.js, Tailwind) and add tokens from `design/DESIGN.md` 2.4 to `globals.css` and the Tailwind config. Load Geist and Geist Mono.
   - Test: `tokens.test.ts` parses `globals.css` and checks every status token and the canvas value equal those in `design/DESIGN.md`. Covers R9.
-- [ ] 2. Build `Figure` with required `prov` and `source`, the unsourced fallback and the throw in dev/test.
+- [x] 2. Build `Figure` with required `prov` and `source`, the unsourced fallback and the throw in dev/test.
   - Test: `Figure.test.tsx` renders sourced `stated`, `computed`, `tariff` values (2 decimals, comma, true minus, tag shown), and an unsourced one that throws in test and renders `—` plus `Unsourced` in production mode. Covers R5.3 to R5.5.
 - [ ] 3. Add a repo check that money is not formatted outside `Figure`.
   - Test: `no-raw-money.test.ts` scans `apps/web` sources for `toFixed(2)` and `Intl.NumberFormat` with currency outside `Figure.tsx` and fails on a hit. Covers R5.3.
 - [ ] 4. Implement `provenance-guard.ts` and the route wrapper.
   - Test: `provenance-guard.test.ts` rejects a payload with a money field lacking `prov`, accepts a sourced one, and a route test confirms the wrapper returns 500 in test mode. Covers R5.8.
-- [ ] 5. Implement `states.ts` (`lineState`, `noticeStatus`, `fogOpacity`).
+- [x] 5. Implement `states.ts` (`lineState`, `noticeStatus`, `fogOpacity`).
   - Test: `states.test.ts` covers state precedence, fog `0.15 + 0.85 × share`, fog 0 when all verified, and `At peace`. Covers R4.2, R4.5, R4.6.
 - [ ] 6. Build `StatusPill`, `HauntedLine`, `Paper` and `Fog` with the glow rules and reduced-motion CSS.
   - Test: `HauntedLine.test.tsx` checks each state has a word and an icon, only `disagrees` and `unverified` get a glow class, no glow class uses `accent`. `reduced-motion.test.ts` checks the media query sets `animation: none` and keeps a static box-shadow. Covers R4.3, R4.4, R4.8.
-- [ ] 7. Set up SQLite (`bun:sqlite`) with tables and the FTS5 rulings index. Add a specimen seed.
+- [x] 7. Set up SQLite (`bun:sqlite`) with tables and the FTS5 rulings index. Add a specimen seed.
   - Test: `db.test.ts` creates the schema in memory, inserts a ruling, and finds it with an FTS5 query. Covers R10.3.
-- [ ] 8. Implement `POST /api/notices` (upload), type and size validation, and storage.
+- [x] 8. Implement `POST /api/notices` (upload), type and size validation, and storage.
   - Test: `notices-upload.test.ts` accepts a PNG, rejects `.exe` and an oversized file, stores nothing on rejection. Covers R2.1, R2.2.
-- [ ] 9. Wire extraction (`notice-extract`) and engine comparison into `GET /api/notices/[id]`, with progress and failure states.
+- [x] 9. Wire extraction (`notice-extract`) and engine comparison into `GET /api/notices/[id]`, with progress and failure states.
   - Test: `notice-api.test.ts` in fixture mode returns lines with states from the engine, a failure fixture returns a reason with no figures, and every figure has `prov`. Covers R2.3, R2.4, R4.2, R4.7.
-- [ ] 10. Implement `POST /api/inbound`.
+- [x] 10. Implement `POST /api/inbound`.
   - Test: `inbound.test.ts` covers 401 without or with a wrong secret (nothing stored), 404 unknown token, 422 with no valid attachment, 202 with notice ids, no outbound mail call (spy), and no body content in logs. Covers R3.1 to R3.7.
 - [ ] 11. Build the Inbox page, `InboxRow`, empty state, `Dropzone`, forward address with Copy, and `Try a specimen`.
   - Test: Playwright `inbox.spec.ts`: first screen shows the title and the single primary pill, the empty state has the headline, `Try a specimen` opens a notice with no key. A phone viewport test checks the sticky `Upload a notice` bar. Covers R1.1 to R1.7.
