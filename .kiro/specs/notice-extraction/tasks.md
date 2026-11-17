@@ -52,7 +52,7 @@ Run `bun run test` and `bun run typecheck` after each task. Each task names the 
   - Test: `bun run --cwd packages/notice-extract test:live` passes with Ollama up. Evidence is the command output and the committed files. Covers R6.5, R9.3, R11.5, R11.6.
 - [x] 25. Check the recorded fixtures offline.
   - Test: `fixtures.test.ts` (always runs, no Ollama, no Chromium): one fixture per acceptance input, file name equals the sha256 of the input file, `responseSha256` matches `raw`, `provider` is `ollama`, `model` is `qwen2.5vl:7b`, `recordedFrom` is `live`, `raw` parses with `Notice`, and fixture-mode `extractNotice` returns `ok: true` for all five. Covers R6.5, R6.6, R6.7, R8.3, R11.5.
-- [ ] 26. Check that the committed result matches the fixtures.
+- [x] 26. Check that the committed result matches the fixtures.
   - Test: `results.test.ts` runs the eval in fixture mode and requires the numbers to equal `eval/results/latest.json` (ignoring `generatedAt`), and `RESULTS.md` to contain the overall figure from `latest.json`. Covers R9.2, R9.6.
 - [ ] 27. Fill in the README line "Measured accuracy: [fill in measured result]" with figures copied from `RESULTS.md`.
   - Test: `readme.test.ts` extracts every percentage from that README sentence and requires each to equal a value in `latest.json`, and fails if the placeholder text remains. Covers R9.4.
