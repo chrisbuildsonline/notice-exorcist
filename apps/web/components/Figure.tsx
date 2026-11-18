@@ -53,7 +53,7 @@ export function Figure({ value, prov, source, size = 'number' }: FigureProps) {
         <button
           type="button"
           popoverTarget={id}
-          className="relative rounded-xs bg-surface-muted px-1.5 text-[11px] leading-4 font-semibold text-text-secondary before:absolute before:-inset-3 before:content-['']"
+          className="relative rounded-xs bg-surface-muted px-1.5 text-[11px] leading-4 font-semibold text-text-secondary before:absolute before:-inset-3.5 before:content-['']"
           aria-label={`${prov}: ${source}`}
           aria-describedby={`${id}-tip`}
         >

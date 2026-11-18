@@ -157,10 +157,11 @@ export function DraftEditor({ draft, onSaved, onEdit }: { draft: DraftView; onSa
         </h2>
         <ol className="mt-3 space-y-1">
           {draft.citations.map((c, n) => (
-            <li key={c.id} id={`source-${c.id}`} className="-mx-2 flex scroll-mt-24 gap-3 rounded-sm px-2 py-1.5 text-caption text-text-secondary target:bg-accent-50">
+            // the whole row (44px at least) is the link's tap target
+            <li key={c.id} id={`source-${c.id}`} className="relative -mx-2 flex min-h-11 scroll-mt-24 items-center gap-3 rounded-sm px-2 py-1.5 text-caption text-text-secondary target:bg-accent-50">
               <span className="shrink-0 font-mono font-semibold text-accent">{`[${n + 1}]`}</span>
               {c.href ? (
-                <a href={c.href} target="_blank" rel="noreferrer" className="min-w-0 text-text-secondary underline-offset-2 hover:text-accent hover:underline">
+                <a href={c.href} target="_blank" rel="noreferrer" className="min-w-0 text-text-secondary underline-offset-2 after:absolute after:inset-0 after:rounded-sm after:content-[''] hover:text-accent hover:underline">
                   {c.label} <span aria-hidden="true">↗</span>
                 </a>
               ) : (

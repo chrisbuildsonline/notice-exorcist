@@ -99,7 +99,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
   return (
     <div className="mx-auto max-w-[1200px] px-4 pb-40 md:px-8 md:pb-16">
       <header className="flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-body font-semibold tracking-tight">
+        <Link href="/" className="flex h-11 items-center gap-2 text-body font-semibold tracking-tight">
           <GhostGlyph size={24} />
           Notice Exorcist
         </Link>
