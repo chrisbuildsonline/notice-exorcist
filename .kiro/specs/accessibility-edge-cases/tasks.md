@@ -23,7 +23,7 @@ Contrast proof, the axe harness, skip link, landmarks, focus rings, route focus.
 - [x] 4. [e2e] One `<main id="main" tabIndex={-1}>` on every page, and the skip link works.
   - Test first: `keyboard.spec.ts` "skip link": on Inbox, notice and Exorcise pages press Tab once, expect the skip link focused and visible, press Enter, expect focus on `#main`.
   - Then: add a `Page` wrapper that owns the landmark and use it in the three pages. Check there is exactly one `main` per page. Covers R1.5.
-- [ ] 5. [e2e] Round controls keep a round focus ring.
+- [x] 5. [e2e] Round controls keep a round focus ring.
   - Test first: `focus-ring.spec.ts` focuses every `.rounded-full` focusable on Inbox, notice view, drawer and Exorcise at 1440 and 390, and fails on `borderRadius` of `0px`, outline other than `2px solid rgb(91, 61, 245)`, or a ring clipped by an `overflow` ancestor.
   - Then: remove `border-radius: inherit` from the base `:focus-visible` rule in `globals.css`, add `.focus-inset` where a parent clips. Covers R1.3, R7.1.
 - [ ] 6. [e2e] Label-wrapped inputs show the ring on the label.

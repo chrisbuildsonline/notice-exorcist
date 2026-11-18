@@ -108,5 +108,6 @@ body { background:var(--color-canvas); color:var(--color-ink); font-family:var(-
 }
 .skip-link:focus { transform:none; }
 .num { font-variant-numeric:tabular-nums; }
-/* In the base layer, so a rounded utility (a pill's rounded-full) keeps its radius when focused. */
-@layer base { :focus-visible { outline:2px solid var(--color-accent); outline-offset:2px; border-radius:inherit; } }
+/* In the base layer, so utilities can tune it. Outlines follow each control's own radius (a pill gets a pill ring),
+   so the rule sets no radius of its own: `inherit` here gave a control its parent's shape on focus. */
+@layer base { :focus-visible { outline:2px solid var(--color-accent); outline-offset:2px; } }

@@ -123,7 +123,7 @@ The source of truth for every visual value in `apps/web`. If a value is not here
 }
 body { background:var(--color-canvas); color:var(--color-ink); font-family:var(--font-geist),ui-sans-serif,system-ui,sans-serif; }
 .num { font-variant-numeric:tabular-nums; }
-:focus-visible { outline:2px solid var(--color-accent); outline-offset:2px; border-radius:inherit; }
+:focus-visible { outline:2px solid var(--color-accent); outline-offset:2px; } /* the outline follows each control's own radius */
 ```
 
 ```ts
