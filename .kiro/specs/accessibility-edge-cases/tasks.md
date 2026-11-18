@@ -80,7 +80,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 18. [css] No JS animation outside the reduced-motion hook.
   - Test first: `no-js-animation.test.ts` scans `apps/web` for `requestAnimationFrame`, `.animate(` and `behavior: 'smooth'`; fails on a hit outside `useReducedMotion.ts`.
   - Then: add `useReducedMotion.ts`; fix any hit. Covers R3.6.
-- [ ] 19. [e2e] Reduced motion in the browser.
+- [x] 19. [e2e] Reduced motion in the browser.
   - Test first: `reduced-motion.spec.ts` with `emulateMedia({ reducedMotion: 'reduce' })` on a haunted notice: `animationName` is `none` on glow and fog, box-shadow is set and non-`none` on `unverified` and `disagrees` lines and `none` on `confirm`, `unsupported`, `verified`; fog opacity equals the value from `fogOpacity`. Same page with `no-preference` shows `pulse-h`, `pulse-u`, `fog-drift`. Toggle on the same page follows without reload.
   - Then: fix any difference. Covers R3.1 to R3.3, R3.7.
 - [ ] 20. [component] Static export indicator and instant calming.
