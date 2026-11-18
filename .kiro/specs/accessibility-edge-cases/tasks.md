@@ -17,7 +17,7 @@ Contrast proof, the axe harness, skip link, landmarks, focus rings, route focus.
 - [x] 2. [e2e] Add `@axe-core/playwright` (dev) and the `scanScreen` helper with waivers.
   - Test first: `e2e/a11y.helper.spec.ts` loads an inline page with a known serious violation (an image with no alt, a button with no name) and expects `scanScreen` to fail with rule id and selector; a minor-only page passes with a logged note; an unused waiver fails.
   - Then: add `e2e/a11y.ts` and an empty `e2e/a11y-waivers.ts`. State the dependency reason in the PR (R8.2). Covers R2.1 to R2.3.
-- [ ] 3. [component] Skip link.
+- [x] 3. [component] Skip link.
   - Test first: `SkipLink.test.tsx` renders the link as the first element in the layout, `href="#main"`, text `Skip to main content`.
   - Then: add `SkipLink.tsx`, its `.skip-link` CSS (hidden until focus, then fixed top-left, 44px high, `z-50`), and render it first in `layout.tsx`. Covers R1.5.
 - [ ] 4. [e2e] One `<main id="main" tabIndex={-1}>` on every page, and the skip link works.
