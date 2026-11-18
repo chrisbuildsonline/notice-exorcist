@@ -34,9 +34,9 @@ The source of truth for every visual value in `apps/web`. If a value is not here
 | `surface` | `#ffffff` | floating cards, document paper, panels | - |
 | `surface-muted` | `#f6f7f9` | wells inside a surface: formula block, table header, row hover | - |
 | `line` | `#e6e8ee` | hairline dividers **inside** a surface only | - |
-| `ink` | `#14161c` | primary text, primary pill fill | 17.9 on white |
+| `ink` | `#14161c` | primary text, primary pill fill | 18.1 on white |
 | `ink-hover` | `#2a2d36` | primary pill hover | - |
-| `text-secondary` | `#4a5060` | body copy, labels | 8.0 white / 7.1 canvas |
+| `text-secondary` | `#4a5060` | body copy, labels | 8.1 white / 7.1 canvas |
 | `text-muted` | `#646a79` | captions, timestamps, meta | 5.4 white / 4.7 canvas |
 | `disabled-bg` / `disabled-fg` | `#e6e8ee` / `#8a90a0` | disabled controls (exempt from AA; always paired with muted helper text) | - |
 | **`accent`** | `#5b3df5` ("séance violet") | links, selection, focus ring, chart series, citation chips | 6.1 white / 5.4 canvas; white on accent 6.1 |
@@ -52,8 +52,8 @@ The source of truth for every visual value in `apps/web`. If a value is not here
 | `unverified` | not yet checked against the engine/tariff | `#8a5300` | `#fff6e0` | `#b87d00` (3.5) | `rgba(245,179,0,.28)` | 5.9 |
 | `calm` (verified/approved) | stated = computed | `#15693d` | `#e8f6ee` | `#2f9e5e` (3.4) | `rgba(47,158,94,.22)` | 6.0 |
 | `confirm` (needs confirmation) | low-confidence read; user must confirm | `#1f5296` | `#e8f0fc` | `#3b7ddd` (4.1) | none | 6.8 |
-| `unsupported` | fee type the engine can't check (e.g. AD/CVD) | `#4a5060` | `#eceef3` | `#8a90a0` dashed (3.2) | none | 7.0 |
-| `draft` | reply not approved | `#4a5060` | `#eceef3` | - | none | 7.0 |
+| `unsupported` | fee type the engine can't check (e.g. AD/CVD) | `#4a5060` | `#eceef3` | `#8a90a0` dashed (3.2) | none | 6.9 |
+| `draft` | reply not approved | `#4a5060` | `#eceef3` | - | none | 6.9 |
 
 **How this fits "one accent".**
 - Violet is the only colour that means "you can act on this or it is selected". Status hues appear **only** as pills, row tints, 3px edges, glows and status icons.

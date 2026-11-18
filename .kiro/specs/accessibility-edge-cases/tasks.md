@@ -11,7 +11,7 @@ Slices are independent stopping points. Each ends with a green `bun run test`, `
 ## Slice 1: Foundations (tasks 1 to 8)
 Contrast proof, the axe harness, skip link, landmarks, focus rings, route focus.
 
-- [ ] 1. [unit] Contrast of the `design/DESIGN.md` pairs.
+- [x] 1. [unit] Contrast of the `design/DESIGN.md` pairs.
   - Test first: `app/a11y-contrast.test.ts` parses `globals.css`, computes WCAG 2.x ratios for the table in the design, and asserts each documented ratio (one decimal) and the AA minimums. Include `ink` on every status `-bg` and the focus ring on `canvas` and `surface`.
   - Then: if a documented ratio is off, fix `design/DESIGN.md`, not the test. Covers R2.4 to R2.6.
 - [ ] 2. [e2e] Add `@axe-core/playwright` (dev) and the `scanScreen` helper with waivers.
