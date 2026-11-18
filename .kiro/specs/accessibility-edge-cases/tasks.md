@@ -95,7 +95,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 23. [unit] Unsupported rate: state, notice caption and draft skipping.
   - Test first: `assess.test.ts` (or `notice-api.test.ts`) with a line whose rate text the engine rejects: state `unsupported`, `computed` null, `difference` null, stated kept, no flag; `draft-builder.test.ts`: the line is absent from claims and `skipped` lists it with a reason; the hash input does not contain `skipped`; `explain.test.ts`: the unsupported sentence has no digits. Add the synthetic SPECIMEN fixture and record which rate text yields `unsupported` in the task PR note.
   - Then: implement `skipped` in `draft-builder.ts`, the count caption source in `notice-view.ts`. Covers R5.1, R5.2, R5.5, R5.6, R5.10.
-- [ ] 24. [e2e] [a11y] Unsupported line in the UI and the drawer.
+- [x] 24. [e2e] [a11y] Unsupported line in the UI and the drawer.
   - Test first: `unsupported-rate.spec.ts`: the row shows the verbatim rate text, stated figure with `stated` tag, `—` in the recomputed and difference cells, the sentence "Duty-engine cannot check this rate, so the figure is shown as printed on the notice." in the DOM, `⊘ Not checked`, no glow class, no `$0.00` anywhere on the row, the caption "1 line is not checked and counts as stated."; the drawer shows rate text, HTS edition, reason and the engine caption, and no `Match`/`Mismatch`; the Exorcise page says one line was left out. Add `notice-unsupported` to `a11y.spec.ts`.
   - Then: add `UnsupportedLine.tsx`, the drawer branch and the Exorcise note. Covers R5.2 to R5.11.
 

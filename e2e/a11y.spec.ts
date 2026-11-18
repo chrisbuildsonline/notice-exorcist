@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { scanScreen } from './a11y';
-import { approveBox, desktop, fileConfirmedNotice, phone } from './helpers';
+import { approveBox, desktop, fileConfirmedNotice, fileUnsupportedNotice, phone } from './helpers';
 
 // R2.1: axe (WCAG 2.0 to 2.2 A and AA) on each screen at both widths; serious or critical fails. Waivers live in
 // a11y-waivers.ts. It files its own notice, so the Inbox has rows whatever ran before.
@@ -10,6 +10,8 @@ let noticePath = '';
 /** A notice on the second server, whose reader flags every field, so it shows the confirm form. */
 const STRICT = 'http://localhost:3211';
 let strictPath = '';
+/** A strict-server notice whose line 3 has a rate duty-engine cannot check (R5.11). */
+let unsupportedPath = '';
 
 test.beforeAll(async ({ browser, baseURL }) => {
   noticePath = await fileConfirmedNotice(browser, baseURL);
@@ -18,6 +20,7 @@ test.beforeAll(async ({ browser, baseURL }) => {
   expect((await page.request.post(`${STRICT}/api/specimens`, { form: { specimen: 'specimen-2-form29' }, maxRedirects: 0 })).status()).toBe(303);
   await page.goto(`${STRICT}/`);
   strictPath = `${STRICT}${await page.getByRole('link', { name: 'CBP Form 29 · Notice of Action' }).first().getAttribute('href')}`;
+  unsupportedPath = await fileUnsupportedNotice(page);
   await page.close();
 });
 
@@ -55,6 +58,15 @@ const screens: Array<{ name: string; path: () => string; ready: (p: import('@pla
     path: () => `${strictPath}?line=1`,
     ready: async (p) => {
       await expect(p.getByRole('form', { name: 'Confirm values' })).toBeVisible();
+    },
+  },
+  {
+    // line 3 chosen, so the phone shows the line view with its unchecked figures too
+    name: 'notice-unsupported',
+    path: () => `${unsupportedPath}?line=3`,
+    ready: async (p) => {
+      await expect(p.locator('li[data-state=unsupported]')).toHaveCount(1);
+      await expect(p.getByRole('complementary', { name: 'Line details' }).getByRole('heading', { name: 'Line 3' })).toBeVisible();
     },
   },
   {

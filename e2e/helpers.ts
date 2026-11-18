@@ -59,6 +59,49 @@ export async function confirmAsRead(request: APIRequestContext, noticePath: stri
   expect((await request.post(`${api}/confirm`, { data: { values } })).status()).toBe(200);
 }
 
+/** The second server, whose reader flags every recorded field, so every value goes through the confirm form. */
+export const STRICT = 'http://localhost:3211';
+
+/**
+ * Files the Form 29 specimen on the strict server and confirms every flagged value as read except those in `except`,
+ * which are left for the test. Returns the full notice URL.
+ */
+export async function fileStrictNotice(page: Page, except: readonly string[] = []): Promise<string> {
+  const request = page.request;
+  await expect.poll(() => request.get(STRICT).then((r) => r.status()).catch(() => 0), { timeout: 60_000 }).toBe(200);
+  expect((await request.post(`${STRICT}/api/specimens`, { form: { specimen: 'specimen-2-form29' }, maxRedirects: 0 })).status()).toBe(303);
+  // the newest notice is listed first
+  await page.goto(`${STRICT}/`);
+  const path = `${STRICT}${await page.getByRole('link', { name: 'CBP Form 29 · Notice of Action' }).first().getAttribute('href')}`;
+  const api = path.replace('/notices/', '/api/notices/');
+  const body = (await (await request.get(api)).json()) as NoticeBody;
+  const values = [...body.assessment.flags, ...body.assessment.lines.flatMap((l) => l.confirm)]
+    .filter((f) => !except.includes(f.path))
+    .map((f) => ({ path: f.path, value: f.read ?? '' }));
+  expect((await request.post(`${api}/confirm`, { data: { values } })).status()).toBe(200);
+  return path;
+}
+
+/** A compound rate duty-engine cannot parse (apps/web/lib/test-env.ts UNSUPPORTED_RATE). */
+export const UNSUPPORTED_RATE = '2.4¢/kg + 5% (see note)';
+/**
+ * The specimen prints line 3 as `Free` with $0.00 duty. These tests take the notice to print a compound rate and a
+ * duty for it, so a $0.00 on that row could only come from the engine, which must show a dash instead.
+ */
+export const UNSUPPORTED_DUTY = '196.80';
+export const LINE3 = ['lines[2].rateText', 'lines[2].dutyStated'] as const;
+
+/** A strict-server notice whose line 3 is confirmed with UNSUPPORTED_RATE and UNSUPPORTED_DUTY, the rest as read. */
+export async function fileUnsupportedNotice(page: Page): Promise<string> {
+  const path = await fileStrictNotice(page, LINE3);
+  const values = [
+    { path: LINE3[0], value: UNSUPPORTED_RATE },
+    { path: LINE3[1], value: UNSUPPORTED_DUTY },
+  ];
+  expect((await page.request.post(`${path.replace('/notices/', '/api/notices/')}/confirm`, { data: { values } })).status()).toBe(200);
+  return path;
+}
+
 /** The draft id on the Exorcise screen: its URL names the notice, not the draft. */
 export const draftIdOf = (page: Page) => page.evaluate(() => document.querySelector<HTMLElement>('[data-draft-id]')!.dataset.draftId!);
 
