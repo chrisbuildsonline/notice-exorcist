@@ -32,7 +32,7 @@ Contrast proof, the axe harness, skip link, landmarks, focus rings, route focus.
 - [x] 7. [e2e] Focus moves to the page title on navigation.
   - Test first: `keyboard.spec.ts` "route focus": from Inbox open a specimen notice with Enter, expect `document.activeElement` to be the `h1`; go Back to Inbox, expect the Inbox `h1`; first page load leaves focus on `body`.
   - Then: add `RouteFocus.tsx` using `usePathname`, mount it in the layout, give each `h1` `tabIndex={-1}` with no outline. Covers R1.6.
-- [ ] 8. [a11y] Axe on Inbox (with notices) and notice view.
+- [x] 8. [a11y] Axe on Inbox (with notices) and notice view.
   - Test first: `a11y.spec.ts` rows `inbox-list` and `notice-view` at 1440 and 390, using `scanScreen`.
   - Then: fix every serious violation in the markup or tokens. Add a waiver only with a reason and a note in the PR. Covers R2.1, R2.7.
 
