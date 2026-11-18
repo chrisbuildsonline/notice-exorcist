@@ -1,8 +1,6 @@
-import { resolve } from 'node:path';
-import { DatabaseSync } from 'node:sqlite';
 import { expect, type Page, test } from '@playwright/test';
 import { scanScreen } from './a11y';
-import { desktop, inkPills, phone, watchErrors } from './helpers';
+import { desktop, emptyStore, inkPills, phone, watchErrors } from './helpers';
 
 // R4 on the empty store: it runs in the `empty-inbox` project, before any spec files a notice, and leaves the
 // store empty again for inbox.spec.ts.
@@ -66,14 +64,7 @@ test('removing the last notice returns to the empty state without an error', asy
   await expect(page.getByRole('link', { name: 'CBP Form 29 · Notice of Action' })).toHaveCount(1);
   await expect(page.getByTestId('at-stake')).toContainText('$');
 
-  // The app has no delete control yet, so the notice is removed from the store directly, as an admin would.
-  const db = new DatabaseSync(resolve('.e2e-data', 'notices.db'));
-  try {
-    for (const t of ['approvals', 'drafts', 'confirmations', 'lines', 'notices']) db.exec(`DELETE FROM ${t}`);
-  } finally {
-    db.close();
-  }
-
+  emptyStore();
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Exorcise your customs notice' })).toBeVisible();
   await expect(page.getByTestId('at-stake')).toHaveCount(0);

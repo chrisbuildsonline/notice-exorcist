@@ -1,4 +1,49 @@
+import { createRequire } from 'node:module';
+import { dirname, join, resolve } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
+import { pathToFileURL } from 'node:url';
 import { type APIRequestContext, type Browser, expect, type Page } from '@playwright/test';
+
+type PdfJs = {
+  getDocument(src: { data: Uint8Array; useSystemFonts?: boolean }): {
+    promise: Promise<{
+      numPages: number;
+      getPage(n: number): Promise<{ getTextContent(): Promise<{ items: { str?: string; hasEOL?: boolean }[] }> }>;
+      getMetadata(): Promise<{ info: Record<string, unknown> }>;
+    }>;
+    destroy(): Promise<void>;
+  };
+};
+
+/** pdf.js is a dev dependency of apps/web, so it is resolved from there. */
+async function pdfjs(): Promise<PdfJs> {
+  const dir = dirname(createRequire(resolve('apps/web/package.json')).resolve('pdfjs-dist/package.json'));
+  return (await import(pathToFileURL(join(dir, 'legacy/build/pdf.mjs')).href)) as PdfJs;
+}
+
+/** The text of each page of a PDF (whitespace collapsed) and the document info. */
+export async function readPdf(bytes: Uint8Array) {
+  const task = (await pdfjs()).getDocument({ data: bytes, useSystemFonts: true });
+  const doc = await task.promise;
+  const pages: string[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const { items } = await (await doc.getPage(i)).getTextContent();
+    pages.push(items.map((t) => `${t.str ?? ''}${t.hasEOL ? ' ' : ''}`).join('').replace(/\s+/g, ' '));
+  }
+  const { info } = await doc.getMetadata();
+  await task.destroy();
+  return { pages, info };
+}
+
+/** Empties the main server's notice store. The app has no delete control yet, so this goes to the store directly, as an admin would. */
+export function emptyStore() {
+  const db = new DatabaseSync(resolve('.e2e-data', 'notices.db'));
+  try {
+    for (const t of ['approvals', 'drafts', 'confirmations', 'lines', 'notices']) db.exec(`DELETE FROM ${t}`);
+  } finally {
+    db.close();
+  }
+}
 
 export const desktop = { width: 1440, height: 900 };
 export const phone = { width: 390, height: 844 };

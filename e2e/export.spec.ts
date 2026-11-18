@@ -1,44 +1,10 @@
 import { readFile } from 'node:fs/promises';
-import { createRequire } from 'node:module';
-import { dirname, join, resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { expect, type Page, test } from '@playwright/test';
-import { approveBox, desktop, draftIdOf, exportPill, fileConfirmedNotice, watchErrors } from './helpers';
+import { approveBox, desktop, draftIdOf, exportPill, fileConfirmedNotice, readPdf, watchErrors } from './helpers';
 
 // The export flow end to end against the real server (R7, R8): blocked before the tick, a real download after it,
 // blocked again after an edit, and the file is the approved draft. It files its own notice.
 test.describe.configure({ mode: 'serial' });
-
-type PdfJs = {
-  getDocument(src: { data: Uint8Array; useSystemFonts?: boolean }): {
-    promise: Promise<{
-      numPages: number;
-      getPage(n: number): Promise<{ getTextContent(): Promise<{ items: { str?: string; hasEOL?: boolean }[] }> }>;
-      getMetadata(): Promise<{ info: Record<string, unknown> }>;
-    }>;
-    destroy(): Promise<void>;
-  };
-};
-
-/** pdf.js is a dev dependency of apps/web, so it is resolved from there. */
-async function pdfjs(): Promise<PdfJs> {
-  const dir = dirname(createRequire(resolve('apps/web/package.json')).resolve('pdfjs-dist/package.json'));
-  return (await import(pathToFileURL(join(dir, 'legacy/build/pdf.mjs')).href)) as PdfJs;
-}
-
-/** The text of each page (whitespace collapsed) and the document info. */
-async function readPdf(bytes: Uint8Array) {
-  const task = (await pdfjs()).getDocument({ data: bytes, useSystemFonts: true });
-  const doc = await task.promise;
-  const pages: string[] = [];
-  for (let i = 1; i <= doc.numPages; i++) {
-    const { items } = await (await doc.getPage(i)).getTextContent();
-    pages.push(items.map((t) => `${t.str ?? ''}${t.hasEOL ? ' ' : ''}`).join('').replace(/\s+/g, ' '));
-  }
-  const { info } = await doc.getMetadata();
-  await task.destroy();
-  return { pages, info };
-}
 
 /** Every request to the export route, and every download, from here on. */
 function watchExports(page: Page) {
