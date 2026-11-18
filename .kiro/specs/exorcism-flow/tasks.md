@@ -36,7 +36,7 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: `hash.test.ts` same content gives the same hash regardless of key order, any paragraph or citation change gives a different hash, a golden value is fixed. Covers R7.2.
 - [x] 17. Implement `draft-builder.ts` and `DraftEditor` with figure tokens and citation chips.
   - Test: `draft-builder.test.ts` every claim has a citation, figures come from provenance refs, model output containing a bare number outside a token is rejected. `DraftEditor.test.tsx` rejects a typed number as a figure token. Covers R6.1 to R6.6.
-- [ ] 18. Implement draft `GET` and `PUT` where `PUT` clears the approval in the same transaction.
+- [x] 18. Implement draft `GET` and `PUT` where `PUT` clears the approval in the same transaction.
   - Test: `drafts-put.test.ts` approves, edits, and checks the approval row is gone and state is `draft`. Covers R7.5.
 - [ ] 19. Implement `POST /api/drafts/[id]/approve` and `approval.ts`.
   - Test: `approve.test.ts` records approval only when the posted hash equals the server-recomputed hash, and rejects a stale hash with 409. Approval state is derived from the stored record. Covers R7.2, R7.8.

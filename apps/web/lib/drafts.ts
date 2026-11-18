@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { getDb } from './db';
-import type { DraftContent, DraftView } from './draft';
+import { checkParagraph, type DraftContent, type DraftView } from './draft';
 import { buildDraft, canDraft, type LineTariff } from './draft-builder';
 import { confirmationsFor } from './confirm';
 import { draftHash } from './hash';
@@ -46,6 +46,39 @@ export async function ensureDraft(noticeId: string): Promise<DraftRow | null> {
     .prepare('INSERT OR IGNORE INTO drafts (id, notice_id, body_json, hash, state, updated_at) VALUES (?, ?, ?, ?, ?, ?)')
     .run(randomUUID(), noticeId, JSON.stringify(content), await draftHash(content), 'draft', new Date().toISOString());
   return draftRowFor(noticeId);
+}
+
+export type UpdateResult = { ok: true; row: DraftRow } | { ok: false; status: 404 | 422; error: string; message: string; paragraph?: number };
+
+/**
+ * Stores new paragraph text. Only the words change: each paragraph must keep its figure and citation tokens and
+ * hold no typed amount (the editor's rule, checked again here). Figures and citations stay the server's.
+ * The update and the deletion of any approval happen in one transaction, so an edited draft is never approved.
+ */
+export async function updateDraft(id: string, paragraphs: unknown): Promise<UpdateResult> {
+  const row = getDraftRow(id);
+  if (!row) return { ok: false, status: 404, error: 'not_found', message: 'No such draft.' };
+  const current = contentOf(row);
+  const invalid = (message: string, paragraph?: number): UpdateResult => ({ ok: false, status: 422, error: 'invalid_edit', message, paragraph });
+  if (!Array.isArray(paragraphs) || !paragraphs.every((p) => typeof p === 'string')) return invalid('paragraphs must be a list of strings.');
+  if (paragraphs.length !== current.paragraphs.length) return invalid('Paragraphs can’t be added or removed.');
+  for (const [i, p] of paragraphs.entries()) {
+    const why = checkParagraph(current.paragraphs[i]!, p);
+    if (why) return invalid(why, i);
+  }
+  const content: DraftContent = { ...current, paragraphs };
+  const hash = await draftHash(content);
+  const db = getDb();
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    db.prepare("UPDATE drafts SET body_json = ?, hash = ?, state = 'draft', updated_at = ? WHERE id = ?").run(JSON.stringify(content), hash, new Date().toISOString(), id);
+    db.prepare('DELETE FROM approvals WHERE draft_id = ?').run(id);
+    db.exec('COMMIT');
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
+  return { ok: true, row: getDraftRow(id)! };
 }
 
 /** What the API and the page show. The hash is recomputed from the stored content, never read from a column or a client. */
