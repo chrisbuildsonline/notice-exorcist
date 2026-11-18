@@ -141,7 +141,7 @@ const footerTemplate = (hash: string) => `<div style="width:100%;box-sizing:bord
  * The PDF of an approved draft (R8): Playwright's Chromium `page.pdf`, run on the server with no network.
  * Refuses content whose hash is not the approved hash, so nothing but the approved text is ever printed.
  */
-export async function renderPdf(doc: PdfDoc): Promise<Uint8Array> {
+export async function renderPdf(doc: PdfDoc): Promise<Uint8Array<ArrayBuffer>> {
   if ((await draftHash(doc.content)) !== doc.hash) throw new Error('pdf: the content does not match the approved hash');
   const html = pdfHtml(doc);
   const { chromium } = await import('playwright');
