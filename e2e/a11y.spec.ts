@@ -14,14 +14,27 @@ let strictPath = '';
 test.beforeAll(async ({ browser, baseURL }) => {
   noticePath = await fileConfirmedNotice(browser, baseURL);
   const page = await browser.newPage();
-  await expect.poll(() => page.request.get(STRICT).then((r) => r.status()).catch(() => 0), { timeout: 60_000 }).toBe(200);
+  for (const server of [STRICT, LOCAL]) await expect.poll(() => page.request.get(server).then((r) => r.status()).catch(() => 0), { timeout: 60_000 }).toBe(200);
   expect((await page.request.post(`${STRICT}/api/specimens`, { form: { specimen: 'specimen-2-form29' }, maxRedirects: 0 })).status()).toBe(303);
   await page.goto(`${STRICT}/`);
   strictPath = `${STRICT}${await page.getByRole('link', { name: 'CBP Form 29 · Notice of Action' }).first().getAttribute('href')}`;
   await page.close();
 });
 
+/**
+ * The empty Inbox needs an empty store. The local-only server's store is filed only by local-mode.spec.ts, which
+ * runs after this file; empty-inbox.spec.ts scans the main server's empty store too.
+ */
+const LOCAL = 'http://localhost:3212';
+
 const screens: Array<{ name: string; path: () => string; ready: (p: import('@playwright/test').Page) => Promise<void> }> = [
+  {
+    name: 'inbox-empty',
+    path: () => LOCAL,
+    ready: async (p) => {
+      await expect(p.getByRole('heading', { name: 'Exorcise your customs notice' })).toBeVisible();
+    },
+  },
   {
     name: 'inbox-list',
     path: () => '/',

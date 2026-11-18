@@ -89,7 +89,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 21. [component] Empty inbox shows no money figure and one primary pill.
   - Test first: `EmptyInbox.test.tsx`: headline, one supporting line, `Try a specimen` is the only ink pill, `Upload a notice` is secondary, no `$` in the header, specimen card is `aria-hidden` and `inert`.
   - Then: extract `EmptyInbox.tsx` from `app/page.tsx`; render the amount header only when a computed figure exists; switch the phone sticky bar to `Try a specimen` when empty. Covers R4.1 to R4.4.
-- [ ] 22. [e2e] [a11y] Empty inbox in the browser.
+- [x] 22. [e2e] [a11y] Empty inbox in the browser.
   - Test first: `empty-inbox.spec.ts` with an empty data dir: R4 assertions at 1440 and 390 (sticky bar on phone), keyboard reaches the pill first after the skip link, `inbox-empty` axe scan, and deleting the last notice returns to the empty state with no error.
   - Then: fix. Add `inbox-empty` to `a11y.spec.ts`. Covers R4.5, R4.6.
 - [ ] 23. [unit] Unsupported rate: state, notice caption and draft skipping.
