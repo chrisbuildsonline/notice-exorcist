@@ -22,3 +22,4 @@ packages/tariff-data/.cache/
 .data/
 .e2e-data/
 .e2e-data-strict/
+.e2e-data-local/

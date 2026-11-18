@@ -1,4 +1,4 @@
-import { type Browser, expect, type Page } from '@playwright/test';
+import { type APIRequestContext, type Browser, expect, type Page } from '@playwright/test';
 
 export const desktop = { width: 1440, height: 900 };
 export const phone = { width: 390, height: 844 };
@@ -46,11 +46,17 @@ export async function fileConfirmedNotice(browser: Browser, baseURL: string | un
   await page.getByRole('link', { name: 'CBP Form 29 · Notice of Action' }).first().click();
   await expect(page).toHaveURL(/\/notices\/[\w-]+$/);
   const noticePath = new URL(page.url()).pathname;
-  const body = (await (await request.get(`/api${noticePath}`)).json()) as NoticeBody;
-  const values = [...body.assessment.flags, ...body.assessment.lines.flatMap((l) => l.confirm)].map((f) => ({ path: f.path, value: f.read ?? '' }));
-  expect((await request.post(`/api${noticePath}/confirm`, { data: { values } })).status()).toBe(200);
+  await confirmAsRead(request, noticePath);
   await page.close();
   return noticePath;
+}
+
+/** Confirms every flagged value of a notice as it was read. `noticePath` is `/notices/<id>`, or a full URL to one. */
+export async function confirmAsRead(request: APIRequestContext, noticePath: string) {
+  const api = noticePath.replace(/\/notices\//, '/api/notices/');
+  const body = (await (await request.get(api)).json()) as NoticeBody;
+  const values = [...body.assessment.flags, ...body.assessment.lines.flatMap((l) => l.confirm)].map((f) => ({ path: f.path, value: f.read ?? '' }));
+  expect((await request.post(`${api}/confirm`, { data: { values } })).status()).toBe(200);
 }
 
 /** The draft id on the Exorcise screen: its URL names the notice, not the draft. */

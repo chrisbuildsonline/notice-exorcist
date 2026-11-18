@@ -7,6 +7,10 @@ const DATA_DIR = resolve('.e2e-data');
 // A second server on its own store whose reader flags every field read below 0.96 (the recordings are 0.95),
 // so the confirm flow can be driven with the real specimens. It shares the one build.
 const STRICT = `NOTICE_DATA_DIR="${resolve('.e2e-data-strict')}" CONFIRM_BELOW=0.96 bun run --cwd apps/web start --port 3211`;
+// A third, local-only server (local-mode.spec.ts): recorded fixtures, and a preloaded guard that refuses and logs
+// every outbound connection that is not to this machine.
+const LOCAL_DIR = resolve('.e2e-data-local');
+const LOCAL = `NOTICE_DATA_DIR="${LOCAL_DIR}" EXTRACT_MODE=fixture OFFLINE_LOG="${LOCAL_DIR}/offline.log" NODE_OPTIONS="--require ${resolve('e2e/offline.cjs')}" bun run --cwd apps/web start --port 3212`;
 
 export default defineConfig({
   testDir: './e2e',
@@ -24,7 +28,7 @@ export default defineConfig({
     { name: 'chromium', testIgnore: 'inbox.spec.ts', dependencies: ['empty-inbox'], use: { ...devices['Desktop Chrome'] } },
   ],
   webServer: {
-    command: `rm -rf "${DATA_DIR}" "${DATA_DIR}-strict" && bun run build && (${STRICT} & bun run --cwd apps/web start --port ${PORT})`,
+    command: `rm -rf "${DATA_DIR}" "${DATA_DIR}-strict" "${LOCAL_DIR}" && bun run build && (${STRICT} & ${LOCAL} & bun run --cwd apps/web start --port ${PORT})`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: false,
     timeout: 180_000,
