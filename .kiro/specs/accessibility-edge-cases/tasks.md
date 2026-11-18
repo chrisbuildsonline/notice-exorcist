@@ -29,7 +29,7 @@ Contrast proof, the axe harness, skip link, landmarks, focus rings, route focus.
 - [x] 6. [e2e] Label-wrapped inputs show the ring on the label.
   - Test first: in `focus-ring.spec.ts`, Tab to the Dropzone file input and to the phone `Take a photo` input; the nearest `label` has a visible 2px outline matching its radius.
   - Then: switch `focus-within` utilities to `has-[:focus-visible]` on both labels in `Dropzone.tsx`. Covers R1.3, R1.7.
-- [ ] 7. [e2e] Focus moves to the page title on navigation.
+- [x] 7. [e2e] Focus moves to the page title on navigation.
   - Test first: `keyboard.spec.ts` "route focus": from Inbox open a specimen notice with Enter, expect `document.activeElement` to be the `h1`; go Back to Inbox, expect the Inbox `h1`; first page load leaves focus on `body`.
   - Then: add `RouteFocus.tsx` using `usePathname`, mount it in the layout, give each `h1` `tabIndex={-1}` with no outline. Covers R1.6.
 - [ ] 8. [a11y] Axe on Inbox (with notices) and notice view.

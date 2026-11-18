@@ -114,7 +114,9 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
           <div className="mt-2 flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-6">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                <h1 className="text-title">{v.title}</h1>
+                <h1 tabIndex={-1} className="text-title outline-none">
+                  {v.title}
+                </h1>
                 <span data-testid="notice-status">
                   <StatusPill notice={status} />
                 </span>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
+import { RouteFocus } from '../components/RouteFocus';
 import { SkipLink } from '../components/SkipLink';
 import './globals.css';
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-dvh antialiased">
         <SkipLink />
         {children}
+        <RouteFocus />
       </body>
     </html>
   );

@@ -103,7 +103,9 @@ export function DraftWorkspace({ initial, subtitle }: { initial: DraftView; subt
       <div className="mt-2 flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-6">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h1 className="text-title">Exorcise the notice</h1>
+            <h1 tabIndex={-1} className="text-title outline-none">
+              Exorcise the notice
+            </h1>
             <span data-testid="draft-state">
               <StatusPill draft={draft.state} />
             </span>

@@ -55,7 +55,9 @@ export default async function InboxPage() {
       <Page>
         <div className="flex items-start justify-between gap-6 pt-4 md:pt-6">
           <div>
-            <h1 className="text-title">Inbox</h1>
+            <h1 tabIndex={-1} className="text-title outline-none">
+              Inbox
+            </h1>
             {total ? (
               <div data-testid="at-stake" className="mt-4">
                 <Figure {...total} size="display" />
