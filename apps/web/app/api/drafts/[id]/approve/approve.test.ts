@@ -6,7 +6,7 @@ import { contentOf, type DraftRow, ensureDraft, getDraftRow, updateDraft } from 
 import { draftHash } from '../../../../../lib/hash';
 import { freshDataDir, haunted } from '../../../../../lib/test-env';
 import { GET } from '../route';
-import { POST } from './route';
+import { DELETE, POST } from './route';
 
 const ctx = (id: string) => ({ params: Promise.resolve({ id }) });
 const approve = (id: string, body: unknown) =>
@@ -67,6 +67,21 @@ describe('POST /api/drafts/[id]/approve', () => {
 
   it('404s an unknown draft', async () => {
     expect((await approve('nope', { hash })).status).toBe(404);
+    expect((await DELETE(new Request('http://x', { method: 'DELETE' }), ctx('nope'))).status).toBe(404);
+  });
+
+  it('DELETE withdraws the approval (the user unticked the box), and is safe to repeat', async () => {
+    expect((await approve(draft.id, { hash })).status).toBe(200);
+    for (let i = 0; i < 2; i++) {
+      const res = await DELETE(new Request('http://x', { method: 'DELETE' }), ctx(draft.id));
+      expect(res.status).toBe(200);
+      expect(((await res.json()) as DraftView).state).toBe('draft');
+      expect(approvalRow(draft.id)).toBeUndefined();
+      expect(getDraftRow(draft.id)!.state).toBe('draft');
+    }
+    expect(await stateOf(draft.id)).toBe('draft');
+    // the content is untouched, so the same hash can be approved again by ticking
+    expect((await approve(draft.id, { hash })).status).toBe(200);
   });
 
   it('derives approval from the stored record on every load, not from a state flag', async () => {

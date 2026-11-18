@@ -29,6 +29,20 @@ export async function recordApproval(row: Stored, hash: unknown): Promise<Approv
   return { ok: true };
 }
 
+/** Withdraws the approval (the user unticked the box). Nothing else ever removes one, except an edit. */
+export function revokeApproval(id: string): void {
+  const db = getDb();
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    db.prepare('DELETE FROM approvals WHERE draft_id = ?').run(id);
+    db.prepare("UPDATE drafts SET state = 'draft' WHERE id = ?").run(id);
+    db.exec('COMMIT');
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
+}
+
 /** True only when an approval row exists and its hash equals the hash of the draft as stored now. */
 export async function isApproved(row: Stored): Promise<boolean> {
   const a = getDb().prepare('SELECT hash FROM approvals WHERE draft_id = ?').get(row.id) as { hash: string } | undefined;
