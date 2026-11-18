@@ -40,11 +40,11 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: `drafts-put.test.ts` approves, edits, and checks the approval row is gone and state is `draft`. Covers R7.5.
 - [x] 19. Implement `POST /api/drafts/[id]/approve` and `approval.ts`.
   - Test: `approve.test.ts` records approval only when the posted hash equals the server-recomputed hash, and rejects a stale hash with 409. Approval state is derived from the stored record. Covers R7.2, R7.8.
-- [ ] 20. Build `ApprovalCard` and the export control with helper text and `aria-disabled`, and the persistent toast on edit.
+- [x] 20. Build `ApprovalCard` and the export control with helper text and `aria-disabled`, and the persistent toast on edit.
   - Test: Playwright `approval.spec.ts`: export is disabled and the box unticked on load, tick enables it, an edit unticks it and shows a toast that stays until dismissed, and viewing, saving and navigating never tick it. Covers R7.1, R7.3, R7.4, R7.7.
-- [ ] 21. Implement `POST /api/drafts/[id]/export` with the server-side hash check.
+- [x] 21. Implement `POST /api/drafts/[id]/export` with the server-side hash check.
   - Test: `export-gate.test.ts` direct request without approval returns 403, request with approval for a stale hash returns 403, request body claiming `approved: true` is ignored, valid approval returns a PDF. Covers R7.6.
-- [ ] 22. Implement `pdf.ts` with Playwright `page.pdf`, footer template, calculation trail and sources.
+- [x] 22. Implement `pdf.ts` with Playwright `page.pdf`, footer template, calculation trail and sources.
   - Test: `pdf.test.ts` renders a multi-page draft, extracts text per page and checks each page contains the not-legal-advice footer, the approved hash and `page x of y`, and that the trail and citations exist. Covers R8.1 to R8.6.
 - [ ] 23. Playwright export flow against the real server.
   - Test: `export.spec.ts`: export is blocked before the box is ticked, allowed after (download starts), blocked again after an edit, and the downloaded PDF contains the approved hash. Covers R7, R8 end to end.
