@@ -14,16 +14,31 @@ TypeScript monorepo (Bun workspaces). Next.js and Tailwind front end; a pure pac
 
 ## Develop
 
+### Run it
+
+No API key and no Ollama: the specimens replay recorded model replies.
+
 ```sh
 bun install
+bun run --cwd packages/tariff-data data:build   # tariff index into packages/tariff-data/.cache/ (offline, not in git)
+bun run build
+bun run start      # http://localhost:3000; another port: bun run start --port 3300
+```
+
+Open http://localhost:3000, press Try a specimen, open the Form 29 notice, confirm the flagged values, then Exorcise this notice.
+
+### Work on it
+
+```sh
+bun install
+bun run --cwd packages/tariff-data data:build   # once, before the tests: they read the index
 bun run dev        # web app on http://localhost:3000
 bun run test       # Vitest across all workspaces, then bun test for packages/tariff-data and *.bun.test.ts
 bun run typecheck
-bun run e2e        # Playwright (chromium); first run: bunx playwright install chromium
+bun run e2e        # Playwright (chromium), builds and serves on ports 3210-3212; first run: bunx playwright install chromium
 
 # tariff data (packages/tariff-data)
 bun run --cwd packages/tariff-data data:fetch   # re-download USITC HTS + CBP CROSS into data/ (network)
-bun run --cwd packages/tariff-data data:build   # build the SQLite FTS5 index into .cache/ (offline)
 ```
 
 The tariff and ruling data in `packages/tariff-data/data/` is US government public domain, not MIT; see its `SOURCES.md`.
