@@ -46,7 +46,7 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: `export-gate.test.ts` direct request without approval returns 403, request with approval for a stale hash returns 403, request body claiming `approved: true` is ignored, valid approval returns a PDF. Covers R7.6.
 - [x] 22. Implement `pdf.ts` with Playwright `page.pdf`, footer template, calculation trail and sources.
   - Test: `pdf.test.ts` renders a multi-page draft, extracts text per page and checks each page contains the not-legal-advice footer, the approved hash and `page x of y`, and that the trail and citations exist. Covers R8.1 to R8.6.
-- [ ] 23. Playwright export flow against the real server.
+- [x] 23. Playwright export flow against the real server.
   - Test: `export.spec.ts`: export is blocked before the box is ticked, allowed after (download starts), blocked again after an edit, and the downloaded PDF contains the approved hash. Covers R7, R8 end to end.
 - [ ] 24. Check the phone layouts and the design checklist.
   - Test: `layout.spec.ts` at 390 px checks targets are at least 44px, body text at least 16px, one primary pill per screen, and the sticky thumb bar. Screenshots are reviewed against `design/DESIGN.md` section 6. Covers R9.

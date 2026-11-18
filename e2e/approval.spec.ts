@@ -1,48 +1,15 @@
 import { expect, type Page, test } from '@playwright/test';
+import { approveBox as box, desktop, draftIdOf, exportPill, fileConfirmedNotice, inkPills, overflowing, phone, shot, watchErrors } from './helpers';
 
 // The approval gate on the Exorcise screen (R7.1, R7.3, R7.4, R7.7). It files its own notice, so it does not
-// depend on the order of the other specs on the shared store.
+// depend on the order of the other specs on the shared store. The download itself is export.spec.ts.
 test.describe.configure({ mode: 'serial' });
 
-const desktop = { width: 1440, height: 900 };
-const phone = { width: 390, height: 844 };
-// test-results/ is gitignored
-const shot = (page: Page, name: string, fullPage = true) => page.screenshot({ path: `test-results/f12/${name}.png`, fullPage, animations: 'disabled' });
-
-function watchErrors(page: Page) {
-  const errors: string[] = [];
-  page.on('console', (m) => {
-    if (m.type() === 'error') errors.push(m.text());
-  });
-  page.on('pageerror', (e) => errors.push(e.message));
-  return errors;
-}
-
-/** Visible near-black fills on actionable elements: the primary pills on screen. */
-const inkPills = (page: Page) =>
-  page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>('button, a, label')]
-      .filter((el) => getComputedStyle(el).backgroundColor === 'rgb(20, 22, 28)' && el.getClientRects().length > 0 && el.offsetParent !== null)
-      .map((el) => el.textContent?.trim()),
-  );
-
-const overflowing = (page: Page) =>
-  page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>('body *')]
-      .filter((el) => el.closest('[popover]') === null)
-      .filter((el) => el.getBoundingClientRect().right > window.innerWidth + 1)
-      .map((el) => `${el.tagName.toLowerCase()}.${el.className}`.slice(0, 120)),
-  );
-
-type Flag = { path: string; read: string | null };
-type NoticeBody = { assessment: { flags: Flag[]; lines: { confirm: Flag[] }[] } };
 type Draft = { id: string; hash: string; state: 'draft' | 'approved' };
 
 let draftUrl = '';
 let draftId = '';
 
-const box = (page: Page) => page.getByRole('checkbox', { name: 'I approve this exact draft' });
-const exportPill = (page: Page) => page.getByRole('button', { name: 'Export PDF' });
 const stored = async (page: Page) => (await (await page.request.get(`/api/drafts/${draftId}`)).json()) as Draft;
 const toast = (page: Page) => page.getByRole('status').filter({ hasText: 'Approval cleared' });
 
@@ -57,26 +24,14 @@ async function expectGateShut(page: Page) {
 }
 
 test.beforeAll(async ({ browser, baseURL }) => {
-  const page = await browser.newPage({ baseURL });
-  const request = page.request;
-  expect((await request.post('/api/specimens', { form: { specimen: 'specimen-2-form29' }, maxRedirects: 0 })).status()).toBe(303);
-  // the inbox lists the newest notice first: the one just filed
-  await page.goto('/');
-  await page.getByRole('link', { name: 'CBP Form 29 · Notice of Action' }).first().click();
-  await expect(page).toHaveURL(/\/notices\/[\w-]+$/);
-  const noticePath = new URL(page.url()).pathname;
-  const body = (await (await request.get(`/api${noticePath}`)).json()) as NoticeBody;
-  const values = [...body.assessment.flags, ...body.assessment.lines.flatMap((l) => l.confirm)].map((f) => ({ path: f.path, value: f.read ?? '' }));
-  expect((await request.post(`/api${noticePath}/confirm`, { data: { values } })).status()).toBe(200);
-  draftUrl = `${noticePath}/exorcise`;
-  await page.close();
+  draftUrl = `${await fileConfirmedNotice(browser, baseURL)}/exorcise`;
 });
 
 test('desktop: export is disabled and the box unticked on load; ticking approves the full hash and enables export', async ({ page }) => {
   const errors = watchErrors(page);
   await page.setViewportSize(desktop);
   await page.goto(draftUrl);
-  draftId = await page.evaluate(() => document.querySelector<HTMLElement>('[data-draft-id]')!.dataset.draftId!);
+  draftId = await draftIdOf(page);
 
   await expect(page.getByRole('heading', { level: 1, name: 'Exorcise the notice' })).toBeVisible();
   await expectGateShut(page);
@@ -114,13 +69,6 @@ test('desktop: export is disabled and the box unticked on load; ticking approves
   expect((await stored(page)).state).toBe('approved');
   await page.evaluate(() => window.scrollTo(0, 0));
   await shot(page, 'approval-approved-1440');
-
-  // the export control works once approved: the download is the approved PDF
-  const download = page.waitForEvent('download');
-  await exportPill(page).click();
-  const file = await download;
-  expect(file.suggestedFilename()).toMatch(/^notice-reply-[0-9a-f]{8}\.pdf$/);
-  await file.saveAs('test-results/f12/approved.pdf');
 
   // approval is the stored record: a reload shows it, it is not client state
   await page.reload();

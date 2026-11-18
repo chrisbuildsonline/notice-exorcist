@@ -1,36 +1,8 @@
-import { expect, type Page, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { desktop, draftIdOf, inkPills, overflowing, phone, shot, watchErrors } from './helpers';
 
 // Runs after inbox.spec.ts (project dependency) on the same store; it files the notice it needs.
 test.describe.configure({ mode: 'serial' });
-
-const desktop = { width: 1440, height: 900 };
-const phone = { width: 390, height: 844 };
-// test-results/ is gitignored
-const shot = (page: Page, name: string) => page.screenshot({ path: `test-results/f12/${name}.png`, fullPage: true });
-
-function watchErrors(page: Page) {
-  const errors: string[] = [];
-  page.on('console', (m) => {
-    if (m.type() === 'error') errors.push(m.text());
-  });
-  page.on('pageerror', (e) => errors.push(e.message));
-  return errors;
-}
-
-const inkPills = (page: Page) =>
-  page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>('button, a, label')]
-      .filter((el) => getComputedStyle(el).backgroundColor === 'rgb(20, 22, 28)' && el.getClientRects().length > 0 && el.offsetParent !== null)
-      .map((el) => el.textContent?.trim()),
-  );
-
-const overflowing = (page: Page) =>
-  page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>('body *')]
-      .filter((el) => el.closest('[popover]') === null)
-      .filter((el) => el.getBoundingClientRect().right > window.innerWidth + 1)
-      .map((el) => `${el.tagName.toLowerCase()}.${el.className}`.slice(0, 120)),
-  );
 
 type Flag = { path: string; read: string | null };
 type NoticeBody = { assessment: { flags: Flag[]; lines: { confirm: Flag[] }[] } };
@@ -144,7 +116,7 @@ test('editing words saves, and an edit clears an approval on the server', async 
   await page.goto(draftUrl);
   const id = (await (await page.request.get(`/api/drafts/${await draftIdOf(page)}`)).json()) as { id: string; hash: string };
 
-  // approve the current hash through the API (the approval card comes later), then reload: the state is derived
+  // approve the current hash through the API (the card is approval.spec.ts), then reload: the state is derived
   expect((await page.request.post(`/api/drafts/${id.id}/approve`, { data: { hash: id.hash } })).status()).toBe(200);
   await page.reload();
   await expect(page.getByTestId('draft-state')).toHaveText('✓Approved');
@@ -182,8 +154,3 @@ test('phone: full-width blocks, 16px text, nothing scrolls sideways', async ({ p
   await shot(page, 'draft-390');
   expect(errors).toEqual([]);
 });
-
-/** The draft id, read from the page's API: the exorcise URL names the notice, not the draft. */
-async function draftIdOf(page: Page): Promise<string> {
-  return page.evaluate(() => document.querySelector<HTMLElement>('[data-draft-id]')!.dataset.draftId!);
-}
