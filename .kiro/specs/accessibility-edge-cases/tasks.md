@@ -61,7 +61,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 14. [e2e] Toast reachable and dismissable by keyboard.
   - Test first: after an edit clears approval, the toast is announced (`role=status`), its `Dismiss` button is the next tab stop after the edited block, Enter dismisses it, focus stays where it was.
   - Then: add the Dismiss button if missing and keep focus unchanged. Covers R1.9.
-- [ ] 15. [css] No positive `tabindex`, no `order-*` on interactive elements.
+- [x] 15. [css] No positive `tabindex`, no `order-*` on interactive elements.
   - Test first: `no-tab-order-hacks.test.ts` scans `apps/web` sources for `tabIndex={[1-9]` and `tabindex="[1-9]` and for `order-` classes on `a`, `button`, `input` elements; fails on a hit.
   - Then: remove any hit. Covers R1.2.
 - [ ] 16. [a11y] Axe on confirm form, calculation drawer open, Exorcise (draft and approved).
