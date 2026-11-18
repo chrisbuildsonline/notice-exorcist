@@ -3,7 +3,9 @@
 import { useCallback, useRef, useState } from 'react';
 import type { DraftView } from '../lib/draft';
 import { ApprovalCard, ApprovalCheck, ExportPill } from './ApprovalCard';
+import type { Skipped } from '../lib/draft-builder';
 import { DraftEditor } from './DraftEditor';
+import { SkippedNote } from './SkippedNote';
 import { StatusPill } from './StatusPill';
 import { Toast, type ToastMessage } from './Toast';
 
@@ -19,7 +21,7 @@ const filenameOf = (res: Response) => /filename="([^"]+)"/.exec(res.headers.get(
  * Approval comes from the server: the page loads it from the stored record and only a tick that the server
  * accepts for the current full hash sets it. Any keystroke in the draft clears it, here and on the server.
  */
-export function DraftWorkspace({ initial, subtitle }: { initial: DraftView; subtitle: string }) {
+export function DraftWorkspace({ initial, subtitle, skipped = [] }: { initial: DraftView; subtitle: string; skipped?: Skipped[] }) {
   const [draft, setDraft] = useState(initial);
   const [ticking, setTicking] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -122,6 +124,7 @@ export function DraftWorkspace({ initial, subtitle }: { initial: DraftView; subt
             </span>
           </div>
           <p className="mt-2 font-mono text-mono text-text-muted">{subtitle}</p>
+          <SkippedNote skipped={skipped} />
         </div>
         <ExportPill {...pill} variant="header" className="hidden shrink-0 md:block" />
       </div>
