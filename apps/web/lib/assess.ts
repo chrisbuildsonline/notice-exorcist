@@ -157,7 +157,8 @@ export function assess(r: ExtractOk): Assessment {
           enteredValue: value,
           quantity: l.quantity.value !== null && l.unit.value !== null ? { value: makeFig(l.quantity.value, l.quantity.prov), unit: l.unit.value } : undefined,
         });
-        parts.push(result);
+        // A rate the engine cannot check is not a checked part: it counts as stated, not as unknown at stake.
+        if (result.status === 'ok') parts.push(result);
         return result;
       }, { description: l.description.value, hts: l.hts.value, rateText: l.rateText.value });
     });

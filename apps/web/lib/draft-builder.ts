@@ -55,6 +55,18 @@ function checkPhrasing(raw: unknown, figureIds: Set<string>): Phrasing {
   return out;
 }
 
+export type Skipped = { label: string; reason: string };
+
+/**
+ * R5.10: the lines the draft makes no claim about because the engine could not check them, with why. Kept apart
+ * from the draft content, so it is not hashed and cannot affect approval.
+ */
+export function skippedLines(v: NoticeView): Skipped[] {
+  return (v.assessment?.lines ?? [])
+    .filter((l) => l.state === 'unsupported')
+    .map((l) => ({ label: l.label, reason: l.rateText ? 'duty-engine cannot check its rate' : 'duty-engine has no fee table for it' }));
+}
+
 /** "Line 1 · Cotton towels" -> "Line 1 (Cotton towels)". */
 const lineName = (l: AssessedLine) => {
   const [head, ...rest] = l.label.split(' · ');

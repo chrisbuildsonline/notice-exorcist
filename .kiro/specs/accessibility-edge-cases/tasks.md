@@ -92,7 +92,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 22. [e2e] [a11y] Empty inbox in the browser.
   - Test first: `empty-inbox.spec.ts` with an empty data dir: R4 assertions at 1440 and 390 (sticky bar on phone), keyboard reaches the pill first after the skip link, `inbox-empty` axe scan, and deleting the last notice returns to the empty state with no error.
   - Then: fix. Add `inbox-empty` to `a11y.spec.ts`. Covers R4.5, R4.6.
-- [ ] 23. [unit] Unsupported rate: state, notice caption and draft skipping.
+- [x] 23. [unit] Unsupported rate: state, notice caption and draft skipping.
   - Test first: `assess.test.ts` (or `notice-api.test.ts`) with a line whose rate text the engine rejects: state `unsupported`, `computed` null, `difference` null, stated kept, no flag; `draft-builder.test.ts`: the line is absent from claims and `skipped` lists it with a reason; the hash input does not contain `skipped`; `explain.test.ts`: the unsupported sentence has no digits. Add the synthetic SPECIMEN fixture and record which rate text yields `unsupported` in the task PR note.
   - Then: implement `skipped` in `draft-builder.ts`, the count caption source in `notice-view.ts`. Covers R5.1, R5.2, R5.5, R5.6, R5.10.
 - [ ] 24. [e2e] [a11y] Unsupported line in the UI and the drawer.

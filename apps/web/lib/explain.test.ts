@@ -24,6 +24,12 @@ describe('explainLine (plain English, checked by the explanation guard)', () => 
     expect(t).not.toMatch(/\$|385|442|57\.96/);
   });
 
+  it('a line whose rate text the engine cannot check says so with no digits (R5.3)', () => {
+    const t = explainLine(line({ state: 'unsupported', rateText: '2.4¢/kg + 5% (see note)', computed: null, difference: null }));
+    expect(t).toContain('Duty-engine cannot check this rate, so the figure is shown as printed on the notice');
+    expect(t).not.toMatch(/\d/);
+  });
+
   it('every state has its own explanation', () => {
     const states = ['verified', 'unverified', 'confirm', 'unsupported', 'disagrees'] as const;
     const texts = states.map((state) => explainLine(line({ state })));

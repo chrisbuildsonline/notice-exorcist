@@ -14,7 +14,9 @@ export function explainLine(l: AssessedLine): string {
     verified: `The notice's figure for ${what} matches ${rate}. Nothing to dispute here.`,
     unverified: `Duty-engine could not check ${what} yet: the notice does not print everything the calculation needs.`,
     confirm: `The reader was not sure of some values on ${what}. Confirm or correct them and duty-engine will check it.`,
-    unsupported: `Duty-engine cannot check this kind of charge, so it is shown exactly as printed and counted as stated.`,
+    unsupported: l.rateText
+      ? `Duty-engine cannot check this rate, so the figure is shown as printed on the notice and counted as stated.`
+      : `Duty-engine cannot check this kind of charge, so it is shown exactly as printed and counted as stated.`,
   }[l.state];
   return guardExplanation(text, [l.rateText, l.hts].filter((s): s is string => !!s)).text;
 }

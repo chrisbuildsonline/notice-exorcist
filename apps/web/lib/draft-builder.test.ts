@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { buildDraft, canDraft, PhrasingRejected, type LineTariff } from './draft-builder';
+import type { Assessment } from './assess';
+import { buildDraft, canDraft, PhrasingRejected, skippedLines, type LineTariff } from './draft-builder';
 import { segments } from './draft';
 import { confirmationsFor, confirmFields } from './confirm';
+import { canonicalDraft } from './hash';
 import { fileNotice, getNotice } from './intake';
-import { type NoticeView, noticeView } from './notice-view';
-import { freshDataDir, specimenBytes } from './test-env';
+import { type NoticeView, noticeView, uncheckedCaption } from './notice-view';
+import { freshDataDir, specimenBytes, UNSUPPORTED_RATE, withUnsupportedRate } from './test-env';
 
 /** Files a specimen; with `confirm`, the user confirms every flagged value as read, as the notice page asks first. */
 async function view(file: string, opts: { confirm?: boolean } = {}): Promise<NoticeView> {
@@ -26,6 +28,44 @@ const towels: LineTariff = {
 const figIds = (p: string) => segments(p).flatMap((s) => (s.t === 'fig' ? [s.id] : []));
 const citeIds = (p: string) => segments(p).flatMap((s) => (s.t === 'cite' ? [s.id] : []));
 const textOf = (p: string) => segments(p).flatMap((s) => (s.t === 'text' ? [s.s] : [])).join('');
+
+describe('a line whose rate text the engine rejects (R5)', () => {
+  beforeEach(() => {
+    freshDataDir();
+    delete process.env.EXTRACT_MODE;
+  });
+
+  it('is unsupported with the stated figure kept, left out of the claims and listed as skipped', async () => {
+    const id = await withUnsupportedRate();
+    const v = noticeView(getNotice(id)!, confirmationsFor(id));
+    const a = v.assessment!;
+    const l = a.lines[2]!;
+    expect(l.state).toBe('unsupported');
+    expect(l.rateText).toBe(UNSUPPORTED_RATE);
+    expect(l.stated?.prov).toBe('stated');
+    expect([l.computed, l.difference, l.calc]).toEqual([null, null, null]);
+    expect(a.flags).toEqual([]);
+    expect(a.lines.flatMap((x) => x.confirm)).toEqual([]);
+    // the checked lines still give an amount at stake, and the notice says once that one line counts as stated
+    expect(a.lines[0]!.state).toBe('disagrees');
+    expect(a.atStake).not.toBeNull();
+    expect(uncheckedCaption(a)).toBe('1 line is not checked and counts as stated.');
+
+    const d = buildDraft(v, []);
+    expect(d.paragraphs.some((p) => p.startsWith('Line 3 '))).toBe(false);
+    expect(d.figures.some((f) => f.id.startsWith('line3.'))).toBe(false);
+    expect(skippedLines(v)).toEqual([{ label: l.label, reason: 'duty-engine cannot check its rate' }]);
+    // skipped lines are not part of the hashed draft, so they cannot affect approval
+    expect(Object.keys(d).sort()).toEqual(['citations', 'figures', 'paragraphs']);
+    expect(canonicalDraft(d)).not.toMatch(/skipped|Line 3/);
+  });
+
+  it('the caption counts every unchecked line, and is absent when there is none', () => {
+    const a = (states: string[]) => ({ lines: states.map((state) => ({ state })) }) as unknown as Assessment;
+    expect(uncheckedCaption(a(['verified', 'disagrees']))).toBeNull();
+    expect(uncheckedCaption(a(['unsupported', 'unsupported', 'verified']))).toBe('2 lines are not checked and count as stated.');
+  });
+});
 
 describe('buildDraft', () => {
   let form29: NoticeView;

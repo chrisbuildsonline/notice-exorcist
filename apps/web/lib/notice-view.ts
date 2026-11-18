@@ -34,6 +34,16 @@ export type NoticeView = {
   assessment?: Assessment;
 };
 
+/**
+ * R5.6: said once on the notice when the engine could not check some lines, which then count as stated.
+ * The count is a plain integer, not money. Null when every line was checkable.
+ */
+export function uncheckedCaption(a: Pick<Assessment, 'lines'>): string | null {
+  const n = a.lines.filter((l) => l.state === 'unsupported').length;
+  if (n === 0) return null;
+  return n === 1 ? '1 line is not checked and counts as stated.' : `${n} lines are not checked and count as stated.`;
+}
+
 // "ending 5187", not "…5187": CSS truncation adds its own ellipsis.
 const last4 = (s: string | null) => (s ? `ending ${s.replace(/\D/g, '').slice(-4)}` : 'unknown');
 
