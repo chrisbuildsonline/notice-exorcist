@@ -83,7 +83,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 19. [e2e] Reduced motion in the browser.
   - Test first: `reduced-motion.spec.ts` with `emulateMedia({ reducedMotion: 'reduce' })` on a haunted notice: `animationName` is `none` on glow and fog, box-shadow is set and non-`none` on `unverified` and `disagrees` lines and `none` on `confirm`, `unsupported`, `verified`; fog opacity equals the value from `fogOpacity`. Same page with `no-preference` shows `pulse-h`, `pulse-u`, `fog-drift`. Toggle on the same page follows without reload.
   - Then: fix any difference. Covers R3.1 to R3.3, R3.7.
-- [ ] 20. [component] Static export indicator and instant calming.
+- [x] 20. [component] Static export indicator and instant calming.
   - Test first: `ApprovalCard.test.tsx` renders `Exporting…` text with a static indicator class under `motion-reduce`, and `HauntedLine.test.tsx` shows a line that turns verified has no calming class when reduced motion is on.
   - Then: add `motion-reduce:` variants, remove the spin for reduced motion. Covers R3.4, R3.5.
 - [ ] 21. [component] Empty inbox shows no money figure and one primary pill.

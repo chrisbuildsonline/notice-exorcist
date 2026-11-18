@@ -86,8 +86,9 @@ export function ExportPill({ approved, exporting, onExport, variant, className =
         }}
         className={`inline-flex items-center justify-center gap-2 rounded-full px-6 text-body font-medium transition duration-120 ${size} ${look} ${exporting ? 'cursor-progress' : ''}`}
       >
-        {exporting ? <span aria-hidden="true" className="size-[18px] animate-spin rounded-full border-2 border-white/30 border-t-white" /> : <DownloadIcon />}
-        Export PDF
+        {/* With reduced motion the ring stands still; the word carries the state either way. */}
+        {exporting ? <span aria-hidden="true" data-testid="export-indicator" className="size-[18px] rounded-full border-2 border-white/30 border-t-white motion-safe:animate-spin" /> : <DownloadIcon />}
+        {exporting ? 'Exporting…' : 'Export PDF'}
       </button>
       <p id={helper} className={`mt-2 text-caption text-text-muted ${variant === 'header' ? 'text-right' : 'text-center'}`}>
         {approved ? HELPER_OPEN : HELPER_SHUT}

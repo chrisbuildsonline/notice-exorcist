@@ -51,6 +51,14 @@ describe('HauntedLine', () => {
     expect(html.indexOf('$385.02')).toBeLessThan(html.indexOf('$442.98'));
   });
 
+  it('a line that turns verified goes straight to its final state: no glow, calming or animation class (R3.5)', () => {
+    const before = renderToStaticMarkup(<HauntedLine state="disagrees" index={3} label="Line 1 · Towels" stated={stated} computed={computed} />);
+    expect(before).toContain('animation-delay');
+    const html = renderToStaticMarkup(<HauntedLine state="verified" index={3} label="Line 1 · Towels" stated={stated} computed={computed} />);
+    expect(classes(html).filter((c) => /glow|calm|animate|transition|duration/.test(c))).toEqual([]);
+    expect(html).not.toContain('animation-delay');
+  });
+
   it('a verified line shows only the stated figure', () => {
     const html = render('verified');
     expect(html).toContain('$385.02');
