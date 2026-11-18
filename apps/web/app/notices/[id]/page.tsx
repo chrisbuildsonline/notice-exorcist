@@ -14,7 +14,7 @@ import type { FigureJson } from '../../../lib/assess';
 import { confirmationsFor } from '../../../lib/confirm';
 import { canDraft } from '../../../lib/draft-builder';
 import { getNotice } from '../../../lib/intake';
-import { noticeView } from '../../../lib/notice-view';
+import { noticeView, uncheckedCaption } from '../../../lib/notice-view';
 import { htsCandidates, openTariff, rulingsFor } from '../../../lib/tariff';
 
 export const dynamic = 'force-dynamic';
@@ -94,6 +94,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
     v.header?.respondBy && `respond by ${date(v.header.respondBy)}`,
   ].filter(Boolean);
   const t = a?.totals;
+  const unchecked = a ? uncheckedCaption(a) : null;
   // Phone: one job per screen. A tapped line replaces the list with the line view.
   const listOnly = explicit ? 'max-md:hidden' : '';
 
@@ -184,6 +185,12 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
                 }
               />
             </section>
+            {/* R5.6: said once, under the totals it affects. */}
+            {unchecked ? (
+              <p data-testid="unchecked-caption" className={`mt-3 px-1 text-caption text-text-muted ${listOnly}`}>
+                {unchecked}
+              </p>
+            ) : null}
 
             <div className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:gap-6 lg:grid-cols-12 lg:items-start">
               <div className={`lg:col-span-7 ${listOnly}`}>
