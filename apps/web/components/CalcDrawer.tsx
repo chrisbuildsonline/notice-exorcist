@@ -9,10 +9,12 @@ import { StatusPill } from './StatusPill';
 /** The printed code's HTS line in the tariff index, for the edition the rate can be checked against. */
 export type HtsRef = { code: string; rate: string; edition: string };
 
+/** A line the engine could not check: its printed rate text and why, in place of a calculation (R5.8). */
+export type Unchecked = { rateText: string; reason: string };
+
 type Props = {
   title: string;
   subtitle?: string | null;
-  calc: Calc;
   /** The figure the notice prints for the same thing, if any. */
   stated: FigureJson | null;
   /** Set by the engine only when the notice and the recomputation disagree. */
@@ -20,7 +22,7 @@ type Props = {
   /** Duty lines only: the HTS line, or why there is none. Left out for fees and totals. */
   hts?: HtsRef | 'not-built' | 'not-found';
   className?: string;
-};
+} & ({ calc: Calc; unsupported?: never } | { calc?: never; unsupported: Unchecked });
 
 const Label = ({ children }: { children: ReactNode }) => <p className="text-label uppercase text-text-muted">{children}</p>;
 
@@ -47,12 +49,14 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [ta
  * every input with its provenance, and the notice figure beside the recomputed one.
  * Focus is trapped; Esc, the close button and a click on the scrim close it, and focus returns to the trigger.
  */
-export function CalcDrawer({ title, subtitle, calc, stated, difference, hts, className = '' }: Props) {
+export function CalcDrawer({ title, subtitle, calc, unsupported, stated, difference, hts, className = '' }: Props) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const close = () => dialog.current?.close();
-  const byKey = new Map(calc.inputs.map((i) => [i.key, i]));
+  const byKey = new Map((calc?.inputs ?? []).map((i) => [i.key, i]));
+  // An unchecked line still quotes its rate text, verbatim, as the notice prints it.
+  const rate: Calc['rate'] = calc ? calc.rate : { text: unsupported.rateText, prov: 'stated', source: 'as printed on the notice' };
 
   // Tab and Shift+Tab wrap inside the drawer.
   const trap = (e: KeyboardEvent<HTMLDialogElement>) => {
@@ -105,7 +109,11 @@ export function CalcDrawer({ title, subtitle, calc, stated, difference, hts, cla
                 {title}
               </h2>
               {subtitle ? <p className="mt-0.5 text-body text-text-secondary">{subtitle}</p> : null}
-              {stated ? (
+              {unsupported ? (
+                <div className="mt-3">
+                  <StatusPill line="unsupported" />
+                </div>
+              ) : stated ? (
                 <div className="mt-3">
                   <StatusPill match={!difference} />
                 </div>
@@ -123,33 +131,41 @@ export function CalcDrawer({ title, subtitle, calc, stated, difference, hts, cla
           </div>
 
           <div className="px-5 pb-[max(24px,env(safe-area-inset-bottom))] md:px-8 md:pb-8">
-            <div data-testid="formula" className="calc-well rounded-md bg-surface-muted p-4 font-mono text-mono text-text-secondary md:p-5">
-              <p className="font-semibold text-ink">{calc.formula}</p>
-              <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-1 pl-[2ch]">
-                <span aria-hidden="true">=</span>
-                {calc.substitution.map((t, n) => {
-                  if (t.t === 'text') return <span key={n}>{t.s.trim()}</span>;
-                  const i = byKey.get(t.key);
-                  return i ? <Value key={n} i={i} /> : null;
-                })}
-              </p>
-              <p className="mt-1 flex items-baseline gap-x-1.5 pl-[2ch]">
-                <span aria-hidden="true">=</span>
-                <Figure {...calc.result} />
-              </p>
-              <p className="mt-3 border-t border-line pt-3 text-text-muted">rounding: {calc.rounding}</p>
-            </div>
+            {calc ? (
+              <div data-testid="formula" className="calc-well rounded-md bg-surface-muted p-4 font-mono text-mono text-text-secondary md:p-5">
+                <p className="font-semibold text-ink">{calc.formula}</p>
+                <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-1 pl-[2ch]">
+                  <span aria-hidden="true">=</span>
+                  {calc.substitution.map((t, n) => {
+                    if (t.t === 'text') return <span key={n}>{t.s.trim()}</span>;
+                    const i = byKey.get(t.key);
+                    return i ? <Value key={n} i={i} /> : null;
+                  })}
+                </p>
+                <p className="mt-1 flex items-baseline gap-x-1.5 pl-[2ch]">
+                  <span aria-hidden="true">=</span>
+                  <Figure {...calc.result} />
+                </p>
+                <p className="mt-3 border-t border-line pt-3 text-text-muted">rounding: {calc.rounding}</p>
+              </div>
+            ) : (
+              // No formula and no result: the engine did not compute this line, and says why.
+              <div data-testid="unsupported-why" className="calc-well rounded-md bg-surface-muted p-4 font-mono text-mono text-text-secondary md:p-5">
+                <p className="font-semibold text-ink">Not computed</p>
+                <p className="mt-2">reason: {unsupported.reason}</p>
+              </div>
+            )}
 
-            {calc.rate || hts ? (
+            {rate || hts ? (
               <section className="mt-8">
-                {calc.rate ? (
+                {rate ? (
                   <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                     <span className="text-label uppercase text-text-muted">Rate text</span>
-                    <span className="font-mono text-mono font-semibold text-ink">“{calc.rate.text}”</span>
-                    <Tag prov={calc.rate.prov} />
-                    <span className="text-caption text-text-secondary">· {calc.rate.source}</span>
-                    {calc.rate.href ? (
-                      <a href={calc.rate.href} target="_blank" rel="noreferrer" className="inline-flex min-h-6 items-center text-caption text-accent hover:text-accent-700 hover:underline">
+                    <span className="font-mono text-mono font-semibold text-ink">“{rate.text}”</span>
+                    <Tag prov={rate.prov} />
+                    <span className="text-caption text-text-secondary">· {rate.source}</span>
+                    {rate.href ? (
+                      <a href={rate.href} target="_blank" rel="noreferrer" className="inline-flex min-h-6 items-center text-caption text-accent hover:text-accent-700 hover:underline">
                         Source ↗
                       </a>
                     ) : null}
@@ -176,20 +192,22 @@ export function CalcDrawer({ title, subtitle, calc, stated, difference, hts, cla
               </section>
             ) : null}
 
-            <section className="mt-8">
-              <Label>Inputs</Label>
-              <ul className="mt-2 divide-y divide-line">
-                {calc.inputs.map((i) => (
-                  <li data-testid="calc-input" key={i.key} className="flex items-start justify-between gap-4 py-3">
-                    <span className="pt-0.5 text-body text-text-secondary">{i.label}</span>
-                    <span className="flex min-w-0 flex-col items-end gap-0.5 text-right">
-                      <Value i={i} />
-                      <span className="text-caption text-text-muted">{i.source}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            {calc ? (
+              <section className="mt-8">
+                <Label>Inputs</Label>
+                <ul className="mt-2 divide-y divide-line">
+                  {calc.inputs.map((i) => (
+                    <li data-testid="calc-input" key={i.key} className="flex items-start justify-between gap-4 py-3">
+                      <span className="pt-0.5 text-body text-text-secondary">{i.label}</span>
+                      <span className="flex min-w-0 flex-col items-end gap-0.5 text-right">
+                        <Value i={i} />
+                        <span className="text-caption text-text-muted">{i.source}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
 
             <section className="mt-8 grid grid-cols-2 gap-4 rounded-md bg-surface-muted p-4 md:p-5">
               {stated ? (
@@ -203,7 +221,15 @@ export function CalcDrawer({ title, subtitle, calc, stated, difference, hts, cla
               <div className="min-w-0">
                 <Label>Recomputed</Label>
                 <div className="mt-1">
-                  <Figure {...calc.result} />
+                  {calc ? (
+                    <Figure {...calc.result} />
+                  ) : (
+                    // A dash, never a number: the engine did not compute this line.
+                    <span className="flex items-baseline gap-1.5">
+                      <span className="text-number num text-text-muted">—</span>
+                      <span className="text-caption text-text-muted">Not computed</span>
+                    </span>
+                  )}
                 </div>
               </div>
               {difference ? (

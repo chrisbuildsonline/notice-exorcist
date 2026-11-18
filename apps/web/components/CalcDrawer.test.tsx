@@ -94,3 +94,29 @@ describe('CalcDrawer', () => {
     expect(html).not.toContain('bg-ink');
   });
 });
+
+describe('CalcDrawer for a line the engine cannot check (R5.8)', () => {
+  const unsupported = { rateText: '2.4¢/kg + 5% (see note)', reason: 'unsupported rate text' };
+  const html = renderToStaticMarkup(<CalcDrawer title="How line 3 was checked" unsupported={unsupported} stated={stated} difference={null} hts={hts} />);
+  const t = text(html);
+
+  it('shows the rate text verbatim, the HTS edition, the reason and the engine caption', () => {
+    expect(t).toContain('Rate text “2.4¢/kg + 5% (see note)”');
+    expect(t).toMatch(/HTS 6302\.91\.00 · tariff rate “9\.1%” · 2026 Basic Edition/);
+    expect(html).toMatch(/data-testid="unsupported-why"[^>]*>.*unsupported rate text/);
+    expect(t).toContain('Computed by duty-engine, not by the AI model.');
+  });
+
+  it('has no formula, no result, no Match or Mismatch, and only the stated figure as money', () => {
+    expect(html).not.toContain('data-testid="formula"');
+    expect(html).not.toContain('data-testid="calc-input"');
+    expect(t).not.toMatch(/Match|Mismatch|rounding/);
+    expect(t).toMatch(/Notice says \$385\.02 stated .*Recomputed — Not computed/);
+    expect(t.match(/\$/g)).toHaveLength(1);
+  });
+
+  it('keeps the dialog wiring: a See the math trigger and a closed modal named by its title', () => {
+    expect(html).toMatch(/<button[^>]*aria-haspopup="dialog"[^>]*>See the math/);
+    expect(t).toContain('How line 3 was checked');
+  });
+});
