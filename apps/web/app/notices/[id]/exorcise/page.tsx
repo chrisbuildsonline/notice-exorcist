@@ -20,7 +20,8 @@ export default async function ExorcisePage(props: { params: Promise<{ id: string
   const subtitle = [`Reply to ${v.title}`, v.header?.entryNumber && `Entry ${v.header.entryNumber}`].filter(Boolean).join(' · ');
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4 pb-16 md:px-8">
+    // Phone: room at the end for the sticky approval stack.
+    <div className="mx-auto max-w-[1200px] px-4 pb-[200px] md:px-8 md:pb-16">
       <header className="flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 text-body font-semibold tracking-tight">
           <GhostGlyph size={24} />

@@ -21,11 +21,12 @@ type Status = { kind: 'idle' | 'saving' | 'saved' } | { kind: 'failed' };
 const STATUS_TEXT = { idle: 'Edits save when you leave a paragraph', saving: 'Saving…', saved: 'Saved', failed: 'Not saved' } as const;
 
 /**
- * The reply draft on paper. Each paragraph is a plain-text block. Figures are `<Figure>` tokens bound to their
+ * The reply draft on paper. `onEdit` fires on every keystroke in a block, before anything is saved.
+ * Each paragraph is a plain-text block. Figures are `<Figure>` tokens bound to their
  * provenance record and citations are chips; both are atomic, so only the words around them can be edited.
  * A typed amount is refused before anything is sent, and the server checks the same rule.
  */
-export function DraftEditor({ draft, onSaved }: { draft: DraftView; onSaved?: (v: DraftView) => void }) {
+export function DraftEditor({ draft, onSaved, onEdit }: { draft: DraftView; onSaved?: (v: DraftView) => void; onEdit?: () => void }) {
   const [paras, setParas] = useState(draft.paragraphs);
   // Bumped to redraw a block from state (after a save, or to undo an edit the editor refused).
   const [versions, setVersions] = useState<number[]>(() => draft.paragraphs.map(() => 0));
@@ -94,6 +95,7 @@ export function DraftEditor({ draft, onSaved }: { draft: DraftView; onSaved?: (v
                 contentEditable="plaintext-only"
                 suppressContentEditableWarning
                 spellCheck
+                onInput={onEdit}
                 onBlur={(e) => void commit(i, e.currentTarget)}
                 onKeyDown={(e) => onKey(i, e)}
                 className={`-mx-3 cursor-text rounded-sm px-3 py-2.5 pr-9 text-body text-ink transition-colors duration-120 outline-none hover:bg-surface-muted focus:bg-surface-muted focus:shadow-[0_0_0_2px_var(--color-accent-200)] max-md:text-[16px] ${err ? 'bg-haunt-bg hover:bg-haunt-bg focus:bg-haunt-bg' : ''}`}
