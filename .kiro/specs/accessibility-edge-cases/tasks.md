@@ -111,7 +111,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 26. [unit] `checkUpload` and the message table.
   - Test first: `upload-check.test.ts`: empty file → 422 "That file is empty."; 10 MB + 1 → 413 with the oversize message; `.exe` bytes with a `.png` name → 415; HEIC `ftyp` → 415 with the HEIC hint; 12000×12000 PNG header → 422 `too_many_pixels`; tall (800×3000) and wide (3000×800) → ok; `format-bytes.test.ts` for `formatBytes` (1 decimal, MB and KB).
   - Then: `upload-check.ts`, `upload-messages.ts`, `format-bytes.ts`, `limits.ts`. Covers R6.1 to R6.5, R6.8.
-- [ ] 27. [route] Wire the checker into upload and inbound.
+- [x] 27. [route] Wire the checker into upload and inbound.
   - Test first: extend `notices-upload.test.ts` (each rejection above stores no file and logs nothing) and `inbound.test.ts` (invalid attachment skipped; 422 when none valid; tall image accepted).
   - Then: replace `checkFile` calls in `intake.ts` and the inbound route by `checkUpload`. Covers R6.10, R6.11.
 - [ ] 28. [component] Dropzone pre-check and accessible error.

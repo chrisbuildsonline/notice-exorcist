@@ -1,18 +1,15 @@
 import { randomUUID } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { type Config, extractNotice, type ExtractResult, readConfig, sniff } from '@notice-exorcist/notice-extract';
+import { type Config, extractNotice, type ExtractResult, readConfig } from '@notice-exorcist/notice-extract';
 import { dataDir, type Db, getDb, repoRoot, SPECIMENS } from './db';
-
-export const MAX_BYTES = 10 * 1024 * 1024;
-const MIME = { pdf: 'application/pdf', png: 'image/png', jpeg: 'image/jpeg' } as const;
+import { MAX_BYTES } from './limits';
+import { checkUpload } from './upload-check';
 
 export type Source = 'upload' | 'email' | 'specimen';
 
 /** Recorded model replies, keyed by the sha256 of the input file. */
 export const fixturesDir = () => join(repoRoot(), 'packages', 'notice-extract', 'fixtures');
-
-export const TOO_BIG ='That file is over 10 MB.';
 
 /**
  * Buffers the request body, stopping as soon as it passes the cap for `files` files (plus room for base64 and
@@ -33,16 +30,6 @@ export async function cappedRequest(req: Request, files = 1): Promise<Request | 
     }
   }
   return new Request(req.url, { method: req.method, headers: req.headers, body: Buffer.concat(chunks) });
-}
-
-export type Checked = { ok: true; mime: string } | { ok: false; status: 413 | 415; error: string };
-
-/** Type by magic bytes (never the name or the client's content type), size up to 10 MB. */
-export function checkFile(bytes: Uint8Array): Checked {
-  if (bytes.byteLength > MAX_BYTES) return { ok: false, status: 413, error: TOO_BIG };
-  const type = sniff(bytes);
-  if (!type) return { ok: false, status: 415, error: 'That file is not a PDF, PNG or JPEG.' };
-  return { ok: true, mime: MIME[type] };
 }
 
 /**
@@ -75,7 +62,7 @@ async function read(db: Db, id: string, bytes: Uint8Array, source: Source): Prom
 
 /** Stores a checked file and starts reading it. `settled` resolves when the reading is stored. */
 export function fileNotice(input: { bytes: Uint8Array; filename: string; source: Source }): { id: string; settled: Promise<void> } {
-  const checked = checkFile(input.bytes);
+  const checked = checkUpload(input.bytes);
   if (!checked.ok) throw new Error(checked.error);
   const id = randomUUID();
   const dir = join(dataDir(), 'files');

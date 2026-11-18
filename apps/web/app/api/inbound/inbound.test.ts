@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { heicHeader, pngHeader } from '../../../../../packages/notice-extract/src/test/image-headers';
 import { getNotice, listNotices } from '../../../lib/intake';
 import { freshDataDir, noticeCount, specimenBytes, storedFiles } from '../../../lib/test-env';
 import { POST } from './route';
@@ -115,6 +116,18 @@ describe('POST /api/inbound', () => {
     const { ids } = (await res.json()) as { ids: string[] };
     expect(ids).toHaveLength(2);
     expect(listNotices().map((n) => n.source)).toEqual(['email', 'email']);
+  });
+
+  it('uses the upload check: empty, HEIC and pixel-bomb attachments are skipped, a tall image is filed', async () => {
+    const bad: Array<[Uint8Array, string]> = [[new Uint8Array(), 'empty.pdf'], [heicHeader(), 'IMG_0001.heic'], [pngHeader(12000, 12000), 'bomb.png']];
+    expect((await post(multipart({ files: bad }))).status).toBe(422);
+    expect(noticeCount()).toBe(0);
+    expect(storedFiles(dir)).toEqual([]);
+    const res = await post(multipart({ files: [...bad, [pngHeader(800, 3000), 'receipt.png']] }));
+    expect(res.status).toBe(202);
+    expect(((await res.json()) as { ids: string[] }).ids).toHaveLength(1);
+    expect(listNotices().map((n) => n.filename)).toEqual(['receipt.png']);
+    expect(storedFiles(dir)).toHaveLength(1);
   });
 
   it('202 for JSON with a base64 attachment', async () => {

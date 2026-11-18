@@ -1,6 +1,7 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { getDb } from '../../../lib/db';
-import { cappedRequest, checkFile, fileNotice } from '../../../lib/intake';
+import { cappedRequest, fileNotice } from '../../../lib/intake';
+import { checkUpload } from '../../../lib/upload-check';
 import { type MailPart, parseEml } from '../../../lib/mime';
 
 export const dynamic = 'force-dynamic';
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
   }
   if (!mail) return Response.json({ error: 'unreadable' }, { status: 400 });
   if (!knownToken(mail.to)) return Response.json({ error: 'unknown_inbox' }, { status: 404 });
-  const valid = mail.attachments.filter((a) => checkFile(a.bytes).ok).slice(0, MAX_ATTACHMENTS);
+  const valid = mail.attachments.filter((a) => checkUpload(a.bytes).ok).slice(0, MAX_ATTACHMENTS);
   if (valid.length === 0) return Response.json({ error: 'no_valid_attachment' }, { status: 422 });
   const ids = valid.map((a) => fileNotice({ bytes: a.bytes, filename: a.filename, source: 'email' }).id);
   return Response.json({ ids }, { status: 202 });
