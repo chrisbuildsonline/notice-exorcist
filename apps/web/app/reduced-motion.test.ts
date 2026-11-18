@@ -37,4 +37,54 @@ describe('reduced motion', () => {
     expect(rule(block, selector)).toMatch(/box-shadow\s*:/);
     expect(rule(block, selector)).toMatch(shadow);
   });
+
+  /** Rules outside the reduced-motion block, as [selectors, body]. Keyframe steps (from/to) are left out. */
+  const outside = css.replace(block, '').replace(/@keyframes[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g, '');
+  const rules = [...outside.matchAll(/([^{}@]+)\{([^{}]*)\}/g)].map((m) => [m[1]!.trim().split(/\s*,\s*/), m[2]!] as const);
+  const blockRules = [...block.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => [m[1]!.trim().split(/\s*,\s*/), m[2]!] as const);
+  /** The body of the block rule whose selector list names `selector`. */
+  const inBlock = (selector: string) => blockRules.filter(([sels]) => sels.includes(selector)).map(([, body]) => body).join(';');
+
+  it('neutralises every keyframe animation used in globals.css', () => {
+    const names = [...css.matchAll(/@keyframes\s+([\w-]+)/g)].map((m) => m[1]!);
+    expect(names.length).toBeGreaterThan(0);
+    for (const name of names) {
+      const users = rules.filter(([, body]) => new RegExp(`animation(?:-name)?\\s*:[^;]*\\b${name}\\b`).test(body)).flatMap(([sels]) => sels);
+      expect(users.length, `${name} is used`).toBeGreaterThan(0);
+      for (const sel of users) {
+        // `*, *::before, *::after` reaches elements and those two pseudo-elements only; ::backdrop and the rest need their own rule.
+        const pseudo = /::([\w-]+)/.exec(sel)?.[1];
+        if (pseudo && pseudo !== 'before' && pseudo !== 'after') expect(inBlock(sel), `${sel} (${name})`).toMatch(/animation\s*:\s*none/);
+      }
+    }
+  });
+
+  it.each(['.fog', '.line', '.calc-panel', '.side-panel'])('%s has no transition and no animation', (selector) => {
+    expect(inBlock(selector)).toMatch(/transition\s*:\s*none\s*!important/);
+    expect(inBlock(selector)).toMatch(/animation\s*:\s*none\s*!important/);
+  });
+
+  it('scrolls without smoothing', () => {
+    expect(inBlock('html')).toMatch(/scroll-behavior\s*:\s*auto/);
+  });
+
+  it('static glow values are the ones in DESIGN.md 3', () => {
+    const design = readFileSync(join(import.meta.dirname, '..', '..', '..', 'design', 'DESIGN.md'), 'utf8');
+    for (const [status, edge, glow, cls] of [
+      ['unverified', 'unverified-edge', 'glow-unverified', '.glow-unverified'],
+      ['disagrees', 'haunt-edge', 'glow-haunt', '.glow-haunt'],
+    ] as const) {
+      const m = new RegExp(`${status} is \`([^\`]+)\` edge plus \`([^\`]+)\``).exec(design);
+      expect(m, status).not.toBeNull();
+      const want = `${m![1]} var(--color-${edge}), ${m![2]}`;
+      expect(m![2]).toContain(`var(--${glow})`);
+      expect(rule(block, cls).replace(/\s+/g, ' ')).toContain(`box-shadow:${want}`.replace(/\s+/g, ' '));
+    }
+  });
+
+  it.each(['confirm', 'unsupported', 'verified'])('%s has no shadow and no animation anywhere', (state) => {
+    for (const [sels, body] of [...rules, ...blockRules]) {
+      if (sels.some((s) => s.includes(`data-state=${state}`))) expect(body, sels.join(',')).not.toMatch(/box-shadow|animation/);
+    }
+  });
 });
