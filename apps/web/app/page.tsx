@@ -3,6 +3,7 @@ import { Dropzone } from '../components/Dropzone';
 import { Figure } from '../components/Figure';
 import { GhostGlyph } from '../components/GhostGlyph';
 import { InboxRow } from '../components/InboxRow';
+import { Page } from '../components/Page';
 import { SpecimenCard } from '../components/SpecimenCard';
 import { confirmationsFor } from '../lib/confirm';
 import { inboxToken } from '../lib/db';
@@ -51,7 +52,7 @@ export default async function InboxPage() {
         </span>
       </header>
 
-      <main>
+      <Page>
         <div className="flex items-start justify-between gap-6 pt-4 md:pt-6">
           <div>
             <h1 className="text-title">Inbox</h1>
@@ -121,7 +122,7 @@ export default async function InboxPage() {
             )}
           </section>
         </div>
-      </main>
+      </Page>
 
       <div data-testid="thumb-bar" className="fixed inset-x-0 bottom-0 z-10 bg-gradient-to-t from-canvas via-canvas/90 to-transparent px-4 pt-6 pb-[max(16px,env(safe-area-inset-bottom))] md:hidden">
         <UploadButton className={`${PILL} ${INK} flex h-14 w-full`}>

@@ -20,7 +20,7 @@ Contrast proof, the axe harness, skip link, landmarks, focus rings, route focus.
 - [x] 3. [component] Skip link.
   - Test first: `SkipLink.test.tsx` renders the link as the first element in the layout, `href="#main"`, text `Skip to main content`.
   - Then: add `SkipLink.tsx`, its `.skip-link` CSS (hidden until focus, then fixed top-left, 44px high, `z-50`), and render it first in `layout.tsx`. Covers R1.5.
-- [ ] 4. [e2e] One `<main id="main" tabIndex={-1}>` on every page, and the skip link works.
+- [x] 4. [e2e] One `<main id="main" tabIndex={-1}>` on every page, and the skip link works.
   - Test first: `keyboard.spec.ts` "skip link": on Inbox, notice and Exorcise pages press Tab once, expect the skip link focused and visible, press Enter, expect focus on `#main`.
   - Then: add a `Page` wrapper that owns the landmark and use it in the three pages. Check there is exactly one `main` per page. Covers R1.5.
 - [ ] 5. [e2e] Round controls keep a round focus ring.

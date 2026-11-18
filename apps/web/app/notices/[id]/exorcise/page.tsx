@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { DraftWorkspace } from '../../../../components/DraftWorkspace';
 import { GhostGlyph } from '../../../../components/GhostGlyph';
+import { Page } from '../../../../components/Page';
 import { confirmationsFor } from '../../../../lib/confirm';
 import { draftView, ensureDraft } from '../../../../lib/drafts';
 import { getNotice } from '../../../../lib/intake';
@@ -28,12 +29,12 @@ export default async function ExorcisePage(props: { params: Promise<{ id: string
           Notice Exorcist
         </Link>
       </header>
-      <main>
+      <Page>
         <Link href={`/notices/${id}`} className="-ml-2 inline-flex h-11 items-center gap-1 rounded-full px-2 text-body font-medium text-accent hover:text-accent-700">
           <span aria-hidden="true">←</span> Notice
         </Link>
         <DraftWorkspace initial={await draftView(draft)} subtitle={subtitle} />
-      </main>
+      </Page>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { Figure } from '../../../components/Figure';
 import { GhostGlyph } from '../../../components/GhostGlyph';
 import { HauntedLine } from '../../../components/HauntedLine';
 import { LinePanel } from '../../../components/LinePanel';
+import { Page } from '../../../components/Page';
 import { Paper } from '../../../components/Paper';
 import { StatusPill } from '../../../components/StatusPill';
 import type { FigureJson } from '../../../lib/assess';
@@ -105,7 +106,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
         </Link>
       </header>
 
-      <main>
+      <Page>
         <div className={listOnly}>
           <Link href="/" className="-ml-2 inline-flex h-11 items-center gap-1 rounded-full px-2 text-body font-medium text-accent hover:text-accent-700">
             <span aria-hidden="true">←</span> Inbox
@@ -232,7 +233,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
             </div>
           </>
         )}
-      </main>
+      </Page>
 
       <div data-testid="thumb-bar" className={`fixed inset-x-0 bottom-0 z-10 bg-gradient-to-t from-canvas via-canvas/90 to-transparent px-4 pt-6 pb-[max(16px,env(safe-area-inset-bottom))] md:hidden ${listOnly}`}>
         <Exorcise id="exorcise-why-phone" reason={reason} href={exorcise} className="" />
