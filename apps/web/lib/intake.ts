@@ -75,6 +75,19 @@ export function fileNotice(input: { bytes: Uint8Array; filename: string; source:
   return { id, settled: read(db, id, input.bytes, input.source) };
 }
 
+/**
+ * Reads a failed notice again from its stored original (never changed). Null for an unknown id, 'not_failed' when
+ * the notice is reading or read already.
+ */
+export function rereadNotice(id: string): { settled: Promise<void> } | 'not_failed' | null {
+  const db = getDb();
+  const row = db.prepare('SELECT status, source, file_path FROM notices WHERE id = ?').get(id) as { status: string; source: Source; file_path: string } | undefined;
+  if (!row) return null;
+  if (row.status !== 'failed') return 'not_failed';
+  db.prepare("UPDATE notices SET status = 'reading', extracted_json = NULL WHERE id = ?").run(id);
+  return { settled: read(db, id, new Uint8Array(readFileSync(row.file_path)), row.source) };
+}
+
 /** Files one bundled specimen (the haunted Form 29 unless another id is named). */
 export function fileSpecimen(id = SPECIMENS[0]!.id) {
   const s = SPECIMENS.find((x) => x.id === id);
