@@ -108,7 +108,11 @@ export function DraftEditor({
                 suppressContentEditableWarning
                 spellCheck
                 onInput={() => onEdit?.(i)}
-                onBlur={(e) => void commit(i, e.currentTarget)}
+                // Tab onto the block's own citation chip has not left the paragraph: saving then would redraw the block
+                // and drop focus from the chip to the page.
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget)) void commit(i, e.currentTarget);
+                }}
                 onKeyDown={(e) => onKey(i, e)}
                 className={`-mx-3 cursor-text rounded-sm px-3 py-2.5 pr-9 text-body text-ink transition-colors duration-120 hover:bg-surface-muted focus:bg-surface-muted max-md:text-[16px] ${err ? 'bg-haunt-bg hover:bg-haunt-bg focus:bg-haunt-bg' : ''}`}
               >
