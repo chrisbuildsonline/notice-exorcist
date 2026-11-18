@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { CalcDrawer } from '../../../components/CalcDrawer';
+import { RefreshWhileReading } from '../../../components/ClientBits';
 import { ConfirmForm } from '../../../components/ConfirmForm';
 import { Figure } from '../../../components/Figure';
 import { GhostGlyph } from '../../../components/GhostGlyph';
@@ -130,8 +131,16 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
 
         {!a ? (
           <section className="mt-8 rounded-lg bg-surface p-6 shadow-float md:mt-12">
-            <p className="text-heading">{v.failure ? 'This notice could not be read' : 'Reading the notice…'}</p>
+            <h2 className="text-heading">{v.failure ? 'This notice could not be read' : 'Reading the notice…'}</h2>
             <p className="mt-2 text-body text-text-secondary">{v.failure?.message ?? 'Figures appear once every line is read and checked.'}</p>
+            {v.failure ? (
+              <form method="post" action={`/api/notices/${v.id}/read`} className="mt-5">
+                <button type="submit" className={`${PILL} inline-flex h-11 bg-surface text-text-secondary shadow-float transition duration-120 hover:bg-surface-muted active:scale-[.98]`}>
+                  Try reading again
+                </button>
+              </form>
+            ) : null}
+            <RefreshWhileReading active={v.status === 'reading'} />
           </section>
         ) : (
           <>

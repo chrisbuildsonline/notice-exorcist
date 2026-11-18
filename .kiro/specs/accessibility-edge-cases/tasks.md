@@ -117,7 +117,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 28. [component] Dropzone pre-check and accessible error.
   - Test first: `Dropzone.test.tsx`: a `File` over the limit never calls `fetch` and shows the oversize message with size and limit; a server error body is shown in `role="alert"`; the input gets `aria-invalid` and `aria-describedby` while an error shows, cleared on the next attempt; focus is unchanged.
   - Then: update `Dropzone.tsx`. Covers R6.1, R6.2, R6.9.
-- [ ] 29. [e2e] [a11y] Upload edge cases in the browser.
+- [x] 29. [e2e] [a11y] Upload edge cases in the browser.
   - Test first: `upload-edge.spec.ts`: 11 MB file, `.exe`, a `.gif`, an empty file, a HEIC stub each show the exact message at 1440 and 390 and add no row; a tall PNG and a wide PNG are accepted and show a row with progress then a ready or plain-language failure with a retry button; add `upload-error` to `a11y.spec.ts`.
   - Then: fix. Covers R6.1 to R6.5, R6.7, R6.9.
 - [ ] 30. [unit] Downscale a copy for the model, keep the original.

@@ -31,7 +31,7 @@ export function CopyButton({ text }: { text: string }) {
   );
 }
 
-/** Re-renders the inbox every second while a notice is still being read. */
+/** Re-renders the page (inbox or notice) every second while a notice is still being read. */
 export function RefreshWhileReading({ active }: { active: boolean }) {
   const router = useRouter();
   useEffect(() => {

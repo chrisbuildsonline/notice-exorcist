@@ -46,6 +46,15 @@ const screens: Array<{ name: string; path: () => string; ready: (p: import('@pla
     },
   },
   {
+    // R6.9: a rejected upload, its alert beside the dropzone
+    name: 'upload-error',
+    path: () => '/',
+    ready: async (p) => {
+      await p.locator('#notice-file').setInputFiles({ name: 'notice.pdf', mimeType: 'application/pdf', buffer: Buffer.from('MZ not a pdf') });
+      await expect(p.getByRole('alert').filter({ hasText: 'That file is not a PDF, PNG or JPEG.' })).toBeVisible();
+    },
+  },
+  {
     name: 'notice-view',
     path: () => noticePath,
     ready: async (p) => {
