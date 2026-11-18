@@ -72,7 +72,7 @@ export function DraftEditor({ draft, onSaved }: { draft: DraftView; onSaved?: (v
   }
 
   return (
-    <section aria-label="Reply draft" className="rounded-lg bg-surface p-5 shadow-float md:p-8">
+    <section aria-label="Reply draft" data-draft-id={draft.id} className="rounded-lg bg-surface p-5 shadow-float md:p-8">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <p className="text-label uppercase text-text-muted">Reply draft</p>
         <p data-testid="save-status" aria-live="polite" className="text-caption text-text-muted">
