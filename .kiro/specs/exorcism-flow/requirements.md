@@ -90,6 +90,7 @@ App: `apps/web` (Next.js, Tailwind). Visual values come from `design/DESIGN.md`.
 3. Each screen SHALL have at most one near-black primary pill.
 4. Phone layouts SHALL follow `design/DESIGN.md` section 5, not a shrunk desktop layout.
 
+5. See `.kiro/specs/accessibility-edge-cases` for the accessibility and edge-case parts of R9.
 ### R10. Privacy and config
 1. Config and secrets SHALL come from env vars. THE app SHALL NOT log notice contents.
 2. The app SHALL run in local-only mode with Ollama or fixtures and no cloud calls.

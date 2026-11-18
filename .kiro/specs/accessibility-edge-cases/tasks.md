@@ -126,7 +126,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 31. [e2e] Tablet side panel as a drawer.
   - Test first: `tablet-panel.spec.ts` at 820×1180: choosing a line opens a modal dialog from the right (560px) with the explanation and the "Candidates, not a final classification" caption; focus is trapped; Esc and scrim click close it; focus returns to the line; no horizontal scroll; targets ≥ 44px. At 1024 the panel is sticky at 5/12; at 390 it is the full-screen view. With reduced motion the dialog appears without a slide. Add the 820 viewport to the `notice-view-line-selected` axe scan.
   - Then: add `SidePanelDrawer.tsx`, reuse `.calc-drawer` CSS, open it only in the 768 to 1023 range and react to resize. Covers R7.2 to R7.5.
-- [ ] 32. [e2e] Final sweep and doc fixes.
+- [x] 32. [e2e] Final sweep and doc fixes.
   - Test first: run the full a11y matrix (all screens, 1440 and 390, plus tablet) and the keyboard and reduced-motion specs together; any unused waiver fails.
   - Then: fix leftovers; update `exorcism-flow/requirements.md` R9 with a pointer to this spec; correct any `design/DESIGN.md` ratio the contrast test found wrong; review screenshots against section 6 of the design. Covers R2, R8.1, R8.3.
 
