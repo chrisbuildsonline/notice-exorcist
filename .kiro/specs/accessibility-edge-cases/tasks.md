@@ -114,7 +114,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 27. [route] Wire the checker into upload and inbound.
   - Test first: extend `notices-upload.test.ts` (each rejection above stores no file and logs nothing) and `inbound.test.ts` (invalid attachment skipped; 422 when none valid; tall image accepted).
   - Then: replace `checkFile` calls in `intake.ts` and the inbound route by `checkUpload`. Covers R6.10, R6.11.
-- [ ] 28. [component] Dropzone pre-check and accessible error.
+- [x] 28. [component] Dropzone pre-check and accessible error.
   - Test first: `Dropzone.test.tsx`: a `File` over the limit never calls `fetch` and shows the oversize message with size and limit; a server error body is shown in `role="alert"`; the input gets `aria-invalid` and `aria-describedby` while an error shows, cleared on the next attempt; focus is unchanged.
   - Then: update `Dropzone.tsx`. Covers R6.1, R6.2, R6.9.
 - [ ] 29. [e2e] [a11y] Upload edge cases in the browser.
