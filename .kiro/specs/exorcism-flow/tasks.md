@@ -34,7 +34,7 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: Playwright `drawer.spec.ts` checks the formula and sources show, Esc closes, focus returns to the trigger, and the caption is present. Covers R5.1, R5.2, R5.6, R5.7.
 - [x] 16. Implement `hash.ts` (`canonicalDraft`, `draftHash`).
   - Test: `hash.test.ts` same content gives the same hash regardless of key order, any paragraph or citation change gives a different hash, a golden value is fixed. Covers R7.2.
-- [ ] 17. Implement `draft-builder.ts` and `DraftEditor` with figure tokens and citation chips.
+- [x] 17. Implement `draft-builder.ts` and `DraftEditor` with figure tokens and citation chips.
   - Test: `draft-builder.test.ts` every claim has a citation, figures come from provenance refs, model output containing a bare number outside a token is rejected. `DraftEditor.test.tsx` rejects a typed number as a figure token. Covers R6.1 to R6.6.
 - [ ] 18. Implement draft `GET` and `PUT` where `PUT` clears the approval in the same transaction.
   - Test: `drafts-put.test.ts` approves, edits, and checks the approval row is gone and state is `draft`. Covers R7.5.

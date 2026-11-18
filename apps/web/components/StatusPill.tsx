@@ -33,9 +33,13 @@ function noticeLook(s: PillStatus): Look {
 }
 
 /** Status is never colour alone: every pill has an icon and a word. Status hues only, never the accent. */
-export function StatusPill(props: { notice: PillStatus } | { line: LineState } | { match: boolean }) {
+export function StatusPill(props: { notice: PillStatus } | { line: LineState } | { match: boolean } | { draft: 'draft' | 'approved' }) {
   const look =
-    'line' in props
+    'draft' in props
+      ? props.draft === 'approved'
+        ? { icon: '✓', word: 'Approved', cls: CALM }
+        : { icon: '✎', word: 'Draft', cls: NEUTRAL }
+      : 'line' in props
       ? LINE[props.line]
       : 'match' in props
         ? props.match

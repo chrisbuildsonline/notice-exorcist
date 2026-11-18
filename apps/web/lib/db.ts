@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS drafts (
   state TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
+CREATE UNIQUE INDEX IF NOT EXISTS drafts_notice ON drafts(notice_id);
 CREATE TABLE IF NOT EXISTS approvals (
   draft_id TEXT PRIMARY KEY REFERENCES drafts(id),
   hash TEXT NOT NULL,

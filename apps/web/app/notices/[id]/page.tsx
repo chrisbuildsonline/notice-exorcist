@@ -11,6 +11,7 @@ import { Paper } from '../../../components/Paper';
 import { StatusPill } from '../../../components/StatusPill';
 import type { FigureJson } from '../../../lib/assess';
 import { confirmationsFor } from '../../../lib/confirm';
+import { canDraft } from '../../../lib/draft-builder';
 import { getNotice } from '../../../lib/intake';
 import { noticeView } from '../../../lib/notice-view';
 import { htsCandidates, openTariff, rulingsFor } from '../../../lib/tariff';
@@ -33,8 +34,19 @@ function Tile(props: { id: string; label: string; fig: FigureJson | null; empty:
   );
 }
 
-/** The one primary action. Drafting the reply is not built yet, so it is shown disabled with the reason. */
-function Exorcise({ id, reason, className }: { id: string; reason: string; className: string }) {
+/** The one primary action: drafts the reply once a line disagrees and nothing is left to confirm, else disabled with the reason. */
+function Exorcise({ id, reason, href, className }: { id: string; reason: string; href: string | null; className: string }) {
+  if (href)
+    return (
+      <div className={className}>
+        <Link
+          href={href}
+          className={`${PILL} flex h-14 w-full bg-ink text-white shadow-pill transition duration-120 hover:-translate-y-px hover:bg-ink-hover active:scale-[.98] md:inline-flex md:h-13 md:w-auto`}
+        >
+          Exorcise this notice
+        </Link>
+      </div>
+    );
   return (
     <div className={className}>
       <button type="button" aria-disabled="true" aria-describedby={id} className={`${PILL} flex h-14 w-full cursor-not-allowed bg-disabled-bg text-disabled-fg md:inline-flex md:h-13 md:w-auto`}>
@@ -72,7 +84,8 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
       ? 'Confirm the flagged values first'
       : a.status.kind === 'at_peace'
         ? 'Every figure checks out. Nothing to dispute'
-        : 'Reply drafting is not available yet';
+        : 'No figure disagrees with duty-engine yet';
+  const exorcise = canDraft(v) ? `/notices/${id}/exorcise` : null;
   const status = a?.status ?? { kind: v.status === 'failed' ? ('failed' as const) : ('reading' as const) };
   const meta = [
     v.header?.entryNumber && `Entry ${v.header.entryNumber}`,
@@ -107,7 +120,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
               </div>
               {meta.length ? <p className="mt-2 font-mono text-mono text-text-muted">{meta.join(' · ')}</p> : null}
             </div>
-            <Exorcise id="exorcise-why" reason={reason} className="hidden shrink-0 md:block" />
+            <Exorcise id="exorcise-why" reason={reason} href={exorcise} className="hidden shrink-0 md:block" />
           </div>
         </div>
 
@@ -222,7 +235,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
       </main>
 
       <div data-testid="thumb-bar" className={`fixed inset-x-0 bottom-0 z-10 bg-gradient-to-t from-canvas via-canvas/90 to-transparent px-4 pt-6 pb-[max(16px,env(safe-area-inset-bottom))] md:hidden ${listOnly}`}>
-        <Exorcise id="exorcise-why-phone" reason={reason} className="" />
+        <Exorcise id="exorcise-why-phone" reason={reason} href={exorcise} className="" />
       </div>
     </div>
   );
