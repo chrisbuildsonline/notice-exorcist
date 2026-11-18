@@ -80,6 +80,17 @@ export function LinePanel(props: {
             difference={l.difference}
             hts={l.calc.formulaId.startsWith('line.') ? htsRef(l, tariff) : undefined}
           />
+        ) : l.state === 'unsupported' && l.rateText ? (
+          // No calculation to show: the drawer quotes the rate text, the HTS edition and why the engine stopped (R5.8).
+          <CalcDrawer
+            className="mt-3"
+            title={`How ${heading(l).toLowerCase()} was checked`}
+            subtitle={l.description}
+            unsupported={{ rateText: l.rateText, reason: 'unsupported rate text' }}
+            stated={l.stated}
+            difference={null}
+            hts={htsRef(l, tariff)}
+          />
         ) : null}
       </section>
 
