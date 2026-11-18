@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { isApproved } from './approval';
 import { getDb } from './db';
 import { checkParagraph, type DraftContent, type DraftView } from './draft';
 import { buildDraft, canDraft, type LineTariff } from './draft-builder';
@@ -81,8 +82,11 @@ export async function updateDraft(id: string, paragraphs: unknown): Promise<Upda
   return { ok: true, row: getDraftRow(id)! };
 }
 
-/** What the API and the page show. The hash is recomputed from the stored content, never read from a column or a client. */
+/**
+ * What the API and the page show. The hash is recomputed from the stored content, never read from a column or a
+ * client, and the state is derived from the approval record on every load.
+ */
 export async function draftView(row: DraftRow): Promise<DraftView> {
   const content = contentOf(row);
-  return { id: row.id, noticeId: row.notice_id, ...content, hash: await draftHash(content), state: row.state === 'approved' ? 'approved' : 'draft' };
+  return { id: row.id, noticeId: row.notice_id, ...content, hash: await draftHash(content), state: (await isApproved(row)) ? 'approved' : 'draft' };
 }

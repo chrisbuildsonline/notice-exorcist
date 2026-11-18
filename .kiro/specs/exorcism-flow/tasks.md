@@ -38,7 +38,7 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: `draft-builder.test.ts` every claim has a citation, figures come from provenance refs, model output containing a bare number outside a token is rejected. `DraftEditor.test.tsx` rejects a typed number as a figure token. Covers R6.1 to R6.6.
 - [x] 18. Implement draft `GET` and `PUT` where `PUT` clears the approval in the same transaction.
   - Test: `drafts-put.test.ts` approves, edits, and checks the approval row is gone and state is `draft`. Covers R7.5.
-- [ ] 19. Implement `POST /api/drafts/[id]/approve` and `approval.ts`.
+- [x] 19. Implement `POST /api/drafts/[id]/approve` and `approval.ts`.
   - Test: `approve.test.ts` records approval only when the posted hash equals the server-recomputed hash, and rejects a stale hash with 409. Approval state is derived from the stored record. Covers R7.2, R7.8.
 - [ ] 20. Build `ApprovalCard` and the export control with helper text and `aria-disabled`, and the persistent toast on edit.
   - Test: Playwright `approval.spec.ts`: export is disabled and the box unticked on load, tick enables it, an edit unticks it and shows a toast that stays until dismissed, and viewing, saving and navigating never tick it. Covers R7.1, R7.3, R7.4, R7.7.
