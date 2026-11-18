@@ -14,7 +14,7 @@ Contrast proof, the axe harness, skip link, landmarks, focus rings, route focus.
 - [x] 1. [unit] Contrast of the `design/DESIGN.md` pairs.
   - Test first: `app/a11y-contrast.test.ts` parses `globals.css`, computes WCAG 2.x ratios for the table in the design, and asserts each documented ratio (one decimal) and the AA minimums. Include `ink` on every status `-bg` and the focus ring on `canvas` and `surface`.
   - Then: if a documented ratio is off, fix `design/DESIGN.md`, not the test. Covers R2.4 to R2.6.
-- [ ] 2. [e2e] Add `@axe-core/playwright` (dev) and the `scanScreen` helper with waivers.
+- [x] 2. [e2e] Add `@axe-core/playwright` (dev) and the `scanScreen` helper with waivers.
   - Test first: `e2e/a11y.helper.spec.ts` loads an inline page with a known serious violation (an image with no alt, a button with no name) and expects `scanScreen` to fail with rule id and selector; a minor-only page passes with a logged note; an unused waiver fails.
   - Then: add `e2e/a11y.ts` and an empty `e2e/a11y-waivers.ts`. State the dependency reason in the PR (R8.2). Covers R2.1 to R2.3.
 - [ ] 3. [component] Skip link.

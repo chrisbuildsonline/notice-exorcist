@@ -16,6 +16,7 @@
     "rates:sweep": "vitest run packages/duty-engine/src/rate-text-sweep.test.ts --silent=false"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@notice-exorcist/duty-engine": "workspace:*",
     "@notice-exorcist/tariff-data": "workspace:*",
     "@playwright/test": "^1.65.1",
