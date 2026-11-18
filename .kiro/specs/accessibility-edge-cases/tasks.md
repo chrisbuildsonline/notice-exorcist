@@ -105,7 +105,7 @@ The whole flow by keyboard, plus axe on the other screens.
 
 ## Slice 4: Odd uploads, tablet panel, final sweep (tasks 25 to 32)
 
-- [ ] 25. [unit] PNG and JPEG header parser.
+- [x] 25. [unit] PNG and JPEG header parser.
   - Test first: `image-info.test.ts` with byte arrays built in the test: PNG 100×4000, PNG 4000×100, JPEG with a SOF0 and with a SOF2 segment, JPEG with the SOF after an APP1 segment, truncated header returns `null`, a PDF returns `null`.
   - Then: `lib/image-info.ts` returns `{ width, height }` or `null`. No dependency. Covers R6.5, R6.8, R8.2.
 - [ ] 26. [unit] `checkUpload` and the message table.
