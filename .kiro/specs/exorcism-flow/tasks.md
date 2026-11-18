@@ -48,7 +48,7 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: `pdf.test.ts` renders a multi-page draft, extracts text per page and checks each page contains the not-legal-advice footer, the approved hash and `page x of y`, and that the trail and citations exist. Covers R8.1 to R8.6.
 - [x] 23. Playwright export flow against the real server.
   - Test: `export.spec.ts`: export is blocked before the box is ticked, allowed after (download starts), blocked again after an edit, and the downloaded PDF contains the approved hash. Covers R7, R8 end to end.
-- [ ] 24. Check the phone layouts and the design checklist.
+- [x] 24. Check the phone layouts and the design checklist.
   - Test: `layout.spec.ts` at 390 px checks targets are at least 44px, body text at least 16px, one primary pill per screen, and the sticky thumb bar. Screenshots are reviewed against `design/DESIGN.md` section 6. Covers R9.
 - [ ] 25. Verify local-only mode.
   - Test: `local-mode.spec.ts` runs the specimen flow with `EXTRACT_MODE=fixture` and network blocked except localhost, and passes. Covers R10.1, R10.2.
