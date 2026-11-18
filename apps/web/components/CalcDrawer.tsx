@@ -5,6 +5,7 @@ import type { FigureJson } from '../lib/assess';
 import type { Calc, CalcInput } from '../lib/calc';
 import { Figure } from './Figure';
 import { StatusPill } from './StatusPill';
+import { trapTab } from './trapTab';
 
 /** The printed code's HTS line in the tariff index, for the edition the rate can be checked against. */
 export type HtsRef = { code: string; rate: string; edition: string };
@@ -42,7 +43,6 @@ function Value({ i }: { i: CalcInput }) {
 }
 
 const usitc = (code: string) => `https://hts.usitc.gov/search?query=${encodeURIComponent(code)}`;
-const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 /**
  * "See the math": a modal drawer (bottom sheet on phone) with the engine's formula, the rate text and its source,
@@ -59,21 +59,7 @@ export function CalcDrawer({ title, subtitle, calc, unsupported, stated, differe
   const rate: Calc['rate'] = calc ? calc.rate : { text: unsupported.rateText, prov: 'stated', source: 'as printed on the notice' };
 
   // Tab and Shift+Tab wrap inside the drawer.
-  const trap = (e: KeyboardEvent<HTMLDialogElement>) => {
-    if (e.key !== 'Tab' || !dialog.current) return;
-    const items = [...dialog.current.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.getClientRects().length > 0);
-    const first = items[0];
-    const last = items.at(-1);
-    if (!first || !last) return;
-    const active = document.activeElement;
-    if (e.shiftKey && (active === first || !dialog.current.contains(active))) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && (active === last || !dialog.current.contains(active))) {
-      e.preventDefault();
-      first.focus();
-    }
-  };
+  const trap = (e: KeyboardEvent<HTMLDialogElement>) => trapTab(e, dialog.current);
 
   return (
     <>
