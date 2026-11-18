@@ -4,6 +4,7 @@ import type { FigureJson } from '../lib/assess';
 import type { LineState } from '../lib/states';
 import { Figure } from './Figure';
 import { StatusPill } from './StatusPill';
+import { UnsupportedLine } from './UnsupportedLine';
 
 /** The glow classes. Status hues only (globals.css); confirm, unsupported and verified never glow. */
 export const GLOW = { disagrees: 'glow-haunt', unverified: 'glow-unverified' } as const satisfies Partial<Record<LineState, string>>;
@@ -15,6 +16,8 @@ type Props = {
   meta?: ReactNode;
   stated: FigureJson | null;
   computed: FigureJson | null;
+  /** The printed rate text; an unsupported line says whether its rate or its kind of charge could not be checked. */
+  rateText?: string | null;
   /** Wake-up: glows start 80ms apart, once. */
   index?: number;
   href?: string;
@@ -25,7 +28,7 @@ type Props = {
  * One extracted line on the paper. The state comes from the engine and the extraction, never the model.
  * A disagreeing line keeps the stated figure and shows the computed one beside it.
  */
-export function HauntedLine({ state, label, meta, stated, computed, index = 0, href, selected = false }: Props) {
+export function HauntedLine({ state, label, meta, stated, computed, rateText = null, index = 0, href, selected = false }: Props) {
   const glow = state === 'disagrees' || state === 'unverified' ? GLOW[state] : '';
   return (
     <li
@@ -56,6 +59,7 @@ export function HauntedLine({ state, label, meta, stated, computed, index = 0, h
         ) : null}
         <StatusPill line={state} />
       </span>
+      {state === 'unsupported' ? <UnsupportedLine rateText={rateText} /> : null}
     </li>
   );
 }

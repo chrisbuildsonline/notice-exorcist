@@ -203,6 +203,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
                           meta={l.hts ? `${l.hts}${l.rateText ? ` · ${l.rateText}` : ''}` : undefined}
                           stated={l.stated}
                           computed={l.computed}
+                          rateText={l.rateText}
                           href={`/notices/${id}?line=${i + 1}`}
                           selected={i === sel}
                         />
