@@ -5,6 +5,8 @@ import { type DragEvent, useState } from 'react';
 
 export const FILE_INPUT_ID = 'notice-file';
 const ACCEPT = 'application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg';
+// The inputs are visually hidden, so the label wearing them shows the keyboard focus ring (not on a pointer press).
+const RING = 'has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent';
 
 /** Drop or pick a PDF or photo; on phones a second input opens the camera. The server checks type and size. */
 export function Dropzone() {
@@ -49,7 +51,7 @@ export function Dropzone() {
         }}
         onDragLeave={() => setOver(false)}
         onDrop={drop}
-        className={`flex min-h-40 cursor-pointer flex-col items-center justify-center gap-1 rounded-md border-[1.5px] px-4 text-center transition-colors duration-120 focus-within:outline-2 focus-within:outline-accent ${
+        className={`flex min-h-40 cursor-pointer flex-col items-center justify-center gap-1 rounded-md border-[1.5px] px-4 text-center transition-colors duration-120 ${RING} ${
           over ? 'border-solid border-accent bg-accent-50' : 'border-dashed border-[#c9cdd6] bg-surface-muted'
         }`}
       >
@@ -72,7 +74,7 @@ export function Dropzone() {
           or <span className="text-accent underline-offset-2 hover:underline">browse</span> · up to 10 MB
         </span>
       </label>
-      <label className="mt-3 flex h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-surface text-body font-medium text-text-secondary shadow-float focus-within:outline-2 focus-within:outline-accent md:hidden">
+      <label className={`mt-3 flex h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-surface text-body font-medium text-text-secondary shadow-float ${RING} md:hidden`}>
         <input
           type="file"
           accept="image/*"

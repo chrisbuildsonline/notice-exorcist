@@ -113,6 +113,49 @@ for (const [vp, size] of [
   });
 }
 
+/** Presses Tab until `target` has focus; fails if it is not reached within `max` stops. */
+async function tabTo(page: Page, target: import('@playwright/test').Locator, max = 40) {
+  for (let i = 0; i < max; i++) {
+    await page.keyboard.press('Tab');
+    if (await target.evaluate((el) => el === document.activeElement)) return;
+  }
+  throw new Error(`not reached by Tab in ${max} stops`);
+}
+
+const labelRing = (input: import('@playwright/test').Locator) =>
+  input.evaluate(async (el) => {
+    const label = el.closest('label')!;
+    await Promise.all(label.getAnimations().map((a) => a.finished.catch(() => undefined)));
+    const s = getComputedStyle(label);
+    return { ring: `${s.outlineWidth} ${s.outlineStyle} ${s.outlineColor}`, offset: s.outlineOffset, radius: s.borderRadius };
+  });
+
+for (const [vp, size, name] of [
+  ['desktop', desktop, 'dropzone'],
+  ['phone', phone, 'dropzone'],
+  ['phone', phone, 'take-a-photo'],
+] as const) {
+  test(`a label-wrapped file input shows the ring on its label (${name}, ${vp})`, async ({ page }) => {
+    await page.setViewportSize(size);
+    await page.goto('/');
+    const label = name === 'dropzone' ? page.locator('label:has(#notice-file)') : page.locator('label', { hasText: 'Take a photo' });
+    const input = label.locator('input[type=file]');
+
+    // a pointer press focuses the input but is not keyboard focus, so no ring
+    page.on('filechooser', () => {});
+    await label.click();
+    await expect.poll(() => labelRing(input)).toMatchObject({ ring: expect.not.stringContaining('solid') });
+
+    await page.goto('/');
+    await tabTo(page, input);
+    const { ring, offset, radius } = await labelRing(input);
+    expect(ring).toBe(RING);
+    expect(offset).toBe('2px');
+    expect(radius).not.toBe('0px');
+    await shot(page, `../a11y/label-ring-${name}-${vp}`, false);
+  });
+}
+
 test('a focused pill shows its ring on the pill shape', async ({ page }) => {
   for (const [vp, size] of [
     ['desktop', desktop],
