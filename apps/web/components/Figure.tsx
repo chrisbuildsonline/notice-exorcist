@@ -23,7 +23,13 @@ function money(value: string): string {
   return `${sign}$${whole}.${(cents % 100n).toString().padStart(2, '0')}`;
 }
 
-const SIZE = { display: 'text-display', lg: 'text-number-lg', number: 'text-number' } as const;
+/** A figure as print text, "$385.02 (stated)", for the PDF. Same rules as <Figure>: no provenance, no number. */
+export function figureText({ value, prov, source }: Pick<FigureProps, 'value' | 'prov' | 'source'>): string {
+  if (!prov || !source) throw new Error('Unsourced figure: figureText needs prov and source');
+  return `${money(value)} (${prov})`;
+}
+
+const SIZE = { display:'text-display', lg: 'text-number-lg', number: 'text-number' } as const;
 
 /** The only place money is drawn. A figure without provenance is never shown. */
 export function Figure({ value, prov, source, size = 'number' }: FigureProps) {
