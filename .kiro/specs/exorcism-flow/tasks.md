@@ -52,5 +52,5 @@ Run `bun run test` and `bun run typecheck` after each task. Run `bun run e2e` fo
   - Test: `layout.spec.ts` at 390 px checks targets are at least 44px, body text at least 16px, one primary pill per screen, and the sticky thumb bar. Screenshots are reviewed against `design/DESIGN.md` section 6. Covers R9.
 - [x] 25. Verify local-only mode.
   - Test: `local-mode.spec.ts` runs the specimen flow with `EXTRACT_MODE=fixture` and network blocked except localhost, and passes. Covers R10.1, R10.2.
-- [ ] 26. Add a check that the repo has no code path that sends mail or files with CBP.
+- [x] 26. Add a check that the repo has no code path that sends mail or files with CBP.
   - Test: `no-send.test.ts` scans for SMTP, mail-send and CBP filing endpoints in sources and fails on a hit. Covers R3.6, R6.7.
