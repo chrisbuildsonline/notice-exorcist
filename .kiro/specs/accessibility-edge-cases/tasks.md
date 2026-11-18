@@ -86,7 +86,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 20. [component] Static export indicator and instant calming.
   - Test first: `ApprovalCard.test.tsx` renders `Exporting…` text with a static indicator class under `motion-reduce`, and `HauntedLine.test.tsx` shows a line that turns verified has no calming class when reduced motion is on.
   - Then: add `motion-reduce:` variants, remove the spin for reduced motion. Covers R3.4, R3.5.
-- [ ] 21. [component] Empty inbox shows no money figure and one primary pill.
+- [x] 21. [component] Empty inbox shows no money figure and one primary pill.
   - Test first: `EmptyInbox.test.tsx`: headline, one supporting line, `Try a specimen` is the only ink pill, `Upload a notice` is secondary, no `$` in the header, specimen card is `aria-hidden` and `inert`.
   - Then: extract `EmptyInbox.tsx` from `app/page.tsx`; render the amount header only when a computed figure exists; switch the phone sticky bar to `Try a specimen` when empty. Covers R4.1 to R4.4.
 - [ ] 22. [e2e] [a11y] Empty inbox in the browser.

@@ -74,8 +74,9 @@ for (const [name, vp] of [['desktop', desktop], ['phone', phone]] as const) {
     if (name === 'phone') {
       await expect(page.locator('input[type=file][capture=environment]')).toHaveCount(1);
       const bar = page.getByTestId('thumb-bar');
-      await expect(bar.getByRole('button', { name: 'Upload a notice' })).toBeInViewport();
-      expect(await inkPills(page)).toEqual(['Upload a notice']);
+      // accessibility-edge-cases R4.2: the empty state's one primary pill is Try a specimen, in the thumb bar too
+      await expect(bar.getByRole('button', { name: 'Try a specimen' })).toBeInViewport();
+      expect(await inkPills(page)).toEqual(['Try a specimen']);
       expect(await overflowing(page)).toEqual([]);
     } else {
       expect(await inkPills(page)).toEqual(['Try a specimen']);
