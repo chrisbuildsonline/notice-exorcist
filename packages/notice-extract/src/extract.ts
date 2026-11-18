@@ -2,6 +2,7 @@ import type { z } from 'zod';
 import { DEFAULT_THRESHOLD, fieldsNeedingConfirmation, markNeedsConfirmation } from './confidence';
 import { type Config, readConfig } from './config';
 import { applyHonesty, type GuardRecord, type GuardRule } from './honesty';
+import { prepareForModel, type Resize } from './input/prepare-for-model';
 import type { RasterResult } from './input/rasterize';
 import { type InputType, sniff } from './input/sniff';
 import { logEvent } from './logger';
@@ -59,6 +60,8 @@ export type ExtractDeps = {
   loadBedrock?: LoadBedrock;
   /** PDF rasterizer; loaded lazily so fixture mode never loads Playwright. */
   rasterize?: Rasterize;
+  /** Image downscaler for the model's copy (tests pass a stub); Chromium canvas by default. */
+  resize?: Resize;
   fixturesDir?: string;
   now?: () => Date;
 };
@@ -107,9 +110,10 @@ function defaultProvider(config: Config, deps: ExtractDeps): Provider {
 }
 
 /** PNG and JPEG go as they are; a PDF is rasterized to one PNG per page. Nothing is cropped or enhanced. */
-async function pageImages(bytes: Uint8Array, type: InputType, maxPages: number, raster: Rasterize): Promise<PageImage[] | { reason: FailureReason }> {
-  if (type === 'png') return [{ mime: 'image/png', bytes }];
-  if (type === 'jpeg') return [{ mime: 'image/jpeg', bytes }];
+async function pageImages(bytes: Uint8Array, type: InputType, maxPages: number, raster: Rasterize, resize?: Resize): Promise<PageImage[] | { reason: FailureReason }> {
+  // A tall receipt or a wide scan goes to the model as a reduced copy; the stored original is untouched.
+  if (type === 'png') return [await prepareForModel({ mime: 'image/png', bytes }, { resize })];
+  if (type === 'jpeg') return [await prepareForModel({ mime: 'image/jpeg', bytes }, { resize })];
   const r = await raster(bytes, { maxPages });
   if (!r.ok) return { reason: r.reason };
   return r.pages.map((p) => ({ mime: 'image/png' as const, bytes: p }));
@@ -160,7 +164,7 @@ async function extractInner(input: { bytes: Uint8Array }, deps: ExtractDeps): Pr
       v = validateResponse(raw);
       source = { name: 'fixture', model: fixture.model };
     } else {
-      const images = await pageImages(input.bytes, type, config.maxPages, deps.rasterize ?? defaultRasterize);
+      const images = await pageImages(input.bytes, type, config.maxPages, deps.rasterize ?? defaultRasterize, deps.resize);
       if (!Array.isArray(images)) return fail(images.reason);
       const provider = deps.provider ?? defaultProvider(config, deps);
       source = { name: provider.name, model: provider.model };

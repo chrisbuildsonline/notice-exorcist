@@ -120,7 +120,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 29. [e2e] [a11y] Upload edge cases in the browser.
   - Test first: `upload-edge.spec.ts`: 11 MB file, `.exe`, a `.gif`, an empty file, a HEIC stub each show the exact message at 1440 and 390 and add no row; a tall PNG and a wide PNG are accepted and show a row with progress then a ready or plain-language failure with a retry button; add `upload-error` to `a11y.spec.ts`.
   - Then: fix. Covers R6.1 to R6.5, R6.7, R6.9.
-- [ ] 30. [unit] Downscale a copy for the model, keep the original.
+- [x] 30. [unit] Downscale a copy for the model, keep the original.
   - Test first: `prepare-for-model.test.ts` in `notice-extract`: an image with longest side over the limit is reduced with the aspect ratio kept (tall and wide cases), a copy within the limit is returned unchanged, the input bytes are not mutated, and `sniff` of the stored original is unchanged. Record the chosen resize approach (R6.6 / design) in the PR; use no new dependency.
   - Then: implement and call it in `extractNotice` before the model request. Covers R6.6.
 - [ ] 31. [e2e] Tablet side panel as a drawer.
