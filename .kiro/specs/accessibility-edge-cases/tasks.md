@@ -43,16 +43,16 @@ Contrast proof, the axe harness, skip link, landmarks, focus rings, route focus.
 ## Slice 2: Keyboard path and the remaining screens (tasks 9 to 16)
 The whole flow by keyboard, plus axe on the other screens.
 
-- [ ] 9. [e2e] Keyboard: Inbox to a notice.
+- [x] 9. [e2e] Keyboard: Inbox to a notice.
   - Test first: `keyboard.spec.ts` "inbox to notice": from a fresh page, using only `keyboard.press`, reach `Try a specimen`, activate it, land on the notice. Assert focus is visible on each stop and tab order matches DOM order.
   - Then: fix any control that is not focusable or is out of order. Covers R1.1 to R1.3.
-- [ ] 10. [e2e] Keyboard: upload by keyboard.
+- [x] 10. [e2e] Keyboard: upload by keyboard.
   - Test first: focus the Dropzone input by Tab, expect the file chooser to open on Enter and on Space (`page.waitForEvent('filechooser')`), set the PNG fixture, expect the row to appear.
   - Then: adjust `Dropzone` so the visually hidden input is the focus target and nothing steals the key. Covers R1.1, R1.7.
-- [ ] 11. [e2e] Keyboard: notice view, line selection and confirm form.
+- [x] 11. [e2e] Keyboard: notice view, line selection and confirm form.
   - Test first: select a line with Enter on its link, move through the side panel, fill the confirm form with the keyboard and submit. No Tab step skips a control or lands on a hidden one.
   - Then: fix order or missing names. Covers R1.1, R1.2.
-- [ ] 12. [e2e] Keyboard: calculation drawer.
+- [x] 12. [e2e] Keyboard: calculation drawer.
   - Test first: `See the math` with Enter opens the dialog, focus lands inside, Tab and Shift+Tab cycle within it, Esc closes, focus returns to the trigger.
   - Then: only fix gaps (the dialog exists already). Covers R1.4.
 - [ ] 13. [e2e] Keyboard: approve and export without auto-approval.

@@ -60,7 +60,7 @@ export function ConfirmForm({ noticeId, flags, title = 'Confirm values' }: { not
               name={f.path}
               defaultValue={f.read ?? ''}
               autoComplete="off"
-              className="mt-1 block h-11 w-full rounded-sm bg-surface px-3 font-mono text-mono text-ink shadow-float outline-none focus-visible:outline-2 focus-visible:outline-accent"
+              className="mt-1 block h-11 w-full rounded-sm bg-surface px-3 font-mono text-mono text-ink shadow-float"
             />
             <span className="mt-1 block text-caption text-text-muted">Read from {f.source}</span>
           </label>
