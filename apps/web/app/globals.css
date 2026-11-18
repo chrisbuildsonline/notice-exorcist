@@ -78,6 +78,9 @@ html:has(.calc-drawer[open]) { overflow:hidden; }
 @keyframes drawer-in { from { transform:translateX(100%); } }
 @keyframes sheet-in  { from { transform:translateY(100%); } }
 @keyframes scrim-in  { from { opacity:0; } }
+/* Toast, DESIGN.md 4: slides up 12px and fades in over 200ms. */
+.toast-in { animation:toast-in 200ms var(--ease-out); }
+@keyframes toast-in  { from { opacity:0; transform:translateY(12px); } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation:none !important; transition-duration:0ms !important; }
   .calc-drawer::backdrop { animation:none; }
@@ -97,4 +100,5 @@ html:has(.calc-drawer[open]) { overflow:hidden; }
 
 body { background:var(--color-canvas); color:var(--color-ink); font-family:var(--font-sans); }
 .num { font-variant-numeric:tabular-nums; }
-:focus-visible { outline:2px solid var(--color-accent); outline-offset:2px; border-radius:inherit; }
+/* In the base layer, so a rounded utility (a pill's rounded-full) keeps its radius when focused. */
+@layer base { :focus-visible { outline:2px solid var(--color-accent); outline-offset:2px; border-radius:inherit; } }
