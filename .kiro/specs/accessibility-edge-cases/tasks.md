@@ -108,7 +108,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 25. [unit] PNG and JPEG header parser.
   - Test first: `image-info.test.ts` with byte arrays built in the test: PNG 100×4000, PNG 4000×100, JPEG with a SOF0 and with a SOF2 segment, JPEG with the SOF after an APP1 segment, truncated header returns `null`, a PDF returns `null`.
   - Then: `lib/image-info.ts` returns `{ width, height }` or `null`. No dependency. Covers R6.5, R6.8, R8.2.
-- [ ] 26. [unit] `checkUpload` and the message table.
+- [x] 26. [unit] `checkUpload` and the message table.
   - Test first: `upload-check.test.ts`: empty file → 422 "That file is empty."; 10 MB + 1 → 413 with the oversize message; `.exe` bytes with a `.png` name → 415; HEIC `ftyp` → 415 with the HEIC hint; 12000×12000 PNG header → 422 `too_many_pixels`; tall (800×3000) and wide (3000×800) → ok; `format-bytes.test.ts` for `formatBytes` (1 decimal, MB and KB).
   - Then: `upload-check.ts`, `upload-messages.ts`, `format-bytes.ts`, `limits.ts`. Covers R6.1 to R6.5, R6.8.
 - [ ] 27. [route] Wire the checker into upload and inbound.
