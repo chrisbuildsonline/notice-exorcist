@@ -233,6 +233,7 @@ The notice is drawn as **paper**: a `surface` card, radius `lg`, shadow `float`,
 - **Upload dropzone**
   - `surface-muted`, radius `md`, 1.5px dashed `#c9cdd6`, min-height 160. Icon plus "Drop a PDF or photo" plus `caption` "or browse".
   - Drag-over: `accent-50` fill and a solid `accent` border.
+  - Error: the dashed border turns `haunt-edge`; below it a `role=alert` callout, `haunt-bg` fill, `haunt-fg` caption text, radius `sm`, 16px alert icon (`aria-hidden`), naming the problem and the next step. The input gets `aria-invalid` and `aria-describedby`; focus stays put. Cleared on the next attempt.
   - Below it: the forward address in mono, e.g. `notices+abc@in.noticeexorcist.app`, with a Copy ghost button.
 - **Toast:** bottom-centre (phone: above the thumb bar). `ink` bg, white text, radius `md`, `overlay`, max 420px. Slides up 12px and fades in over 200ms. Auto-dismiss after 5s, except errors and "approval cleared", which stay until dismissed. `role=status`.
 
