@@ -123,7 +123,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 30. [unit] Downscale a copy for the model, keep the original.
   - Test first: `prepare-for-model.test.ts` in `notice-extract`: an image with longest side over the limit is reduced with the aspect ratio kept (tall and wide cases), a copy within the limit is returned unchanged, the input bytes are not mutated, and `sniff` of the stored original is unchanged. Record the chosen resize approach (R6.6 / design) in the PR; use no new dependency.
   - Then: implement and call it in `extractNotice` before the model request. Covers R6.6.
-- [ ] 31. [e2e] Tablet side panel as a drawer.
+- [x] 31. [e2e] Tablet side panel as a drawer.
   - Test first: `tablet-panel.spec.ts` at 820×1180: choosing a line opens a modal dialog from the right (560px) with the explanation and the "Candidates, not a final classification" caption; focus is trapped; Esc and scrim click close it; focus returns to the line; no horizontal scroll; targets ≥ 44px. At 1024 the panel is sticky at 5/12; at 390 it is the full-screen view. With reduced motion the dialog appears without a slide. Add the 820 viewport to the `notice-view-line-selected` axe scan.
   - Then: add `SidePanelDrawer.tsx`, reuse `.calc-drawer` CSS, open it only in the 768 to 1023 range and react to resize. Covers R7.2 to R7.5.
 - [ ] 32. [e2e] Final sweep and doc fixes.

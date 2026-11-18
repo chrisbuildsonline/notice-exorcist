@@ -31,6 +31,61 @@ export const overflowing = (page: Page) =>
       .map((el) => `${el.tagName.toLowerCase()}.${el.className}`.slice(0, 120)),
   );
 
+/**
+ * Visible tap targets smaller than 44×44. The hit area counts an absolutely placed `::before` or `::after`
+ * (a stretched row link, a small tag with a larger invisible hit box). A checkbox inside a label is measured by
+ * its label (the label is the target). A target in a line of text is exempt, as in WCAG 2.5.8.
+ * `within` limits the check to one element (a drawer); the default is the whole page.
+ */
+export const smallTargets = (page: Page, within = 'body') =>
+  page.evaluate((root) => {
+    const hitArea = (el: HTMLElement) => {
+      const r = el.getBoundingClientRect();
+      let [left, top, right, bottom] = [r.left, r.top, r.right, r.bottom];
+      for (const pseudo of ['::before', '::after']) {
+        const s = getComputedStyle(el, pseudo);
+        if (s.content === 'none' || s.position !== 'absolute') continue;
+        const inset = [s.left, s.top, s.right, s.bottom].map((v) => (v.endsWith('px') ? parseFloat(v) : NaN));
+        if (inset.some(Number.isNaN)) continue;
+        // the containing block: the element itself when positioned, else its nearest positioned ancestor
+        const cb = getComputedStyle(el).position !== 'static' ? el : (el.offsetParent as HTMLElement | null);
+        if (!cb) continue;
+        const c = cb.getBoundingClientRect();
+        const x0 = c.left + cb.clientLeft;
+        const y0 = c.top + cb.clientTop;
+        left = Math.min(left, x0 + inset[0]!);
+        top = Math.min(top, y0 + inset[1]!);
+        right = Math.max(right, x0 + cb.clientWidth - inset[2]!);
+        bottom = Math.max(bottom, y0 + cb.clientHeight - inset[3]!);
+      }
+      return { width: right - left, height: bottom - top };
+    };
+    const visible = (el: HTMLElement) => {
+      const s = getComputedStyle(el);
+      return el.getClientRects().length > 0 && s.visibility !== 'hidden' && el.closest('[popover]:not(:popover-open)') === null;
+    };
+    const inLine = (el: HTMLElement) => {
+      const parent = el.parentElement;
+      if (!parent || !getComputedStyle(el).display.startsWith('inline')) return false;
+      return (parent.textContent ?? '').replace(el.textContent ?? '', '').trim().length > 0;
+    };
+    const sel = 'a[href], button, input:not([type=hidden]), select, textarea, summary, [role=button], [role=link], [tabindex]:not([tabindex="-1"])';
+    const targets = new Set<HTMLElement>();
+    for (const el of document.querySelector(root)!.querySelectorAll<HTMLElement>(sel)) {
+      if (el.isContentEditable) continue;
+      const label = el.closest('label');
+      const target = el instanceof HTMLInputElement && label ? label : el;
+      const r = el.getBoundingClientRect();
+      // a visually hidden input is reached through its label or another control
+      if (el instanceof HTMLInputElement && !label && (r.width <= 1 || r.height <= 1 || getComputedStyle(el).opacity === '0')) continue;
+      if (visible(target) && !inLine(target)) targets.add(target);
+    }
+    return [...targets]
+      .map((el) => ({ el, r: hitArea(el) }))
+      .filter(({ r }) => r.width < 43.5 || r.height < 43.5)
+      .map(({ el, r }) => `${el.tagName.toLowerCase()} "${(el.textContent ?? el.getAttribute('aria-label') ?? '').trim().slice(0, 40)}" ${Math.round(r.width)}×${Math.round(r.height)}`);
+  }, within);
+
 type Flag = { path: string; read: string | null };
 type NoticeBody = { assessment: { flags: Flag[]; lines: { confirm: Flag[] }[] } };
 

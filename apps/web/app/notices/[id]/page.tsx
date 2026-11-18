@@ -10,6 +10,7 @@ import { HauntedLine } from '../../../components/HauntedLine';
 import { LinePanel } from '../../../components/LinePanel';
 import { Page } from '../../../components/Page';
 import { Paper } from '../../../components/Paper';
+import { SidePanelDrawer } from '../../../components/SidePanelDrawer';
 import { StatusPill } from '../../../components/StatusPill';
 import type { FigureJson } from '../../../lib/assess';
 import { confirmationsFor } from '../../../lib/confirm';
@@ -241,13 +242,16 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
               </div>
 
               {line ? (
-                <LinePanel
-                  noticeId={id}
-                  line={line}
-                  tariff={tariff}
-                  backHref={`/notices/${id}`}
-                  className={`rounded-lg bg-surface p-5 shadow-raised md:p-6 lg:sticky lg:top-6 lg:col-span-5 lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto ${explicit ? '' : 'max-md:hidden'}`}
-                />
+                // Desktop: sticky 5/12 column. Tablet: a right drawer when a line is chosen. Phone: the line view.
+                <SidePanelDrawer open={explicit} lineHref={`/notices/${id}?line=${sel + 1}`} closeHref={`/notices/${id}`}>
+                  <LinePanel
+                    noticeId={id}
+                    line={line}
+                    tariff={tariff}
+                    backHref={`/notices/${id}`}
+                    className={`rounded-lg bg-surface p-5 shadow-raised md:p-6 lg:sticky lg:top-6 lg:col-span-5 lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto ${explicit ? '' : 'max-md:hidden'}`}
+                  />
+                </SidePanelDrawer>
               ) : null}
             </div>
           </>

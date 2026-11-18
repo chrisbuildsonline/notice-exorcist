@@ -30,7 +30,7 @@ test.beforeAll(async ({ browser, baseURL }) => {
  */
 const LOCAL = 'http://localhost:3212';
 
-const screens: Array<{ name: string; path: () => string; ready: (p: import('@playwright/test').Page) => Promise<void> }> = [
+const screens: Array<{ name: string; path: () => string; tablet?: true; ready: (p: import('@playwright/test').Page) => Promise<void> }> = [
   {
     name: 'inbox-empty',
     path: () => LOCAL,
@@ -59,6 +59,15 @@ const screens: Array<{ name: string; path: () => string; ready: (p: import('@pla
     path: () => noticePath,
     ready: async (p) => {
       await expect(p.getByRole('heading', { level: 1, name: 'CBP Form 29 · Notice of Action' })).toBeVisible();
+    },
+  },
+  {
+    // R7.3: at 820 the line panel is a modal drawer, so this screen also runs at the tablet width
+    name: 'notice-view-line-selected',
+    path: () => `${noticePath}?line=1`,
+    tablet: true,
+    ready: async (p) => {
+      await expect(p.getByRole('complementary', { name: 'Line details' }).getByRole('heading', { name: 'Line 1' })).toBeVisible();
     },
   },
   {
@@ -104,10 +113,12 @@ const screens: Array<{ name: string; path: () => string; ready: (p: import('@pla
 ];
 
 for (const s of screens) {
-  for (const [vp, size] of [
+  const sizes = [
     ['1440', desktop],
     ['390', phone],
-  ] as const) {
+    ...(s.tablet ? ([['820', { width: 820, height: 1180 }]] as const) : []),
+  ] as const;
+  for (const [vp, size] of sizes) {
     test(`${s.name} at ${vp} has no serious axe violation`, async ({ page }) => {
       await page.setViewportSize(size);
       await page.goto(s.path());
