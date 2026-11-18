@@ -24,6 +24,8 @@ export function DraftWorkspace({ initial, subtitle }: { initial: DraftView; subt
   const [ticking, setTicking] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [toast, setToast] = useState<ToastMessage | null>(null);
+  // The paragraph an edit toast follows in the DOM, so its Dismiss is the next Tab stop from there; else it is last.
+  const [toastAt, setToastAt] = useState<number | null>(null);
   // Bumped by every edit and every untick, so an approval answered after one is not applied.
   const generation = useRef(0);
   const approved = draft.state === 'approved' && !ticking;
@@ -31,8 +33,16 @@ export function DraftWorkspace({ initial, subtitle }: { initial: DraftView; subt
   const shown = useRef({ approvedOrTicking: false });
   shown.current.approvedOrTicking = draft.state === 'approved' || ticking;
 
-  const say = (m: Omit<ToastMessage, 'id'>) => setToast({ ...m, id: Date.now() });
-  const dismiss = useCallback(() => setToast(null), []);
+  const say = (m: Omit<ToastMessage, 'id'>, at: number | null = null) => {
+    setToastAt(at);
+    setToast({ ...m, id: Date.now() });
+  };
+  const dismiss = useCallback(() => {
+    // Dismissed from the keyboard: back to the paragraph being edited, not to the top of the page.
+    if (toastAt !== null && document.activeElement?.closest('[role=status]'))
+      document.querySelector<HTMLElement>(`[role=textbox][aria-label="Paragraph ${toastAt + 1}"]`)?.focus();
+    setToast(null);
+  }, [toastAt]);
 
   function withdraw() {
     generation.current += 1;
@@ -60,18 +70,18 @@ export function DraftWorkspace({ initial, subtitle }: { initial: DraftView; subt
     say({ text: 'Not approved', detail: 'The approval could not be saved. Try again.', persistent: true });
   }
 
-  function onEdit() {
+  function onEdit(i: number) {
     if (!shown.current.approvedOrTicking) return;
     withdraw();
-    say(CLEARED);
+    say(CLEARED, i);
   }
 
   /** A save always clears the stored approval (PUT does). If the box was ticked meanwhile, say so. */
-  function onSaved(v: DraftView) {
+  function onSaved(v: DraftView, i: number) {
     if (shown.current.approvedOrTicking) {
       generation.current += 1;
       setTicking(false);
-      say(CLEARED);
+      say(CLEARED, i);
     }
     setDraft(v);
   }
@@ -97,6 +107,7 @@ export function DraftWorkspace({ initial, subtitle }: { initial: DraftView; subt
 
   const check = { checked: draft.state === 'approved' || ticking, busy: ticking, onChange: (on: boolean) => (on ? void approve() : withdraw()) };
   const pill = { approved, exporting, onExport: () => void exportPdf() };
+  const toastNode = <Toast message={toast} onDismiss={dismiss} />;
 
   return (
     <>
@@ -117,7 +128,7 @@ export function DraftWorkspace({ initial, subtitle }: { initial: DraftView; subt
 
       <div className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:gap-6 lg:grid-cols-12 lg:items-start">
         <div className="lg:col-span-8">
-          <DraftEditor draft={draft} onSaved={onSaved} onEdit={onEdit} />
+          <DraftEditor draft={draft} onSaved={onSaved} onEdit={onEdit} after={toastAt === null ? undefined : { index: toastAt, node: toastNode }} />
         </div>
         <aside aria-label="About this draft" className="lg:sticky lg:top-6 lg:col-span-4">
           <ApprovalCard draft={draft} check={check} />
@@ -129,7 +140,7 @@ export function DraftWorkspace({ initial, subtitle }: { initial: DraftView; subt
         <ExportPill {...pill} variant="bar" className="mt-2" />
       </div>
 
-      <Toast message={toast} onDismiss={dismiss} />
+      {toastAt === null ? toastNode : null}
     </>
   );
 }

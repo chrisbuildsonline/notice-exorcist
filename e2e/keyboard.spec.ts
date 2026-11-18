@@ -1,5 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
-import { desktop, fileConfirmedNotice, phone, shot } from './helpers';
+import { approveBox, desktop, exportPill, fileConfirmedNotice, phone, shot } from './helpers';
 
 // R1 by keyboard alone. It files its own notice, so it does not depend on the order of the other specs.
 test.describe.configure({ mode: 'serial' });
@@ -90,9 +90,11 @@ type Stop = { kb: string; id: string; name: string; ring: boolean };
 const tagTabbables = (page: Page) =>
   page.evaluate(() => {
     const sel = 'a[href], button, input, select, textarea, [tabindex], [contenteditable]';
+    // an editing host is reached by Tab, though its tabIndex property reads -1 without the attribute
+    const host = (el: HTMLElement) => el.isContentEditable && !el.parentElement?.isContentEditable && !el.hasAttribute('tabindex');
     const els = [...document.querySelectorAll<HTMLElement>(sel)].filter(
       (el) =>
-        el.tabIndex >= 0 &&
+        (el.tabIndex >= 0 || host(el)) &&
         !(el as HTMLButtonElement).disabled &&
         !el.closest('[inert], dialog:not([open]), [popover]:not(:popover-open)') &&
         el.checkVisibility({ visibilityProperty: true }),
@@ -251,4 +253,126 @@ test('calculation drawer: Enter opens it, focus lands inside and cycles both way
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
   expect(await trigger.evaluate((t) => t === document.activeElement)).toBe(true);
+});
+
+/** Counts every approval post, export request and download the page makes from here on. */
+function watchGate(page: Page) {
+  const seen = { approvals: 0, exports: 0, downloads: 0 };
+  page.on('request', (r) => {
+    if (r.method() === 'POST' && r.url().endsWith('/approve')) seen.approvals += 1;
+    if (r.url().endsWith('/export')) seen.exports += 1;
+  });
+  page.on('download', () => {
+    seen.downloads += 1;
+  });
+  return seen;
+}
+
+const box = /^I approve this exact draft/;
+
+test('approval by keyboard: Export stays focusable and inert until Space ticks the box, Enter downloads, a typed edit unticks it', async ({ page }) => {
+  const seen = watchGate(page);
+  await page.setViewportSize(desktop);
+  await page.goto(`${noticePath}/exorcise`);
+  await expect(approveBox(page)).not.toBeChecked();
+
+  // every stop down to the checkbox is in DOM order, shows the ring, and passes the blocked Export PDF
+  await tagTabbables(page);
+  const walk = await pressUntil(page, 'Tab', named(box));
+  inDomOrder(walk);
+  expect(walk.filter((s) => !s.ring).map((s) => s.name)).toEqual([]);
+  expect(walk.map((s) => s.name)).toContain('Export PDF');
+  await expect(approveBox(page)).not.toBeChecked();
+
+  // Enter on the blocked pill does nothing and it keeps focus
+  await pressUntil(page, 'Shift+Tab', named('Export PDF'));
+  await expect(exportPill(page)).toHaveAttribute('aria-disabled', 'true');
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(500);
+  await expect(exportPill(page)).toBeFocused();
+  expect(seen).toEqual({ approvals: 0, exports: 0, downloads: 0 });
+
+  // Space on the box approves; Enter on the pill then downloads
+  await pressUntil(page, 'Tab', named(box));
+  const approved = page.waitForResponse((r) => r.request().method() === 'POST' && r.url().endsWith('/approve'));
+  await page.keyboard.press('Space');
+  expect((await approved).status()).toBe(200);
+  await expect(page.getByTestId('draft-state')).toHaveText('✓Approved');
+  await pressUntil(page, 'Shift+Tab', named('Export PDF'));
+  const download = page.waitForEvent('download');
+  await page.keyboard.press('Enter');
+  await download;
+
+  // a typed edit unticks the box and blocks the pill again
+  await pressUntil(page, 'Tab', named('Paragraph 1'));
+  await shot(page, '../a11y/paragraph-ring-1440', false);
+  await page.keyboard.press('End');
+  await page.keyboard.type(' Thanks.');
+  await expect(approveBox(page)).not.toBeChecked();
+  await pressUntil(page, 'Shift+Tab', named('Export PDF'));
+  await expect(exportPill(page)).toHaveAttribute('aria-disabled', 'true');
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(500);
+  // the one approval was the Space press; the one export was the approved one
+  expect(seen).toEqual({ approvals: 1, exports: 1, downloads: 1 });
+  await expect(approveBox(page)).not.toBeChecked();
+});
+
+test('toast: an edit that clears approval is announced, Dismiss is the next Tab stop, Enter dismisses and focus goes back', async ({ page }) => {
+  await page.setViewportSize(desktop);
+  await page.goto(`${noticePath}/exorcise`);
+  await pressUntil(page, 'Tab', named(box));
+  await page.keyboard.press('Space');
+  await expect(page.getByTestId('draft-state')).toHaveText('✓Approved');
+
+  await pressUntil(page, 'Shift+Tab', named('Paragraph 2'));
+  await page.keyboard.press('End');
+  await page.keyboard.type(' Thank you.');
+  const toast = page.getByRole('status').filter({ hasText: 'Approval cleared' });
+  await expect(toast).toBeVisible();
+  // the toast does not take focus
+  expect((await stop(page)).name).toBe('Paragraph 2');
+
+  // Tab visits the paragraph's own citation chips, then the toast: the first stop past the paragraph is Dismiss
+  const para = page.getByRole('textbox', { name: 'Paragraph 2' });
+  const inPara = () => para.evaluate((p) => p.contains(document.activeElement));
+  for (let n = 0; n < 10 && (await inPara()); n++) await page.keyboard.press('Tab');
+  await expect(toast.getByRole('button', { name: 'Dismiss' })).toBeFocused();
+  expect((await stop(page)).ring).toBe(true);
+  await shot(page, '../a11y/toast-dismiss-1440', false);
+  await page.keyboard.press('Enter');
+  await expect(toast).toHaveCount(0);
+  await expect.poll(() => stop(page).then((s) => s.name)).toBe('Paragraph 2');
+  await expect(approveBox(page)).not.toBeChecked();
+});
+
+test('toast on phone: Dismiss is the next Tab stop after the edited paragraph', async ({ page }) => {
+  await page.setViewportSize(phone);
+  await page.goto(`${noticePath}/exorcise`);
+  await pressUntil(page, 'Tab', named(box));
+  await page.keyboard.press('Space');
+  await expect(page.getByTestId('draft-state')).toHaveText('✓Approved');
+  await pressUntil(page, 'Shift+Tab', named('Paragraph 1'));
+  expect((await stop(page)).ring).toBe(true);
+  await shot(page, '../a11y/paragraph-ring-390', false);
+  await page.keyboard.press('End');
+  await page.keyboard.type(' Thanks.');
+  await page.keyboard.press('Tab');
+  const toast = page.getByRole('status').filter({ hasText: 'Approval cleared' });
+  await expect(toast.getByRole('button', { name: 'Dismiss' })).toBeFocused();
+  await shot(page, '../a11y/toast-dismiss-390', false);
+  await page.keyboard.press('Enter');
+  await expect(toast).toHaveCount(0);
+});
+
+test('nothing on Exorcise ticks the box but Space on it', async ({ page }) => {
+  const seen = watchGate(page);
+  await page.setViewportSize(desktop);
+  await page.goto(`${noticePath}/exorcise`);
+  // focus passing over the box, a full lap each way, never approves
+  const total = await tagTabbables(page);
+  for (let i = 0; i < total; i++) await page.keyboard.press('Tab');
+  for (let i = 0; i < total; i++) await page.keyboard.press('Shift+Tab');
+  await expect(approveBox(page)).not.toBeChecked();
+  expect(seen.approvals).toBe(0);
 });

@@ -55,10 +55,10 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 12. [e2e] Keyboard: calculation drawer.
   - Test first: `See the math` with Enter opens the dialog, focus lands inside, Tab and Shift+Tab cycle within it, Esc closes, focus returns to the trigger.
   - Then: only fix gaps (the dialog exists already). Covers R1.4.
-- [ ] 13. [e2e] Keyboard: approve and export without auto-approval.
+- [x] 13. [e2e] Keyboard: approve and export without auto-approval.
   - Test first: `keyboard.spec.ts` "approval": on Exorcise, Tab reaches the checkbox; Enter on `Export PDF` while unticked does nothing and the control is still focusable; Space ticks the box and the download starts on Enter; an edit by keyboard unticks and re-blocks. No key or focus change ever ticks the box.
   - Then: fix gaps. Do not change `approval.ts`. Covers R1.8, R1.10.
-- [ ] 14. [e2e] Toast reachable and dismissable by keyboard.
+- [x] 14. [e2e] Toast reachable and dismissable by keyboard.
   - Test first: after an edit clears approval, the toast is announced (`role=status`), its `Dismiss` button is the next tab stop after the edited block, Enter dismisses it, focus stays where it was.
   - Then: add the Dismiss button if missing and keep focus unchanged. Covers R1.9.
 - [ ] 15. [css] No positive `tabindex`, no `order-*` on interactive elements.

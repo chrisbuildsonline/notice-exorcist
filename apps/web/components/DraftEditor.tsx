@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent, useState } from 'react';
+import { Fragment, type KeyboardEvent, type ReactNode, useState } from 'react';
 import { checkParagraph, type DraftView, segments } from '../lib/draft';
 import { Figure, type FigureProv } from './Figure';
 
@@ -25,8 +25,19 @@ const STATUS_TEXT = { idle: 'Edits save when you leave a paragraph', saving: 'Sa
  * Each paragraph is a plain-text block. Figures are `<Figure>` tokens bound to their
  * provenance record and citations are chips; both are atomic, so only the words around them can be edited.
  * A typed amount is refused before anything is sent, and the server checks the same rule.
+ * `after` puts a node (the toast) right after one paragraph in the DOM, so it is the next Tab stop there.
  */
-export function DraftEditor({ draft, onSaved, onEdit }: { draft: DraftView; onSaved?: (v: DraftView) => void; onEdit?: () => void }) {
+export function DraftEditor({
+  draft,
+  onSaved,
+  onEdit,
+  after,
+}: {
+  draft: DraftView;
+  onSaved?: (v: DraftView, i: number) => void;
+  onEdit?: (i: number) => void;
+  after?: { index: number; node: ReactNode };
+}) {
   const [paras, setParas] = useState(draft.paragraphs);
   // Bumped to redraw a block from state (after a save, or to undo an edit the editor refused).
   const [versions, setVersions] = useState<number[]>(() => draft.paragraphs.map(() => 0));
@@ -59,7 +70,7 @@ export function DraftEditor({ draft, onSaved, onEdit }: { draft: DraftView; onSa
     setParas(view.paragraphs);
     redraw(i);
     setStatus({ kind: 'saved' });
-    onSaved?.(view);
+    onSaved?.(view, i);
   }
 
   function onKey(i: number, e: KeyboardEvent<HTMLDivElement>) {
@@ -85,7 +96,8 @@ export function DraftEditor({ draft, onSaved, onEdit }: { draft: DraftView; onSa
         {paras.map((p, i) => {
           const err = errors[i];
           return (
-            <div key={`${i}-${versions[i]}`} className="group relative">
+            <Fragment key={i}>
+            <div key={versions[i]} className="group relative">
               <div
                 data-testid="draft-block"
                 role="textbox"
@@ -95,10 +107,10 @@ export function DraftEditor({ draft, onSaved, onEdit }: { draft: DraftView; onSa
                 contentEditable="plaintext-only"
                 suppressContentEditableWarning
                 spellCheck
-                onInput={onEdit}
+                onInput={() => onEdit?.(i)}
                 onBlur={(e) => void commit(i, e.currentTarget)}
                 onKeyDown={(e) => onKey(i, e)}
-                className={`-mx-3 cursor-text rounded-sm px-3 py-2.5 pr-9 text-body text-ink transition-colors duration-120 outline-none hover:bg-surface-muted focus:bg-surface-muted focus:shadow-[0_0_0_2px_var(--color-accent-200)] max-md:text-[16px] ${err ? 'bg-haunt-bg hover:bg-haunt-bg focus:bg-haunt-bg' : ''}`}
+                className={`-mx-3 cursor-text rounded-sm px-3 py-2.5 pr-9 text-body text-ink transition-colors duration-120 hover:bg-surface-muted focus:bg-surface-muted max-md:text-[16px] ${err ? 'bg-haunt-bg hover:bg-haunt-bg focus:bg-haunt-bg' : ''}`}
               >
                 {segments(p).map((s, k) => {
                   if (s.t === 'text') return s.s;
@@ -147,6 +159,8 @@ export function DraftEditor({ draft, onSaved, onEdit }: { draft: DraftView; onSa
                 </div>
               ) : null}
             </div>
+            {after?.index === i ? after.node : null}
+            </Fragment>
           );
         })}
       </div>
