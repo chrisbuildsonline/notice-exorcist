@@ -96,7 +96,7 @@ function trailRow(t: TrailItem): string {
   const substitution = c.substitution.map((x) => (x.t === 'text' ? esc(x.s) : esc(byKey.has(x.key) ? inputText(byKey.get(x.key)!) : x.key))).join('');
   const rows: Array<[string, string]> = [
     ['Inputs', c.inputs.map((i) => `${esc(i.label)}: ${esc(inputText(i))} · ${esc(i.source)}`).join('<br>')],
-    ['Rate text', c.rate ? `<span class="mono">&quot;${esc(c.rate.text)}&quot;</span> (${c.rate.prov}) · ${esc(c.rate.source)}` : 'none (a sum of figures)'],
+    ['Rate text', c.rate ? `<span class="mono">&quot;${esc(c.rate.text)}&quot;</span> (${c.rate.prov}) · ${esc(c.rate.source)}` : c.formulaId === 'total.sum' ? 'none (a sum of figures)' : 'none'],
     ['Notice says', t.stated ? esc(figureText(t.stated)) : 'not printed'],
     ['Recomputed', esc(figureText(c.result))],
     ['Rounding', esc(c.rounding)],
