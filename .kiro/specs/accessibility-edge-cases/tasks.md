@@ -77,7 +77,7 @@ The whole flow by keyboard, plus axe on the other screens.
 - [x] 17. [css] Reduced-motion CSS covers every animation and transition.
   - Test first: extend `reduced-motion.test.ts`: every `@keyframes` name used by an `animation:` in `globals.css` is neutralised in the media block; `.fog`, `.line`, `.calc-panel` and the tablet panel have no non-zero transition there; static box-shadow values equal `design/DESIGN.md` section 3; `confirm`, `unsupported` and `verified` have no shadow.
   - Then: add the missing rules (`.fog` transition, `scroll-behavior`, panel animation). Covers R3.1 to R3.3.
-- [ ] 18. [css] No JS animation outside the reduced-motion hook.
+- [x] 18. [css] No JS animation outside the reduced-motion hook.
   - Test first: `no-js-animation.test.ts` scans `apps/web` for `requestAnimationFrame`, `.animate(` and `behavior: 'smooth'`; fails on a hit outside `useReducedMotion.ts`.
   - Then: add `useReducedMotion.ts`; fix any hit. Covers R3.6.
 - [ ] 19. [e2e] Reduced motion in the browser.
