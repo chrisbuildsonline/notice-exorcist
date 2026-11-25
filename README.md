@@ -26,7 +26,7 @@ TypeScript monorepo (Bun workspaces), MIT licensed.
 - `packages/tariff-mcp`: a stdio MCP server on the MCP TypeScript SDK with four tools (`lookup_tariff`, `search_rulings`, `calculate_duty`, `explain_rate`) over the tariff index and the duty engine. It is a development tool for Kiro (see below); the web app reads the same index directly and does not call it.
 - `e2e/`: Playwright, with axe-core accessibility checks.
 
-There is no container setup and no hosted deployment; the app runs locally. A local-only mode is tested end to end: `e2e/local-mode.spec.ts` runs the specimen flow to an exported PDF on a server whose outbound connections off the machine are refused (`e2e/offline.cjs`).
+There is no hosted deployment; the app runs locally. The `Dockerfile` only runs the checks (see Run in Docker). A local-only mode is tested end to end: `e2e/local-mode.spec.ts` runs the specimen flow to an exported PDF on a server whose outbound connections off the machine are refused (`e2e/offline.cjs`).
 
 ## Develop
 
@@ -65,6 +65,15 @@ bun run --cwd packages/tariff-data data:fetch   # re-download USITC HTS + CBP CR
 ```
 
 The tariff and ruling data in `packages/tariff-data/data/` is US government public domain, not MIT; see its `SOURCES.md`.
+
+### Run in Docker
+
+The image installs the dependencies and Playwright Chromium and builds the tariff index; the container runs typecheck, tests and e2e in that order and stops at the first failure.
+
+```sh
+docker build -t notice-exorcist .
+docker run --rm notice-exorcist
+```
 
 ## Built with Kiro
 
