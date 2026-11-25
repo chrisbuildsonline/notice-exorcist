@@ -94,7 +94,7 @@
   background:radial-gradient(closest-side, var(--glow-haunt), transparent); filter:blur(6px); opacity:0;
   animation:wisp 5.6s var(--ease-out) 1.4s infinite;
 }
-@keyframes wisp { from { opacity:0; transform:translateY(14px) scaleX(.7); } 30% { opacity:.9; } to { opacity:0; transform:translateY(-28px) scaleX(1.1); } }
+@keyframes wisp { from { opacity:0; transform:translateY(14px) scaleX(.7); } 30% { opacity:.5; } to { opacity:0; transform:translateY(-20px) scaleX(1.1); } }
 /* Recomputed figures appear out of the fog once, after the flicker. */
 .materialize { display:inline-flex; animation:materialize 700ms var(--ease-out) 1.2s backwards; }
 @keyframes materialize { from { opacity:0; filter:blur(6px); transform:translateY(4px); } }
