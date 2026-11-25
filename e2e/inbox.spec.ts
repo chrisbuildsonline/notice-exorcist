@@ -32,6 +32,12 @@ const overflowing = (page: Page) =>
     [...document.querySelectorAll<HTMLElement>('body *')]
       .filter((el) => el.closest('[popover]') === null && el.closest('[data-testid=specimen-card]') === null)
       .filter((el) => el.getBoundingClientRect().right > window.innerWidth + 1)
+      // Clipped by an ancestor that hides overflow and itself fits (the haunt mist tiles): it cannot widen the page.
+      .filter((el) => {
+        for (let a = el.parentElement; a && a !== document.body; a = a.parentElement)
+          if (/hidden|clip/.test(getComputedStyle(a).overflowX) && a.getBoundingClientRect().right <= window.innerWidth + 1) return false;
+        return true;
+      })
       .map((el) => `${el.tagName.toLowerCase()}.${el.className}`.slice(0, 120)),
   );
 
