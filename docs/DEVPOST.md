@@ -22,7 +22,7 @@ The hardest problem is trust. A model that reads a scan can misread a digit, and
 
 ## Accomplishments
 
-We are proud that the calculator is a standalone, model-free package with a written spec, property tests and a provenance trail, so a skeptical reader can verify any figure by hand. We are also proud of the interface: the notice becomes a haunted document where disagreeing lines glow and verified lines go quiet, and the exorcism flow walks the user through confirmation, review, editing and approval without a blank chat box. The `.kiro` folder holds the specs, hooks, steering and MCP config the project was built with. Test counts from a full run, all passing: 800 Vitest tests in 106 files, 102 Playwright e2e tests (with axe-core accessibility checks), 72 tariff-data tests, 19 script tests and 53 tariff-mcp tests. We did not measure line coverage.
+We are proud that the calculator is a standalone, model-free package with a written spec, property tests and a provenance trail, so a skeptical reader can verify any figure by hand. We are also proud of the interface: the notice becomes a haunted document where disagreeing lines glow and verified lines go quiet, and the exorcism flow walks the user through confirmation, review, editing and approval without a blank chat box. The `.kiro` folder holds the specs, hooks, steering and MCP config the project was built with. Test counts from a full run, all passing: 801 Vitest tests in 106 files, 105 Playwright e2e tests (with axe-core accessibility checks), 72 tariff-data tests, 19 script tests and 53 tariff-mcp tests. We did not measure line coverage.
 
 ## What we learned
 
