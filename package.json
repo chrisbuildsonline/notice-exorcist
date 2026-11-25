@@ -14,6 +14,10 @@
     "typecheck": "tsc -p . && tsc -p packages/tariff-data && tsc -p packages/tariff-mcp && tsc -p scripts && bun run --cwd apps/web typecheck",
     "e2e": "playwright test",
     "specimens:generate": "bun scripts/specimens/generate.ts",
+    "docker:build": "docker build -t notice-exorcist .",
+    "docker:serve": "docker run --rm -p 3000:3000 notice-exorcist",
+    "docker:test": "docker build --target test -t notice-exorcist-test . && docker run --rm notice-exorcist-test",
+    "docker:check": "playwright test -c playwright.docker.config.ts",
     "rates:sweep": "vitest run packages/duty-engine/src/rate-text-sweep.test.ts --silent=false"
   },
   "devDependencies": {

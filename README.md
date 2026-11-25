@@ -26,7 +26,7 @@ TypeScript monorepo (Bun workspaces), MIT licensed.
 - `packages/tariff-mcp`: a stdio MCP server on the MCP TypeScript SDK with four tools (`lookup_tariff`, `search_rulings`, `calculate_duty`, `explain_rate`) over the tariff index and the duty engine. It is a development tool for Kiro (see below); the web app reads the same index directly and does not call it.
 - `e2e/`: Playwright, with axe-core accessibility checks.
 
-There is no hosted deployment; the app runs locally. The `Dockerfile` only runs the checks (see Run in Docker). A local-only mode is tested end to end: `e2e/local-mode.spec.ts` runs the specimen flow to an exported PDF on a server whose outbound connections off the machine are refused (`e2e/offline.cjs`).
+There is no hosted deployment; the app runs locally or in Docker (see Run in Docker). A local-only mode is tested end to end: `e2e/local-mode.spec.ts` runs the specimen flow to an exported PDF on a server whose outbound connections off the machine are refused (`e2e/offline.cjs`).
 
 ## Develop
 
@@ -68,12 +68,23 @@ The tariff and ruling data in `packages/tariff-data/data/` is US government publ
 
 ### Run in Docker
 
-The image installs the dependencies and Playwright Chromium and builds the tariff index; the container runs typecheck, tests and e2e in that order and stops at the first failure.
+The default image serves the app with no key: it installs the dependencies and Playwright Chromium (for the PDF export), builds the tariff index and the Next.js app, and starts it on port 3000 (`-e PORT=...` for another).
 
 ```sh
 docker build -t notice-exorcist .
-docker run --rm notice-exorcist
+docker run --rm -p 3000:3000 notice-exorcist
 ```
+
+Open http://localhost:3000 and press Try a specimen, as in Run it. The notice store lives in the container, so each `docker run` starts with an empty inbox. With the container up, `bun run docker:check` (on the host, after `bun install`) walks the specimen flow against it with Playwright; `SERVE_URL` points it at another address.
+
+The `test` target runs typecheck, tests and e2e in that order and stops at the first failure:
+
+```sh
+docker build --target test -t notice-exorcist-test .
+docker run --rm notice-exorcist-test
+```
+
+The same commands are in `package.json` as `docker:build`, `docker:serve` and `docker:test`.
 
 ## Built with Kiro
 
