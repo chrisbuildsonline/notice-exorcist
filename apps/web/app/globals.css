@@ -149,9 +149,9 @@
   animation:veil-lift 2.2s var(--ease-in-out);
 }
 @keyframes veil-lift {
-  from { opacity:.96; visibility:visible; --veil-clear:-40%; transform:none; }
+  from { opacity:.96; visibility:visible; --veil-clear:-40%; }
   25%  { opacity:.96; visibility:visible; --veil-clear:-25%; }
-  to   { opacity:0; visibility:visible; --veil-clear:100%; transform:scale(1.12); }
+  to   { opacity:0; visibility:visible; --veil-clear:100%; }
 }
 
 /* Calculation drawer, DESIGN.md 4: scrim, a 320ms slide from the right (a bottom sheet on phone). */
