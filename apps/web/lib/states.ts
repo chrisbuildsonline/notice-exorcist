@@ -30,3 +30,13 @@ export function fogOpacity(states: LineState[]): number {
   const haunted = states.filter((s) => s === 'unverified' || s === 'disagrees').length;
   return 0.15 + (0.85 * haunted) / states.length;
 }
+
+/**
+ * DESIGN.md 3.1: the Inbox mist level. 0.15 + 0.85 × (haunted + unverified notices) / notices, 0 when none is, and
+ * 0.6 on the empty Inbox, whose hero is the haunted specimen.
+ */
+export function inboxFog(kinds: Array<NoticeStatus['kind'] | 'reading' | 'failed'>): number {
+  if (kinds.length === 0) return 0.6;
+  const haunted = kinds.filter((k) => k === 'haunted' || k === 'unverified').length;
+  return haunted === 0 ? 0 : 0.15 + (0.85 * haunted) / kinds.length;
+}
