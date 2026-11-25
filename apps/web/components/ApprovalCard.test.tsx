@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { ExportPill } from './ApprovalCard';
+import { ApprovalCheck, ExportPill } from './ApprovalCard';
+import type { DraftView } from '../lib/draft';
 
 const pill = (exporting: boolean) => renderToStaticMarkup(<ExportPill approved exporting={exporting} onExport={() => {}} variant="header" />);
 
@@ -19,5 +20,13 @@ describe('ExportPill while exporting', () => {
   it('reads Export PDF when idle', () => {
     expect(pill(false)).toContain('Export PDF');
     expect(pill(false)).not.toContain('export-indicator');
+  });
+});
+
+describe('ApprovalCheck before hydration', () => {
+  it('is drawn disabled by the server, so an early tick is never undone or shown unrecorded', () => {
+    const draft = { hash: 'a'.repeat(64) } as DraftView;
+    const html = renderToStaticMarkup(<ApprovalCheck draft={draft} checked={false} busy={false} onChange={() => {}} variant="card" />);
+    expect(/<input[^>]*type="checkbox"[^>]*>/.exec(html)?.[0]).toMatch(/\bdisabled=""/);
   });
 });

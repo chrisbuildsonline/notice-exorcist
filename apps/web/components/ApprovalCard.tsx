@@ -1,7 +1,11 @@
 'use client';
 
-import { useId } from 'react';
+import { useId, useSyncExternalStore } from 'react';
 import type { DraftView } from '../lib/draft';
+
+const noop = () => () => {};
+/** False in the server HTML and during hydration, true once React owns the page. */
+const useHydrated = () => useSyncExternalStore(noop, () => true, () => false);
 
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 const short = (hash: string) => `sha256 ${hash.slice(0, 4)}…${hash.slice(-2)}`;
@@ -29,6 +33,9 @@ type CheckProps = {
  */
 export function ApprovalCheck({ draft, checked, busy, onChange, variant, ring = 0, className = '' }: CheckProps) {
   const sub = useId();
+  // A tick before hydration would be undone by React (it restores `checked={false}`), or with no script show an
+  // approval nothing recorded. So the box takes ticks only once it can act on them.
+  const hydrated = useHydrated();
   const look =
     variant === 'card'
       ? 'min-h-16 rounded-md bg-surface-muted hover:bg-line has-[:checked]:bg-calm-bg'
@@ -40,10 +47,11 @@ export function ApprovalCheck({ draft, checked, busy, onChange, variant, ring = 
         <input
           type="checkbox"
           checked={checked}
+          disabled={!hydrated}
           aria-busy={busy || undefined}
           aria-describedby={sub}
           onChange={(e) => onChange(e.currentTarget.checked)}
-          className="peer size-6 cursor-pointer appearance-none rounded-xs bg-surface shadow-[inset_0_0_0_1.5px_var(--color-text-muted)] transition-colors duration-120 [grid-area:1/1] checked:bg-ink checked:shadow-none"
+          className="peer size-6 cursor-pointer appearance-none disabled:cursor-progress rounded-xs bg-surface shadow-[inset_0_0_0_1.5px_var(--color-text-muted)] transition-colors duration-120 [grid-area:1/1] checked:bg-ink checked:shadow-none"
         />
         <svg
           aria-hidden="true"
