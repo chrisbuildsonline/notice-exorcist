@@ -4,7 +4,7 @@ The source of truth for every visual value in `apps/web`. If a value is not here
 
 ## 1. Principles
 
-1. **A finance product that happens to be haunted.** It should read like current fintech or document-review work (refs 02, 04, 05). The haunting shows up in three places only: the **glow** on uncertain lines, the **fog** over a document that isn't verified yet, and the **copy** in headings and notice-level states.
+1. **A finance product that happens to be haunted.** It should read like current fintech or document-review work (refs 02, 04, 05). The haunting shows up in four places only: the **glow** on uncertain lines (and the possessed line, 3.1), the **fog** over the page and the document while anything is unverified, the **exorcism** when the reply is approved, and the **copy** in headings and notice-level states. It must read as haunted at a glance (F15), from the effects, never from props.
 2. **One thing first.** Every screen opens with a title, a status, or the one primary action. Nothing comes before them.
 3. **Numbers are the heroes, and every number names its source.** Figures are large, tabular, and always tagged `stated`, `computed` or `tariff` (`no-model-math.md`). A number with no source is never drawn.
 4. **Calm is the goal.** Verifying a line removes colour. A finished notice is mostly white and grey.
@@ -12,7 +12,8 @@ The source of truth for every visual value in `apps/web`. If a value is not here
 
 **Spooky budget. These are allowed:**
 - glow, fog and the "calming" transition
-- a small ghost glyph in the logo and the empty-state visual
+- the haunt layer (3.1): page mist, the first-load veil, the document aura, the possessed line (flicker, afterimage, ember wisp), materialising recomputed figures, and the fog lifting on approval
+- a small ghost glyph in the logo and the empty-state visual (it may float and blink)
 - the words *haunted*, *at peace*, *exorcise* in page titles, notice-level pills and empty states
 
 **Never:**
@@ -55,6 +56,16 @@ The source of truth for every visual value in `apps/web`. If a value is not here
 | `unsupported` | fee type the engine can't check (e.g. AD/CVD) | `#4a5060` | `#eceef3` | `#8a90a0` dashed (3.2) | none | 6.9 |
 | `draft` | reply not approved | `#4a5060` | `#eceef3` | - | none | 6.9 |
 
+**Haunt layer** (3.1). Decorative only, never behind text in a way that lowers contrast, never the accent.
+
+| Token | Value | Use |
+|---|---|---|
+| `mist-veil` | `rgba(255,255,255,.78)` | page mist wisps and the first-load veil. Lighter than `canvas`, so text on the canvas only gains contrast |
+| `mist-shade` | `rgba(84,94,128,.10)` | cool shade in the outer gutters, ≥1280px only (no text there) |
+| `aura-haunt` | `rgba(232,89,12,.18)` | ember aura around a document with a disagreeing line |
+| `aura-unverified` | `rgba(245,179,0,.18)` | amber aura around a document with only unverified lines |
+| `ghost-haunt` | `rgba(232,89,12,.45)` | the afterimage on a possessed (stated) figure |
+
 **How this fits "one accent".**
 - Violet is the only colour that means "you can act on this or it is selected". Status hues appear **only** as pills, row tints, 3px edges, glows and status icons.
 - A status hue is never on a link, a button, a chart series or the focus ring.
@@ -78,6 +89,7 @@ The source of truth for every visual value in `apps/web`. If a value is not here
 - **Motion:**
   - easings: `ease-out cubic-bezier(.2,.8,.2,1)`, `ease-in-out cubic-bezier(.65,0,.35,1)`
   - durations: `fast 120ms` (hover), `base 200ms` (state), `slow 320ms` (drawer/sheet), `calm 900ms`, `pulse-haunt 2.4s`, `pulse-unverified 3.6s`, `fog-drift 40s`
+  - haunt layer (3.1): `veil-lift 2.2s` (once, first load), `mist-manifest 2.4s` (once), `mist-drift 70s` / `90s`, `flicker 1.4s` (once, then the pulse), `materialize 700ms` after `1.2s`, `aura 2.4s`, `afterimage 3.2s`, `wisp 5.6s`, `ghost-bob 6s`, `ghost-blink 7s`, `exorcise 1.2s` (fog lifts) and `exorcise-ring 900ms`
 
 ### 2.3 Type
 
@@ -120,6 +132,8 @@ The source of truth for every visual value in `apps/web`. If a value is not here
   --shadow-overlay:0 24px 64px -16px rgba(20,22,28,.28);
   --shadow-pill:inset 0 1px 0 rgba(255,255,255,.10),0 6px 16px -6px rgba(20,22,28,.45);
   --ease-out:cubic-bezier(.2,.8,.2,1); --ease-in-out:cubic-bezier(.65,0,.35,1);
+  --mist-veil:rgba(255,255,255,.78); --mist-shade:rgba(84,94,128,.10);
+  --aura-haunt:rgba(232,89,12,.18); --aura-unverified:rgba(245,179,0,.18); --ghost-haunt:rgba(232,89,12,.45);
 }
 body { background:var(--color-canvas); color:var(--color-ink); font-family:var(--font-geist),ui-sans-serif,system-ui,sans-serif; }
 .num { font-variant-numeric:tabular-nums; }
@@ -192,6 +206,34 @@ The notice is drawn as **paper**: a `surface` card, radius `lg`, shadow `float`,
   - Fog is static at its computed opacity. Calming is instant, straight to the final state.
   - Drawers and sheets appear without sliding.
 - **AA:** every tinted row keeps `ink` text (≥15:1 on any status bg). Pill fg on bg is ≥5.5:1. Edges are ≥3:1 on white. Glows are decorative and never carry meaning alone.
+
+### 3.1 The haunting, made visible (F15)
+
+The AI jury called the first pass "deliberately subtle". These effects make inbox and notice read as haunted at a glance while the surfaces, the one accent and the one ink pill stay as they are.
+
+- **Page mist** (`<Haunt level>`, `data-testid=haunt-fog`): a fixed layer at `z-index:-1`, behind every surface.
+  - Two tiles of fractal-noise wisps (an inline SVG `feTurbulence`, stitched) in `mist-veil`, masked so they are densest at the bottom (ground fog) and thin at the top. Layer A drifts sideways over 70s, layer B the other way over 90s.
+  - Its opacity is `0.4 + 0.6 × level`. The level is the notice's fog value (3) on the notice view; on the Inbox it is `inboxFog()`: `0.15 + 0.85 × (haunted + unverified notices) / notices`, `0.6` on the empty Inbox (its hero is the haunted specimen), and 0 when every notice is at peace. At level 0 the layer is not drawn.
+  - At ≥1280px the outer gutters take a `mist-shade` gradient (9% each side). There is no text there.
+  - **Manifest:** on mount the mist rolls in once: from opacity 0, 6% lower and scaled 1.08 to rest over 2.4s.
+  - It is lighter than the canvas, so it never lowers text contrast.
+- **First-load veil** (`data-testid=haunt-veil`, in the root layout, so it plays once per full load, not on client navigation): a full-screen `mist-veil` wash over the page at `z-index:40`, `pointer-events:none`, that lifts and disperses (opacity .92 → 0, scale 1 → 1.12) over 2.2s. Its resting state is hidden.
+- **Document aura:** the paper (`data-aura`) radiates. `haunt` when any line disagrees: `0 0 0 1px rgba(232,89,12,.16), 0 0 64px 8px var(--aura-haunt)` breathing to `0 0 0 1px rgba(232,89,12,.26), 0 0 88px 16px var(--aura-haunt)` over 2.4s; `unverified` the same in amber over 3.6s; none otherwise. The specimen card on the empty Inbox carries the same aura.
+- **Haunted notice marks:** the `! Haunted · n` pill glows (`0 0 0 1px rgba(232,89,12,.22), 0 0 14px var(--glow-haunt)`) on the 2.4s pulse, and a haunted Inbox row's kind icon takes `haunt-bg` / `haunt-fg` with the same glow. The word in the pill still carries the meaning.
+- **The possessed line** (a disagreeing line):
+  - **Flicker:** on first render its glow and tint flicker like a failing bulb for 1.4s (staggered 80ms per line, once), then hand over to `pulse-h`.
+  - **Afterimage:** the stated figure (the wrong one) carries a drifting ghost double, a `text-shadow` of `ghost-haunt` that drifts over 3.2s: `3px -2px 6px var(--ghost-haunt), -2px 1px 0 rgba(20,22,28,.10)` to `-3px -3px 8px …, 2px 2px 0 …`. The glyphs themselves stay `ink`.
+  - **Ember wisp:** a soft ember plume (`::after`, blurred radial `glow-haunt`, behind the row content) rises 28px from the row's top edge and fades, every 5.6s.
+  - **Materialize:** the recomputed figure on the line, and the Recomputed and Difference tiles, appear out of the fog once: from opacity 0, `blur(6px)` and 4px low, over 700ms after 1.2s (after the flicker). The figure is in the DOM from the start; only its look animates.
+- **The exorcism** (Exorcise screen): the page mist sits at level 0.6 while the reply is a draft. When the approval is ticked and the server accepts it, the layer takes `data-exorcised`: the mist lifts 12% and fades to 0 over 1.2s, and a calm ring (`0 0 0 2px var(--color-calm-edge)` expanding from the checkbox-card, scale 1 → 1.6, opacity .7 → 0, 900ms) goes out once. Unticking brings the mist back.
+- **Ghost glyph:** the ghost inside the glyph bobs 2px over 6s and blinks (eyes scale to .1 for 120ms) every 7s.
+- **Reduced motion:** everything above is still, nothing is removed except motion.
+  - The veil is hidden and nothing manifests or materialises: every layer is at its resting state from the first frame.
+  - Mist static at its resting opacity. The aura is static at its first frame (`0 0 0 1px rgba(232,89,12,.16), 0 0 64px 8px var(--aura-haunt)`).
+  - The possessed figure keeps a static afterimage `3px -2px 6px var(--ghost-haunt)`. The wisp is hidden.
+  - The exorcism is instant: mist straight to 0, no ring.
+  - `document.getAnimations()` is empty.
+- **AA:** the mist only lightens the canvas; the shade is in text-free gutters; auras and wisps are glows of the same kind as 3's halos and never sit under a pill or chip (those have their own fill). Nothing in the haunt layer carries meaning.
 
 ## 4. Components
 
@@ -399,6 +441,8 @@ Use this checklist against screenshots.
 - [ ] A verified line still glows.
 - [ ] The fog covers text contrast.
 - [ ] With reduced motion on, anything pulses or slides, or the glow disappears instead of going static.
+- [ ] A haunted notice or Inbox does not read as haunted at a glance: no visible mist, no aura, no possessed line (3.1).
+- [ ] The haunt layer appears on an at-peace notice, or after the reply is approved.
 
 **Approval and export**
 - [ ] `Export PDF` is clickable before approval, or after an edit to an approved draft.
