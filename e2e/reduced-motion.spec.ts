@@ -91,12 +91,12 @@ test('no preference: the same page pulses and drifts, and follows a change witho
     u: (await style(page, '#probe-unverified'))[0]!.anim,
     fog: (await style(page, '[data-testid=fog]'))[0]!.anim,
   });
-  expect(await names()).toEqual({ h: 'pulse-h', u: 'pulse-u', fog: 'fog-drift' });
+  expect(await names()).toEqual({ h: 'haunt-flicker, pulse-h', u: 'pulse-u', fog: 'fog-drift' });
 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   expect(await names()).toEqual({ h: 'none', u: 'none', fog: 'none' });
   expect((await style(page, '[data-state=disagrees]'))[0]!.shadow).toBe(DISAGREES);
 
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  expect(await names()).toEqual({ h: 'pulse-h', u: 'pulse-u', fog: 'fog-drift' });
+  expect(await names()).toEqual({ h: 'haunt-flicker, pulse-h', u: 'pulse-u', fog: 'fog-drift' });
 });
