@@ -13,6 +13,9 @@ const FAILING = new Set(['serious', 'critical']);
  */
 export async function scanScreen(page: Page, screen: string, waivers: Waiver[] = allWaivers): Promise<string[]> {
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  // A transition already running (a pill turning ink on approval) keeps going after the switch; let it finish,
+  // so axe never samples a colour halfway.
+  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running'));
   const { violations } = await new AxeBuilder({ page }).withTags(TAGS).analyze();
   const mine = waivers.filter((w) => w.screen === screen);
   const unused = mine.filter((w) => !violations.some((v) => v.id === w.rule));
