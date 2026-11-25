@@ -88,7 +88,7 @@ The same commands are in `package.json` as `docker:build`, `docker:serve` and `d
 
 ## Built with Kiro
 
-The `.kiro/` folder holds the steering, specs, hooks and MCP config used to build this repo.
+The `.kiro/` folder holds the steering, specs, hooks and MCP config used to build this repo. The Devpost write-up, including how Kiro was used, is in `docs/DEVPOST.md`.
 
 **Steering** (`.kiro/steering/`). Five files are included in every session: `product.md` (audience, what the app does and never does), `tech.md` (stack, commands, rules such as Zod at the model boundary and decimal.js for money), `structure.md` (package layout and boundaries: duty math only in `duty-engine`, tariff data reshaped only in `tariff-data`), `no-model-math.md` (the model never computes, converts or rounds a figure; every displayed number carries `stated`, `computed` or `tariff` provenance) and `approval-gate.md` (approval bound to the draft hash, server-side 403 on export without it). `design-spooky.md` is included only for files under `apps/web/**` and points at `design/DESIGN.md` for visual values.
 
