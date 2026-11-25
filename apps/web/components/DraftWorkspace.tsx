@@ -64,11 +64,13 @@ export function DraftWorkspace({ initial, subtitle, skipped = [] }: { initial: D
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ hash: draft.hash }),
     }).catch(() => null);
+    // Read the body before clearing `ticking`: clearing it first rendered the box unticked until the body arrived.
+    const approved = res?.ok ? ((await res.json().catch(() => null)) as DraftView | null) : null;
     if (at !== generation.current) return; // edited or unticked meanwhile: that already withdrew it
     setTicking(false);
-    if (res?.ok) {
+    if (approved) {
       setExorcisms((n) => n + 1);
-      return setDraft((await res.json()) as DraftView);
+      return setDraft(approved);
     }
     if (res?.status === 409) {
       const now = await fetch(`/api/drafts/${draft.id}`).catch(() => null);
