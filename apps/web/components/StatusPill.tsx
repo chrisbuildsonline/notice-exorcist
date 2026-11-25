@@ -20,7 +20,7 @@ export type PillStatus = NoticeStatus | { kind: 'reading' } | { kind: 'failed' }
 function noticeLook(s: PillStatus): Look {
   switch (s.kind) {
     case 'haunted':
-      return { icon: '!', word: `Haunted · ${s.count}`, cls: HAUNT };
+      return { icon: '!', word: `Haunted · ${s.count}`, cls: `${HAUNT} pill-haunted` };
     case 'unverified':
       return { icon: '?', word: 'Unverified', cls: UNVERIFIED };
     case 'at_peace':

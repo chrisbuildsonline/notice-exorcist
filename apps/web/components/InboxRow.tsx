@@ -4,9 +4,13 @@ import type { NoticeView } from '../lib/notice-view';
 import { Figure } from './Figure';
 import { StatusPill } from './StatusPill';
 
-function KindIcon({ kind }: { kind: string | null }) {
+/** A haunted notice's icon takes the haunt hues and glows (DESIGN.md 3.1); its pill still says why. */
+function KindIcon({ kind, haunted }: { kind: string | null; haunted: boolean }) {
   return (
-    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-muted text-text-secondary" aria-hidden="true">
+    <span
+      className={`flex size-10 shrink-0 items-center justify-center rounded-full ${haunted ? 'kind-haunted bg-haunt-bg text-haunt-fg' : 'bg-surface-muted text-text-secondary'}`}
+      aria-hidden="true"
+    >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         {kind === 'courier_duty_invoice' ? (
           <>
@@ -32,7 +36,7 @@ export function InboxRow({ v }: { v: NoticeView }) {
   return (
     // Phone: stacked (title, short line, then amount + pill + time). Desktop: one 72px row.
     <li className="relative -mx-3 flex min-h-[72px] gap-3 rounded-sm px-3 py-3 transition-colors duration-120 hover:bg-surface-muted md:items-center md:gap-4">
-      <KindIcon kind={v.kind} />
+      <KindIcon kind={v.kind} haunted={status.kind === 'haunted'} />
       <div className="min-w-0 flex-1 md:flex md:items-center md:gap-5">
         <div className="min-w-0 md:flex-1">
           {/* The whole row opens the notice; the figure's source tag stays its own button above the link. */}

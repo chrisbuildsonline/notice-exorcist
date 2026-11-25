@@ -34,7 +34,8 @@ export function HauntedLine({ state, label, meta, stated, computed, rateText = n
     <li
       data-state={state}
       aria-current={selected ? 'true' : undefined}
-      style={glow ? { animationDelay: `${index * 80}ms` } : undefined}
+      // Wake-up: the flicker (disagrees) and the pulse start 80ms apart per line; the pulse follows the 1.4s flicker.
+      style={glow ? { animationDelay: state === 'disagrees' ? `${index * 80}ms, ${index * 80 + 1400}ms` : `${index * 80}ms` } : undefined}
       className={`line ${glow} flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-sm py-3 pr-4 pl-5 ${selected ? 'outline-2 outline-accent-200' : ''}`}
     >
       <span className="min-w-0 flex-1 basis-56">
@@ -48,13 +49,26 @@ export function HauntedLine({ state, label, meta, stated, computed, rateText = n
         {meta ? <span className="mt-0.5 block font-mono text-mono text-text-muted">{meta}</span> : null}
       </span>
       <span className="relative z-10 ml-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
-        {stated ? <Figure {...stated} /> : <span className="text-number num text-text-muted">—</span>}
+        {/* Possessed (DESIGN.md 3.1): the wrong figure carries an afterimage; the recomputed one materialises. */}
+        {stated ? (
+          state === 'disagrees' ? (
+            <span className="possessed">
+              <Figure {...stated} />
+            </span>
+          ) : (
+            <Figure {...stated} />
+          )
+        ) : (
+          <span className="text-number num text-text-muted">—</span>
+        )}
         {state === 'disagrees' && computed ? (
           <>
             <span aria-hidden="true" className="text-text-muted">
               →
             </span>
-            <Figure {...computed} />
+            <span className="materialize">
+              <Figure {...computed} />
+            </span>
           </>
         ) : null}
         <StatusPill line={state} />

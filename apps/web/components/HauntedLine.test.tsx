@@ -59,6 +59,21 @@ describe('HauntedLine', () => {
     expect(html).not.toContain('animation-delay');
   });
 
+  it('a disagreeing line is possessed: the stated figure carries the afterimage, the computed one materialises (DESIGN.md 3.1)', () => {
+    const html = render('disagrees');
+    const possessed = /<span class="possessed[^"]*">([\s\S]*?)<\/span><\/span>/.exec(html)?.[1] ?? '';
+    expect(possessed).toContain('$385.02');
+    expect(possessed).not.toContain('$442.98');
+    const materialize = html.slice(html.indexOf('class="materialize'));
+    expect(materialize).toContain('$442.98');
+  });
+
+  it.each(['unverified', 'verified', 'confirm', 'unsupported'] as const)('a %s line is not possessed', (state) => {
+    const html = render(state);
+    expect(html).not.toContain('possessed');
+    expect(html).not.toContain('materialize');
+  });
+
   it('a verified line shows only the stated figure', () => {
     const html = render('verified');
     expect(html).toContain('$385.02');
