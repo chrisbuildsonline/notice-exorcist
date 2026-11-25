@@ -89,7 +89,7 @@ The source of truth for every visual value in `apps/web`. If a value is not here
 - **Motion:**
   - easings: `ease-out cubic-bezier(.2,.8,.2,1)`, `ease-in-out cubic-bezier(.65,0,.35,1)`
   - durations: `fast 120ms` (hover), `base 200ms` (state), `slow 320ms` (drawer/sheet), `calm 900ms`, `pulse-haunt 2.4s`, `pulse-unverified 3.6s`, `fog-drift 40s`
-  - haunt layer (3.1): `veil-lift 2.2s` (once, first load), `mist-manifest 2.4s` (once), `mist-drift 70s` / `90s`, `flicker 1.4s` (once, then the pulse), `materialize 700ms` after `1.2s`, `aura 2.4s`, `afterimage 3.2s`, `wisp 5.6s`, `ghost-bob 6s`, `ghost-blink 7s`, `exorcise 1.2s` (fog lifts) and `exorcise-ring 900ms`
+  - haunt layer (3.1): `veil-lift 1.6s` ease-out (once, first load), `mist-manifest 2.4s` (once), `mist-drift 70s` / `90s`, `flicker 1.4s` (once, then the pulse), `materialize 360ms` after `120ms`, `aura 2.4s`, `afterimage 3.2s`, `wisp 5.6s`, `ghost-bob 6s`, `ghost-blink 7s`, `exorcise 1.2s` (fog lifts) and `exorcise-ring 900ms`
 
 ### 2.3 Type
 
@@ -217,14 +217,14 @@ The AI jury called the first pass "deliberately subtle". These effects make inbo
   - At ≥1280px the outer gutters take a `mist-shade` gradient (9% each side). There is no text there.
   - **Manifest:** on mount the mist rolls in once: from opacity 0, 6% lower and scaled 1.08 to rest over 2.4s.
   - It is lighter than the canvas, so it never lowers text contrast.
-- **First-load veil** (`data-testid=haunt-veil`, in the root layout, so it plays once per full load, not on client navigation): a full-screen `mist-veil` wash over the page at `z-index:40`, `pointer-events:none`. It holds for the first quarter, then parts from the centre outward (a radial mask, the clearing grows from −40% to 100%) leaving noise wisps drifting in the clearing, and fades (opacity .96 → 0) over 2.2s. It never scales, so it never reaches past the viewport. Its resting state is hidden.
+- **First-load veil** (`data-testid=haunt-veil`, in the root layout, so it plays once per full load, not on client navigation): a full-screen `mist-veil` wash over the page at `z-index:40`, `pointer-events:none`. It parts from the centre outward at once (a radial mask, the clearing grows from −10% to 100%, ease-out) leaving noise wisps drifting in the clearing, and fades (opacity .96 → 0) over 1.6s. By 500ms it is under 0.4 opacity and the centre is clear, so a fast click can read the page. It never scales, so it never reaches past the viewport. Its resting state is hidden.
 - **Document aura:** the paper (`data-aura`) radiates. `haunt` when any line disagrees: `0 0 0 1px rgba(232,89,12,.16), 0 0 64px 8px var(--aura-haunt)` breathing to `0 0 0 1px rgba(232,89,12,.26), 0 0 88px 16px var(--aura-haunt)` over 2.4s; `unverified` the same in amber over 3.6s; none otherwise. The specimen card on the empty Inbox carries the same aura.
 - **Haunted notice marks:** the `! Haunted · n` pill glows (`0 0 0 1px rgba(232,89,12,.22), 0 0 14px var(--glow-haunt)`) on the 2.4s pulse, and a haunted Inbox row's kind icon takes `haunt-bg` / `haunt-fg` with the same glow. The word in the pill still carries the meaning.
 - **The possessed line** (a disagreeing line):
   - **Flicker:** on first render its glow and tint flicker like a failing bulb for 1.4s (staggered 80ms per line, once), then hand over to `pulse-h`.
   - **Afterimage:** the stated figure (the wrong one) carries a drifting ghost double, a `text-shadow` of `ghost-haunt` that drifts over 3.2s: `3px -2px 6px var(--ghost-haunt), -2px 1px 0 rgba(20,22,28,.10)` to `-3px -3px 8px …, 2px 2px 0 …`. The glyphs themselves stay `ink`.
   - **Ember wisp:** a soft ember plume (`::after`, blurred radial `glow-haunt`, behind the row content) rises 20px from the row's top edge at most 0.5 opacity and fades, every 5.6s. It is kept that faint so the caption above the row stays ≥4.5:1 (measured from screenshots).
-  - **Materialize:** the recomputed figure on the line, and the Recomputed and Difference tiles, appear out of the fog once: from opacity 0, `blur(6px)` and 4px low, over 700ms after 1.2s (after the flicker). The figure is in the DOM from the start; only its look animates.
+  - **Materialize:** the recomputed figure on the line, and the Recomputed and Difference tiles, appear out of the fog once: from opacity 0, `blur(6px)` and 4px low, over 360ms after 120ms, so they are fully readable by 480ms; the flicker carries on around them. The figure is in the DOM from the start; only its look animates.
 - **The exorcism** (Exorcise screen): the page mist sits at level 0.6 while the reply is a draft. When the approval is ticked and the server accepts it, the layer takes `data-exorcised`: the mist lifts 12% and fades to 0 over 1.2s, and a calm ring goes out once from the checkbox-card over 900ms: a `box-shadow`, so it never changes layout, from a `2px calm-edge` ring to a 28px spread of `glow-calm`, fading to 0. Unticking brings the mist back.
 - **Ghost glyph:** the ghost inside the glyph bobs 2px over 6s and blinks (eyes scale to .1 for 120ms) every 7s.
 - **Reduced motion:** everything above is still, nothing is removed except motion.

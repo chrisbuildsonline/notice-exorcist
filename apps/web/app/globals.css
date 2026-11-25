@@ -95,8 +95,8 @@
   animation:wisp 5.6s var(--ease-out) 1.4s infinite;
 }
 @keyframes wisp { from { opacity:0; transform:translateY(14px) scaleX(.7); } 30% { opacity:.5; } to { opacity:0; transform:translateY(-20px) scaleX(1.1); } }
-/* Recomputed figures appear out of the fog once, after the flicker. */
-.materialize { display:inline-flex; animation:materialize 700ms var(--ease-out) 1.2s backwards; }
+/* Recomputed figures appear out of the fog once, fully readable by 480ms (a fast click never sees a blank). */
+.materialize { display:inline-flex; animation:materialize 360ms var(--ease-out) 120ms backwards; }
 @keyframes materialize { from { opacity:0; filter:blur(6px); transform:translateY(4px); } }
 /* The document aura and the haunted notice marks (pill, Inbox kind icon). Status hues only. */
 .paper[data-aura=haunt]      { box-shadow:0 0 0 1px rgba(232,89,12,.16), 0 0 64px 8px var(--aura-haunt); animation:aura-h 2.4s var(--ease-in-out) infinite alternate; }
@@ -146,11 +146,10 @@
   /* A wash that parts from the centre, with noise wisps left drifting in the clearing. */
   mask-image:radial-gradient(ellipse 70% 60% at 50% 42%, transparent var(--veil-clear), #000 calc(var(--veil-clear) + 40%)), var(--noise-a);
   mask-size:100% 100%, 720px 720px; mask-repeat:no-repeat, repeat; mask-composite:add;
-  animation:veil-lift 2.2s var(--ease-in-out);
+  animation:veil-lift 1.6s var(--ease-out);
 }
 @keyframes veil-lift {
-  from { opacity:.96; visibility:visible; --veil-clear:-40%; }
-  25%  { opacity:.96; visibility:visible; --veil-clear:-25%; }
+  from { opacity:.96; visibility:visible; --veil-clear:-10%; }
   to   { opacity:0; visibility:visible; --veil-clear:100%; }
 }
 

@@ -93,6 +93,30 @@ for (const [vp, size] of [
   });
 }
 
+test('a fast click reads the figures within 0.5s: they have materialised and the veil has mostly lifted', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize(desktop);
+  await page.goto(noticePath);
+  // Freeze every animation at 500ms after it started and read the frame a user would see then.
+  const at500 = await page.evaluate(() => {
+    for (const a of document.getAnimations()) {
+      a.pause();
+      a.currentTime = 500;
+    }
+    const s = (el: Element) => getComputedStyle(el);
+    return {
+      figures: [...document.querySelectorAll('.materialize')].map((el) => ({ opacity: Number(s(el).opacity), filter: s(el).filter })),
+      veil: Number(s(document.querySelector('[data-testid=haunt-veil]')!).opacity),
+      flicker: s(document.querySelector('[data-state=disagrees]')!).animationName,
+    };
+  });
+  expect(at500.figures.length).toBeGreaterThanOrEqual(3);
+  for (const f of at500.figures) expect(f).toEqual({ opacity: 1, filter: 'none' });
+  expect(at500.veil).toBeLessThan(0.4);
+  // The possessed line still flickers awake.
+  expect(at500.flicker).toBe('haunt-flicker, pulse-h');
+});
+
 test('the Inbox reads haunted: mist, glowing haunted pills and kind icons', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize(desktop);
