@@ -5,6 +5,7 @@ import type { DraftView } from '../lib/draft';
 import { ApprovalCard, ApprovalCheck, ExportPill } from './ApprovalCard';
 import type { Skipped } from '../lib/draft-builder';
 import { DraftEditor } from './DraftEditor';
+import { Haunt } from './Haunt';
 import { SkippedNote } from './SkippedNote';
 import { StatusPill } from './StatusPill';
 import { Toast, type ToastMessage } from './Toast';
@@ -26,6 +27,8 @@ export function DraftWorkspace({ initial, subtitle, skipped = [] }: { initial: D
   const [ticking, setTicking] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [toast, setToast] = useState<ToastMessage | null>(null);
+  // Bumped when the server accepts an approval: each one sends out the exorcism ring once (DESIGN.md 3.1).
+  const [exorcisms, setExorcisms] = useState(0);
   // The paragraph an edit toast follows in the DOM, so its Dismiss is the next Tab stop from there; else it is last.
   const [toastAt, setToastAt] = useState<number | null>(null);
   // Bumped by every edit and every untick, so an approval answered after one is not applied.
@@ -63,7 +66,10 @@ export function DraftWorkspace({ initial, subtitle, skipped = [] }: { initial: D
     }).catch(() => null);
     if (at !== generation.current) return; // edited or unticked meanwhile: that already withdrew it
     setTicking(false);
-    if (res?.ok) return setDraft((await res.json()) as DraftView);
+    if (res?.ok) {
+      setExorcisms((n) => n + 1);
+      return setDraft((await res.json()) as DraftView);
+    }
     if (res?.status === 409) {
       const now = await fetch(`/api/drafts/${draft.id}`).catch(() => null);
       if (now?.ok) setDraft((await now.json()) as DraftView);
@@ -107,12 +113,14 @@ export function DraftWorkspace({ initial, subtitle, skipped = [] }: { initial: D
     }
   }
 
-  const check = { checked: draft.state === 'approved' || ticking, busy: ticking, onChange: (on: boolean) => (on ? void approve() : withdraw()) };
+  const check = { checked: draft.state === 'approved' || ticking, busy: ticking, ring: exorcisms, onChange: (on: boolean) => (on ? void approve() : withdraw()) };
   const pill = { approved, exporting, onExport: () => void exportPdf() };
   const toastNode = <Toast message={toast} onDismiss={dismiss} />;
 
   return (
     <>
+      {/* The draft is still haunted; the approved reply lifts the mist. */}
+      <Haunt level={0.6} exorcised={approved} />
       <div className="mt-2 flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-6">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">

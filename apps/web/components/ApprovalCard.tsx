@@ -12,20 +12,30 @@ export const fingerprint = (d: DraftView) => `${short(d.hash)} · ${plural(d.par
 export const HELPER_SHUT = 'Approve the draft to export';
 const HELPER_OPEN = 'Exports this exact text, nothing else';
 
-type CheckProps = { draft: DraftView; checked: boolean; busy: boolean; onChange: (on: boolean) => void; variant: 'card' | 'bar'; className?: string };
+type CheckProps = {
+  draft: DraftView;
+  checked: boolean;
+  busy: boolean;
+  onChange: (on: boolean) => void;
+  variant: 'card' | 'bar';
+  /** Counts accepted approvals; each new one sends the calm exorcism ring out once (DESIGN.md 3.1). */
+  ring?: number;
+  className?: string;
+};
 
 /**
  * The explicit approval: a full-width checkbox-card, "I approve this exact draft", with the hash it binds to.
  * Unticked unless the stored approval says otherwise. Nothing but the user's tick sets it.
  */
-export function ApprovalCheck({ draft, checked, busy, onChange, variant, className = '' }: CheckProps) {
+export function ApprovalCheck({ draft, checked, busy, onChange, variant, ring = 0, className = '' }: CheckProps) {
   const sub = useId();
   const look =
     variant === 'card'
       ? 'min-h-16 rounded-md bg-surface-muted hover:bg-line has-[:checked]:bg-calm-bg'
       : 'min-h-14 rounded-lg bg-surface shadow-float has-[:checked]:bg-calm-bg';
   return (
-    <label className={`flex cursor-pointer items-center gap-3.5 px-4 py-2.5 transition-colors duration-200 ${look} ${className}`}>
+    <label className={`relative flex cursor-pointer items-center gap-3.5 px-4 py-2.5 transition-colors duration-200 ${look} ${className}`}>
+      {ring && checked ? <span key={ring} aria-hidden="true" data-testid="exorcise-ring" className="exorcise-ring" /> : null}
       <span className="grid size-6 shrink-0 place-items-center">
         <input
           type="checkbox"
