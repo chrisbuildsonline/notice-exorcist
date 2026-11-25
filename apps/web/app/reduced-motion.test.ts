@@ -82,6 +82,40 @@ describe('reduced motion', () => {
     }
   });
 
+  describe('the haunt layer (DESIGN.md 3.1) stays, still', () => {
+    const design = readFileSync(join(import.meta.dirname, '..', '..', '..', 'design', 'DESIGN.md'), 'utf8');
+    const section = design.split('### 3.1')[1]?.split('\n## ')[0] ?? '';
+    const reduced = section.split('**Reduced motion:**')[1] ?? '';
+
+    it('DESIGN.md 3.1 has a reduced-motion list', () => {
+      expect(reduced).toContain('getAnimations()');
+    });
+
+    it('the aura is static at its first frame', () => {
+      const m = /The aura is static at its first frame \(`([^`]+)`\)/.exec(reduced);
+      expect(m).not.toBeNull();
+      expect(inBlock('.paper[data-aura=haunt]').replace(/\s+/g, ' ')).toContain(`box-shadow:${m![1]}`.replace(/\s+/g, ' '));
+    });
+
+    it('the possessed figure keeps a static afterimage', () => {
+      const m = /static afterimage `([^`]+)`/.exec(reduced);
+      expect(m).not.toBeNull();
+      expect(inBlock('.possessed .num').replace(/\s+/g, ' ')).toContain(`text-shadow:${m![1]}`.replace(/\s+/g, ' '));
+    });
+
+    it('the veil and the wisp are hidden, the mist and the figures rest', () => {
+      expect(inBlock('.haunt-veil')).toMatch(/display\s*:\s*none/);
+      expect(inBlock('.glow-haunt::after')).toMatch(/display\s*:\s*none/);
+      expect(inBlock('.haunt-mist')).toMatch(/opacity\s*:\s*1/);
+      expect(inBlock('.materialize')).toMatch(/opacity\s*:\s*1/);
+      expect(inBlock('.materialize')).toMatch(/filter\s*:\s*none/);
+    });
+
+    it('the exorcism is instant: no ring', () => {
+      expect(inBlock('.exorcise-ring')).toMatch(/display\s*:\s*none/);
+    });
+  });
+
   it.each(['confirm', 'unsupported', 'verified'])('%s has no shadow and no animation anywhere', (state) => {
     for (const [sels, body] of [...rules, ...blockRules]) {
       if (sels.some((s) => s.includes(`data-state=${state}`))) expect(body, sels.join(',')).not.toMatch(/box-shadow|animation/);

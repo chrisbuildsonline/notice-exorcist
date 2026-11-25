@@ -37,7 +37,14 @@
   --glow-haunt:rgba(232,89,12,.30);
   --glow-unverified:rgba(245,179,0,.28);
   --glow-calm:rgba(47,158,94,.22);
+  /* The haunt layer, DESIGN.md 2.1 and 3.1 */
+  --mist-veil:rgba(255,255,255,.78); --mist-shade:rgba(84,94,128,.10);
+  --aura-haunt:rgba(232,89,12,.18); --aura-unverified:rgba(245,179,0,.18); --ghost-haunt:rgba(232,89,12,.45);
+  /* Stitched fractal noise, used as a mask so the wisps take the --mist-veil colour. */
+  --noise-a:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='720'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0042 .0085' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 -1.15'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --noise-b:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='560'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0065 .013' numOctaves='3' seed='23' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3.2 0 0 0 -1.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+@property --veil-clear { syntax:"<percentage>"; inherits:false; initial-value:-40%; }
 
 /* Phone (<768px) sizes from DESIGN.md 2.3 */
 @media (max-width: 767px) {
@@ -60,7 +67,7 @@
 .line[data-state=disagrees]::before  { background:var(--color-haunt-edge); }
 /* Only these two glow (HauntedLine.GLOW). Confirm and unsupported never do. */
 .glow-unverified { animation:pulse-u 3.6s var(--ease-in-out) infinite alternate; }
-.glow-haunt      { animation:pulse-h 2.4s var(--ease-in-out) infinite alternate; }
+.glow-haunt      { animation:haunt-flicker 1.4s steps(1,end) backwards, pulse-h 2.4s var(--ease-in-out) infinite alternate; }
 .line[data-state=confirm]    { background:var(--color-confirm-bg); }
 .line[data-state=confirm]::before    { background:var(--color-confirm-edge); }
 .line[data-state=unsupported]::before { background:repeating-linear-gradient(to bottom, var(--color-unsupported-edge) 0 4px, transparent 4px 7px); }
@@ -68,6 +75,85 @@
                      to   { box-shadow:0 0 0 1px rgba(184,125,0,.30), 0 0 18px 2px var(--glow-unverified); } }
 @keyframes pulse-h { from { box-shadow:0 0 0 1px rgba(232,89,12,.30), 0 0 12px 1px var(--glow-haunt); }
                      to   { box-shadow:0 0 0 2px rgba(232,89,12,.45), 0 0 28px 6px var(--glow-haunt); } }
+/* The possessed line, DESIGN.md 3.1: it flickers awake, its wrong figure carries an afterimage, an ember wisp rises. */
+@keyframes haunt-flicker {
+  0%      { box-shadow:none; background-color:transparent; }
+  8%      { box-shadow:0 0 0 2px rgba(232,89,12,.55), 0 0 32px 8px var(--glow-haunt); background-color:var(--color-haunt-bg); }
+  12%     { box-shadow:none; background-color:transparent; }
+  20%     { box-shadow:0 0 0 2px rgba(232,89,12,.45), 0 0 22px 4px var(--glow-haunt); background-color:var(--color-haunt-bg); }
+  25%     { box-shadow:none; background-color:transparent; }
+  31%     { box-shadow:0 0 0 2px rgba(232,89,12,.60), 0 0 40px 12px var(--glow-haunt); background-color:var(--color-haunt-bg); }
+  47%     { box-shadow:0 0 0 1px rgba(232,89,12,.20), 0 0 8px 0 var(--glow-haunt); background-color:var(--color-haunt-bg); }
+  52%,100%{ box-shadow:0 0 0 2px rgba(232,89,12,.55), 0 0 36px 10px var(--glow-haunt); background-color:var(--color-haunt-bg); }
+}
+.possessed .num { text-shadow:3px -2px 6px var(--ghost-haunt), -2px 1px 0 rgba(20,22,28,.10); animation:afterimage 3.2s var(--ease-in-out) infinite alternate; }
+@keyframes afterimage { from { text-shadow:3px -2px 6px var(--ghost-haunt), -2px 1px 0 rgba(20,22,28,.10); }
+                        to   { text-shadow:-3px -3px 8px var(--ghost-haunt), 2px 2px 0 rgba(20,22,28,.10); } }
+.glow-haunt::after {
+  content:""; position:absolute; z-index:-1; left:28%; right:6%; top:-10px; height:48px; border-radius:50%; pointer-events:none;
+  background:radial-gradient(closest-side, var(--glow-haunt), transparent); filter:blur(6px); opacity:0;
+  animation:wisp 5.6s var(--ease-out) 1.4s infinite;
+}
+@keyframes wisp { from { opacity:0; transform:translateY(14px) scaleX(.7); } 30% { opacity:.9; } to { opacity:0; transform:translateY(-28px) scaleX(1.1); } }
+/* Recomputed figures appear out of the fog once, after the flicker. */
+.materialize { display:inline-flex; animation:materialize 700ms var(--ease-out) 1.2s backwards; }
+@keyframes materialize { from { opacity:0; filter:blur(6px); transform:translateY(4px); } }
+/* The document aura and the haunted notice marks (pill, Inbox kind icon). Status hues only. */
+.paper[data-aura=haunt]      { box-shadow:0 0 0 1px rgba(232,89,12,.16), 0 0 64px 8px var(--aura-haunt); animation:aura-h 2.4s var(--ease-in-out) infinite alternate; }
+.paper[data-aura=unverified] { box-shadow:0 0 0 1px rgba(184,125,0,.16), 0 0 64px 8px var(--aura-unverified); animation:aura-u 3.6s var(--ease-in-out) infinite alternate; }
+@keyframes aura-h { from { box-shadow:0 0 0 1px rgba(232,89,12,.16), 0 0 64px 8px var(--aura-haunt); } to { box-shadow:0 0 0 1px rgba(232,89,12,.26), 0 0 88px 16px var(--aura-haunt); } }
+@keyframes aura-u { from { box-shadow:0 0 0 1px rgba(184,125,0,.16), 0 0 64px 8px var(--aura-unverified); } to { box-shadow:0 0 0 1px rgba(184,125,0,.26), 0 0 88px 16px var(--aura-unverified); } }
+.pill-haunted, .kind-haunted { box-shadow:0 0 0 1px rgba(232,89,12,.22), 0 0 14px var(--glow-haunt); animation:pill-h 2.4s var(--ease-in-out) infinite alternate; }
+@keyframes pill-h { from { box-shadow:0 0 0 1px rgba(232,89,12,.16), 0 0 6px var(--glow-haunt); } to { box-shadow:0 0 0 1px rgba(232,89,12,.30), 0 0 18px 2px var(--glow-haunt); } }
+/* The ghost in the glyph bobs and blinks. */
+.ghost-body { transform-box:fill-box; animation:ghost-bob 6s var(--ease-in-out) infinite alternate; }
+.ghost-eyes { transform-box:fill-box; transform-origin:center; animation:ghost-blink 7s linear infinite; }
+@keyframes ghost-bob { from { transform:translateY(1px); } to { transform:translateY(-2px); } }
+@keyframes ghost-blink { 0%, 96%, 100% { transform:none; } 97.5% { transform:scaleY(.1); } }
+
+/* Page mist, DESIGN.md 3.1: fixed behind every surface, lighter than the canvas, densest at the bottom. */
+.haunt { position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; opacity:calc(.4 + .6 * var(--haunt)); transition:opacity 1200ms var(--ease-out); }
+.haunt::before { content:""; position:absolute; inset:0; display:none; background:linear-gradient(90deg, var(--mist-shade), transparent 9%, transparent 91%, var(--mist-shade)); }
+@media (min-width: 1280px) { .haunt::before { display:block; } }
+.haunt-mist {
+  position:absolute; inset:-20% -40%; background-color:var(--mist-veil);
+  mask-image:var(--noise-a), linear-gradient(to top, #000 0%, rgba(0,0,0,.8) 40%, rgba(0,0,0,.45) 100%);
+  mask-size:720px 720px, 100% 100%; mask-repeat:repeat, no-repeat; mask-composite:intersect;
+  transition:transform 1200ms var(--ease-out);
+  animation:mist-manifest 2.4s var(--ease-out), mist-drift-a 70s linear infinite alternate;
+}
+.haunt-mist-b {
+  mask-image:var(--noise-b), linear-gradient(to top, #000 0%, rgba(0,0,0,.65) 35%, transparent 70%);
+  mask-size:560px 560px, 100% 100%;
+  animation:mist-manifest 2.4s var(--ease-out), mist-drift-b 90s linear infinite alternate;
+}
+@keyframes mist-manifest { from { opacity:0; transform:translateY(6%) scale(1.08); } }
+@keyframes mist-drift-a { from { translate:0 0; } to { translate:18% 0; } }
+@keyframes mist-drift-b { from { translate:0 0; } to { translate:-14% -2%; } }
+/* The exorcism: approval lifts the mist. */
+.haunt[data-exorcised] { opacity:0; }
+.haunt[data-exorcised] .haunt-mist { transform:translateY(-12%); }
+.exorcise-ring {
+  position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0;
+  animation:exorcise-ring 900ms var(--ease-out);
+}
+@keyframes exorcise-ring { from { opacity:1; box-shadow:0 0 0 2px var(--color-calm-edge), 0 0 0 0 var(--glow-calm); }
+                           35%  { opacity:1; box-shadow:0 0 0 10px rgba(47,158,94,.28), 0 0 24px 12px var(--glow-calm); }
+                           to   { opacity:0; box-shadow:0 0 0 28px rgba(47,158,94,0), 0 0 48px 28px var(--glow-calm); } }
+/* First-load veil, in the root layout: the page emerges from the fog once per full load. Hidden at rest. */
+.haunt-veil {
+  position:fixed; inset:0; z-index:40; pointer-events:none; opacity:0; visibility:hidden; background-color:var(--mist-veil);
+  /* A wash that parts from the centre, with noise wisps left drifting in the clearing. */
+  mask-image:radial-gradient(ellipse 70% 60% at 50% 42%, transparent var(--veil-clear), #000 calc(var(--veil-clear) + 40%)), var(--noise-a);
+  mask-size:100% 100%, 720px 720px; mask-repeat:no-repeat, repeat; mask-composite:add;
+  animation:veil-lift 2.2s var(--ease-in-out);
+}
+@keyframes veil-lift {
+  from { opacity:.96; visibility:visible; --veil-clear:-40%; transform:none; }
+  25%  { opacity:.96; visibility:visible; --veil-clear:-25%; }
+  to   { opacity:0; visibility:visible; --veil-clear:100%; transform:scale(1.12); }
+}
+
 /* Calculation drawer, DESIGN.md 4: scrim, a 320ms slide from the right (a bottom sheet on phone). */
 .calc-drawer::backdrop { background:rgba(20,22,28,.24); animation:scrim-in 320ms var(--ease-out); }
 .calc-drawer[open] .calc-panel { animation:sheet-in 320ms var(--ease-out); }
@@ -89,6 +175,13 @@ html:has(.calc-drawer[open]) { overflow:hidden; }
   .fog, .line, .calc-panel, .side-panel { transition:none !important; animation:none !important; }
   .glow-unverified { box-shadow:0 0 0 1px var(--color-unverified-edge), 0 0 12px var(--glow-unverified); }
   .glow-haunt      { box-shadow:0 0 0 2px var(--color-haunt-edge), 0 0 20px var(--glow-haunt); }
+  /* The haunt layer, DESIGN.md 3.1: still, but there. */
+  .haunt-veil, .glow-haunt::after, .exorcise-ring { display:none; animation:none !important; }
+  .haunt, .haunt-mist { transition:none !important; animation:none !important; }
+  .haunt-mist { opacity:1; }
+  .materialize { opacity:1; filter:none; transform:none; }
+  .paper[data-aura=haunt] { box-shadow:0 0 0 1px rgba(232,89,12,.16), 0 0 64px 8px var(--aura-haunt); }
+  .possessed .num { text-shadow:3px -2px 6px var(--ghost-haunt); }
 }
 
 /* Fog over the paper, behind the rows: neutral grey, never the accent. Opacity comes from fogOpacity(). */
