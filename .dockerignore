@@ -19,5 +19,4 @@ packages/tariff-data/.cache
 .e2e-data
 .e2e-data-strict
 .e2e-data-local
-Dockerfile
 .dockerignore
