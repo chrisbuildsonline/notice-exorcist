@@ -12,6 +12,6 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["packages", "e2e", "test","vitest.config.ts", "playwright.config.ts"],
+  "include": ["packages", "e2e", "test","vitest.config.ts", "playwright.config.ts", "playwright.docker.config.ts"],
   "exclude": ["packages/tariff-data", "packages/tariff-mcp"]
 }
