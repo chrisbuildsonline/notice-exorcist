@@ -6,6 +6,7 @@ import { RefreshWhileReading } from '../../../components/ClientBits';
 import { ConfirmForm } from '../../../components/ConfirmForm';
 import { Figure } from '../../../components/Figure';
 import { GhostGlyph } from '../../../components/GhostGlyph';
+import { Haunt } from '../../../components/Haunt';
 import { HauntedLine } from '../../../components/HauntedLine';
 import { LinePanel } from '../../../components/LinePanel';
 import { Page } from '../../../components/Page';
@@ -17,6 +18,7 @@ import { confirmationsFor } from '../../../lib/confirm';
 import { canDraft } from '../../../lib/draft-builder';
 import { getNotice } from '../../../lib/intake';
 import { noticeView, uncheckedCaption } from '../../../lib/notice-view';
+import { auraOf } from '../../../lib/states';
 import { htsCandidates, openTariff, rulingsFor } from '../../../lib/tariff';
 
 export const dynamic = 'force-dynamic';
@@ -27,11 +29,24 @@ const PILL = 'items-center justify-center gap-2 rounded-full px-6 text-body font
 const date = (iso: string | null) =>
   iso ? new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : null;
 
-function Tile(props: { id: string; label: string; fig: FigureJson | null; empty: ReactNode; extra?: ReactNode }) {
+/** `materialize`: a recomputed figure appears out of the fog once (DESIGN.md 3.1). */
+function Tile(props: { id: string; label: string; fig: FigureJson | null; empty: ReactNode; extra?: ReactNode; materialize?: boolean }) {
   return (
     <div data-testid={props.id} className="min-w-0 py-4 first:pt-0 last:pb-0 md:px-6 md:py-0 md:first:pl-0 md:last:pr-0">
       <p className="text-label uppercase text-text-muted">{props.label}</p>
-      <div className="mt-2 min-h-10">{props.fig ? <Figure {...props.fig} size="lg" /> : props.empty}</div>
+      <div className="mt-2 min-h-10">
+        {props.fig ? (
+          props.materialize ? (
+            <span className="materialize">
+              <Figure {...props.fig} size="lg" />
+            </span>
+          ) : (
+            <Figure {...props.fig} size="lg" />
+          )
+        ) : (
+          props.empty
+        )}
+      </div>
       {props.extra}
     </div>
   );
@@ -102,6 +117,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 pb-40 md:px-8 md:pb-16">
+      <Haunt level={a?.fog ?? 0} />
       <header className="flex h-16 items-center justify-between">
         <Link href="/" className="flex h-11 items-center gap-2 text-body font-semibold tracking-tight">
           <GhostGlyph size={24} />
@@ -170,6 +186,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
                 id="recomputed"
                 label="Recomputed"
                 fig={t?.computedTotal ?? null}
+                materialize
                 extra={
                   t?.calc ? (
                     <CalcDrawer title="How the total was recomputed" subtitle={t.name} calc={t.calc} stated={t.statedTotal} difference={t.difference} className="mt-1" />
@@ -186,6 +203,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
                 id="difference"
                 label="Difference"
                 fig={t?.difference ?? null}
+                materialize
                 empty={
                   t?.statedTotal && t.computedTotal ? (
                     <StatusPill line="verified" />
@@ -204,7 +222,7 @@ export default async function NoticePage(props: { params: Promise<{ id: string }
 
             <div className="mt-8 grid grid-cols-1 gap-4 md:mt-12 md:gap-6 lg:grid-cols-12 lg:items-start">
               <div className={`lg:col-span-7 ${listOnly}`}>
-                <Paper fog={a.fog} label="The notice, line by line">
+                <Paper fog={a.fog} aura={auraOf(lines.map((l) => l.state))} label="The notice, line by line">
                   <div className="flex items-baseline justify-between gap-3 px-1">
                     <p className="text-label uppercase text-text-muted">Lines on the notice</p>
                     <p className="text-caption text-text-muted">{lines.length ? 'Select a line to see why' : ''}</p>

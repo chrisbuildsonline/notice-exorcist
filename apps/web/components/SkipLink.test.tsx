@@ -20,7 +20,10 @@ describe('SkipLink', () => {
         <p>page</p>
       </RootLayout>,
     );
-    expect(html).toMatch(/<body[^>]*><a href="#main" class="skip-link">Skip to main content<\/a><p>page<\/p><\/body>/);
+    // Only the decorative first-load veil (aria-hidden, DESIGN.md 3.1) follows the page.
+    expect(html).toMatch(
+      /<body[^>]*><a href="#main" class="skip-link">Skip to main content<\/a><p>page<\/p><div aria-hidden="true" data-testid="haunt-veil" class="haunt-veil"><\/div><\/body>/,
+    );
   });
 
   it('is hidden until focused, then a fixed 44px pill above everything', () => {

@@ -24,6 +24,12 @@ export function noticeStatus(states: LineState[]): NoticeStatus {
   return { kind: 'at_peace' };
 }
 
+/** DESIGN.md 3.1: the paper's aura. Ember while any line disagrees, amber while any is only unverified, else none. */
+export function auraOf(states: LineState[]): 'haunt' | 'unverified' | null {
+  if (states.includes('disagrees')) return 'haunt';
+  return states.includes('unverified') ? 'unverified' : null;
+}
+
 /** DESIGN.md 3: 0.15 + 0.85 × (unverified + disagreeing) / total, and 0 when every line is verified. */
 export function fogOpacity(states: LineState[]): number {
   if (states.length === 0 || states.every((s) => s === 'verified')) return 0;

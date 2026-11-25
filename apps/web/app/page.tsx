@@ -2,6 +2,7 @@ import { CopyButton, RefreshWhileReading, UploadButton } from '../components/Cli
 import { Dropzone } from '../components/Dropzone';
 import { EmptyInbox, InboxHeading, INK, PILL, TrySpecimen, UploadIcon } from '../components/EmptyInbox';
 import { GhostGlyph } from '../components/GhostGlyph';
+import { Haunt } from '../components/Haunt';
 import { InboxRow } from '../components/InboxRow';
 import { Page } from '../components/Page';
 import { confirmationsFor } from '../lib/confirm';
@@ -9,6 +10,7 @@ import { inboxToken } from '../lib/db';
 import { inboxCaption, specimenPreview, totalAtStake } from '../lib/inbox';
 import { listNotices } from '../lib/intake';
 import { noticeView } from '../lib/notice-view';
+import { inboxFog } from '../lib/states';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,8 +21,11 @@ export default async function InboxPage() {
   const preview = empty ? await specimenPreview() : null;
   const address = `notices+${inboxToken()}@${process.env.INBOUND_DOMAIN || 'in.noticeexorcist.app'}`;
 
+  const fog = inboxFog(views.map((v) => v.assessment?.status.kind ?? (v.status === 'failed' ? 'failed' : 'reading')));
+
   return (
     <div className="mx-auto max-w-[1200px] px-4 pb-32 md:px-8 md:pb-16">
+      <Haunt level={fog} />
       <header className="flex h-16 items-center">
         <span className="flex items-center gap-2 text-body font-semibold tracking-tight">
           <GhostGlyph size={24} />
