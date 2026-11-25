@@ -12,6 +12,18 @@ Measured accuracy: 96.3% of fields read exactly right (234 of 243) across five i
 
 **In-sample only.** Every figure in this repo, including the accuracy above and the duty and fee results, has been checked only against the three bundled specimen notices and the bundled sample data: 10 HTS chapters, 108 hand-picked CROSS rulings and the fee table in `packages/duty-engine/data/fees.json`. It says nothing about other notices, goods or rate forms. Notice Exorcist is not legal or customs advice; check the current HTS edition and ruling status before relying on any output. Full eval: `packages/notice-extract/eval/results/RESULTS.md`.
 
+## Screenshots
+
+At 1440px, with the bundled specimens. Mist drifts over the canvas while anything is unverified. A document with a disagreeing line gives off an ember aura, and the wrong figure carries a ghostly afterimage. Approving the reply lifts the fog. With reduced motion everything stays, still (`design/DESIGN.md` 3.1).
+
+| Inbox | Notice view |
+|---|---|
+| ![Inbox with two haunted notices, glowing haunted pills and mist on the canvas](docs/screenshots/inbox.png) | ![Form 29 notice: the possessed line glows, its stated figure has an ember afterimage](docs/screenshots/notice.png) |
+| **See the math** | **Exorcise** |
+| ![Calculation drawer: the engine's formula, inputs and rounding for the recomputed total](docs/screenshots/drawer.png) | ![Exorcise screen: the cited reply draft and the approval card, before approval](docs/screenshots/exorcise.png) |
+
+Phone (390px): [Inbox](docs/screenshots/inbox-390.png) · [Notice view](docs/screenshots/notice-390.png)
+
 ## Stack
 
 TypeScript monorepo (Bun workspaces), MIT licensed.
